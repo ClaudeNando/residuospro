@@ -13,6 +13,7 @@
 <meta name="description" content="Orçamentos de resíduos industriais — Cerrado Ambiental">
 <title>ResíduosPRO</title>
 <link rel="manifest" href="manifest.json">
+<script src="ibama.js"></script>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -381,6 +382,33 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
 
 /* DIVIDER */
 .div{height:1px;background:var(--border2);margin:14px 0}
+
+/* AUTOCOMPLETE */
+.ac-wrap{position:relative}
+.ac-list{
+  position:absolute;top:calc(100% - 2px);left:0;right:0;
+  background:var(--card);border:1.5px solid var(--accent);
+  border-top:none;border-radius:0 0 12px 12px;
+  max-height:210px;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  z-index:99;box-shadow:0 8px 24px rgba(69,40,24,0.18);
+  display:none;
+}
+.ac-list.open{display:block}
+.ac-item{
+  padding:11px 14px;font-size:13px;color:var(--text);
+  border-bottom:1px solid var(--border2);cursor:pointer;
+  display:flex;align-items:flex-start;gap:8px;
+}
+.ac-item:last-child{border-bottom:none}
+.ac-item:active{background:var(--accent-dim)}
+.ac-item-text{flex:1;line-height:1.4}
+.ac-badge{
+  font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;
+  white-space:nowrap;flex-shrink:0;margin-top:1px;
+}
+.ac-badge-per{background:rgba(176,48,32,0.12);color:var(--danger);border:1px solid rgba(176,48,32,0.2)}
+.ac-badge-ok{background:rgba(42,122,64,0.10);color:var(--success);border:1px solid rgba(42,122,64,0.2)}
+.ac-open .inp{border-radius:12px 12px 0 0}
 </style>
 </head>
 <body>
@@ -700,9 +728,19 @@ function renderResiduos(){
         ${residuos.length>1?`<button class="res-del" onclick="delRes(${r.id})">×</button>`:''}
       </div>
       <div class="field">
-        <label class="field-label">Descrição</label>
-        <input class="inp" type="text" placeholder="Ex: Óleo lubrificante usado" value="${r.desc||''}" oninput="updRes(${r.id},'desc',this.value)" autocomplete="off" autocorrect="off">
+        <label class="field-label">Descrição <span style="font-size:10px;color:var(--text3);font-weight:400;text-transform:none">— busque na lista IBAMA</span></label>
+        <div class="ac-wrap" id="ac-wrap-${r.id}">
+          <input class="inp" type="text" id="ac-inp-${r.id}"
+            placeholder="Digite para buscar na lista do IBAMA..."
+            value="${r.desc||''}"
+            oninput="acSearch(${r.id},this.value)"
+            onfocus="acSearch(${r.id},this.value)"
+            onblur="setTimeout(()=>acClose(${r.id}),200)"
+            autocomplete="off" autocorrect="off" autocapitalize="none">
+          <div class="ac-list" id="ac-list-${r.id}"></div>
+        </div>
       </div>
+      ${r.perigoso!==undefined?`<div style="margin-bottom:10px"><span class="badge ${r.perigoso?'b-bad':'b-ok'}">${r.perigoso?'⚠️ Resíduo Perigoso':'✓ Não Perigoso'}</span></div>`:''}
       <div class="g2">
         <div class="field">
           <label class="field-label">Peso (kg)</label>
@@ -918,6 +956,57 @@ function maskCNPJ(el){
 function toast(msg,dur=2400){
   const t=g('toast');t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+
+// ── AUTOCOMPLETE IBAMA ─────────────────────────────────
+function acSearch(id, query) {
+  const list = document.getElementById('ac-list-'+id);
+  const wrap = document.getElementById('ac-wrap-'+id);
+  if (!list) return;
+  
+  const q = query.trim().toLowerCase();
+  if (q.length < 2) { acClose(id); return; }
+  
+  const results = (typeof IBAMA !== 'undefined' ? IBAMA : [])
+    .filter(r => r.desc.toLowerCase().includes(q))
+    .slice(0, 30);
+  
+  if (!results.length) { acClose(id); return; }
+  
+  list.innerHTML = results.map(r => `
+    <div class="ac-item" onmousedown="acSelect(${id},'${r.desc.replace(/'/g,"\'")}',${r.perigoso})">
+      <div class="ac-item-text">${highlight(r.desc, q)}</div>
+      <div class="ac-badge ${r.perigoso?'ac-badge-per':'ac-badge-ok'}">${r.perigoso?'Perigoso':'Classe II'}</div>
+    </div>`).join('');
+  
+  list.classList.add('open');
+  wrap.querySelector('.inp').style.borderRadius='12px 12px 0 0';
+}
+
+function acSelect(id, desc, perigoso) {
+  const inp = document.getElementById('ac-inp-'+id);
+  if (inp) inp.value = desc;
+  updRes(id, 'desc', desc);
+  updRes(id, 'perigoso', perigoso);
+  acClose(id);
+  // Atualizar badge de perigoso
+  renderResiduos();
+}
+
+function acClose(id) {
+  const list = document.getElementById('ac-list-'+id);
+  const wrap = document.getElementById('ac-wrap-'+id);
+  if (list) list.classList.remove('open');
+  if (wrap) {
+    const inp = wrap.querySelector('.inp');
+    if (inp) inp.style.borderRadius='';
+  }
+}
+
+function highlight(text, query) {
+  const regex = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+  return text.replace(regex, '<strong style="color:var(--accent)">$1</strong>');
 }
 
 // ── INIT ───────────────────────────────────────────────
