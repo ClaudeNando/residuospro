@@ -740,7 +740,10 @@ function renderResiduos(){
           <div class="ac-list" id="ac-list-${r.id}"></div>
         </div>
       </div>
-      ${r.perigoso!==undefined?`<div style="margin-bottom:10px"><span class="badge ${r.perigoso?'b-bad':'b-ok'}">${r.perigoso?'⚠️ Resíduo Perigoso':'✓ Não Perigoso'}</span></div>`:''}
+      ${r.codigo||r.perigoso!==undefined?`<div style="margin-bottom:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        ${r.codigo?`<span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);background:var(--bg3);padding:3px 10px;border-radius:8px;border:1px solid var(--border)">${r.codigo}</span>`:''}
+        ${r.perigoso!==undefined?`<span class="badge ${r.perigoso?'b-bad':'b-ok'}">${r.perigoso?'⚠️ Perigoso':'✓ Não Perigoso'}</span>`:''}
+      </div>`:''}
       <div class="g2">
         <div class="field">
           <label class="field-label">Peso (kg)</label>
@@ -795,7 +798,7 @@ function renderResultado(r){
       ih+=`<div class="rr">
         <div>
           <div style="font-size:13px;font-weight:600;color:var(--text)">${it.desc||'Resíduo '+(i+1)}</div>
-          <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px">${it.dest} · ${fmt(it.peso)} kg</div>
+          <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px">${it.codigo?it.codigo+' · ':''}${it.dest} · ${fmt(it.peso)} kg</div>
         </div>
         <div style="text-align:right">
           <div class="rv acc" style="font-weight:600">${brl(it.precCli)}</div>
@@ -853,7 +856,7 @@ function gerarProposta(){
   const np=`${hj.getFullYear()}${String(hj.getMonth()+1).padStart(2,'0')}${String(hj.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*900)+100)}`;
   let lr='';
   r.itens.forEach((it,i)=>{
-    if((it.peso||0)>0){lr+=`  • ${it.desc||'Resíduo '+(i+1)}\n    Peso: ${fmt(it.peso)} kg | Dest.: ${it.dest}\n    R$ ${(cfg.dest.cli[it.dest]||0).toFixed(2)}/kg | Subtotal: ${brl(it.precCli)}\n\n`;}
+    if((it.peso||0)>0){lr+=`  • ${it.desc||'Resíduo '+(i+1)}${it.codigo?' ['+it.codigo+']':''}\n    Peso: ${fmt(it.peso)} kg | Dest.: ${it.dest}${it.perigoso?' ⚠️ PERIGOSO':''}\n    R$ ${(cfg.dest.cli[it.dest]||0).toFixed(2)}/kg | Subtotal: ${brl(it.precCli)}\n\n`;}
   });
   const txt=`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nPROPOSTA COMERCIAL Nº ${np}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nPRESTADOR\n${cfg.empresa||'Cerrado Ambiental'}${cfg.cnpj?'\nCNPJ: '+cfg.cnpj:''}${cfg.tel?'\nTel: '+cfg.tel:''}\n\nCLIENTE\n${r.cli.nome||'—'}${r.cli.cnpj?'\nCNPJ: '+r.cli.cnpj:''}${r.cli.contato?'\nContato: '+r.cli.contato:''}\n\nData: ${fd(hj)} | Validade: ${fd(val)}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSERVIÇOS\n\n▸ COLETA E TRANSPORTE\n  Veículo: ${r.veic} | Trajeto: ${fmt(r.km)} km\n  Valor: ${brl(r.ptc)}${r.ac>0?'\n  Acréscimos: '+brl(r.ac):''}\n\n▸ TRATAMENTO E DESTINAÇÃO\n${lr}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nVALOR TOTAL: ${brl(r.tot)}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${r.obs?'\nOBSERVAÇÕES\n'+r.obs+'\n\n':''}\nServiços em conformidade com a legislação\nambiental vigente. Documentação de\ndestinação fornecida após a execução.\n\n${cfg.empresa||'Cerrado Ambiental'}`;
 
@@ -969,28 +972,34 @@ function acSearch(id, query) {
   if (q.length < 2) { acClose(id); return; }
   
   const results = (typeof IBAMA !== 'undefined' ? IBAMA : [])
-    .filter(r => r.desc.toLowerCase().includes(q))
-    .slice(0, 30);
+    .filter(r => r.desc.toLowerCase().includes(q) || r.codigo.includes(q))
+    .slice(0, 40);
   
   if (!results.length) { acClose(id); return; }
   
-  list.innerHTML = results.map(r => `
-    <div class="ac-item" onmousedown="acSelect(${id},'${r.desc.replace(/'/g,"\'")}',${r.perigoso})">
-      <div class="ac-item-text">${highlight(r.desc, q)}</div>
-      <div class="ac-badge ${r.perigoso?'ac-badge-per':'ac-badge-ok'}">${r.perigoso?'Perigoso':'Classe II'}</div>
-    </div>`).join('');
+  list.innerHTML = results.map(r => {
+    const safeDesc = r.desc.replace(/'/g,"\'");
+    const safeCod = r.codigo.replace(/'/g,"\'");
+    return `<div class="ac-item" onmousedown="acSelect(${id},'${safeDesc}','${safeCod}',${r.perigoso})">
+      <div class="ac-item-text">
+        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px">${r.codigo}</div>
+        <div>${highlight(r.desc, q)}</div>
+      </div>
+      <div class="ac-badge ${r.perigoso?'ac-badge-per':'ac-badge-ok'}">${r.perigoso?'⚠️ Perigoso':'✓ Não per.'}</div>
+    </div>`;
+  }).join('');
   
   list.classList.add('open');
   wrap.querySelector('.inp').style.borderRadius='12px 12px 0 0';
 }
 
-function acSelect(id, desc, perigoso) {
+function acSelect(id, desc, codigo, perigoso) {
   const inp = document.getElementById('ac-inp-'+id);
   if (inp) inp.value = desc;
   updRes(id, 'desc', desc);
+  updRes(id, 'codigo', codigo);
   updRes(id, 'perigoso', perigoso);
   acClose(id);
-  // Atualizar badge de perigoso
   renderResiduos();
 }
 
