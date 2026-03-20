@@ -1,17 +1,36 @@
 {
-  "name": "ResíduosPRO",
+  "name": "ResíduosPRO — Cerrado Ambiental",
   "short_name": "ResíduosPRO",
-  "description": "Orçamentos de coleta e destinação de resíduos",
+  "description": "Orçamentos de coleta e destinação de resíduos industriais",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#0b1610",
-  "theme_color": "#0b1610",
   "orientation": "portrait",
+  "background_color": "#452818",
+  "theme_color": "#452818",
+  "lang": "pt-BR",
+  "categories": ["business", "productivity"],
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%230b1610'/><text y='130' x='30' font-size='120' font-family='sans-serif'>♻️</text></svg>",
+      "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Novo Orçamento",
+      "short_name": "Orçamento",
+      "url": "./index.html#orcamento",
+      "description": "Criar novo orçamento"
     }
   ]
 }

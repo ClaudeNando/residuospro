@@ -2,425 +2,933 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#452818">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ResíduosPRO">
+<meta name="application-name" content="ResíduosPRO">
+<meta name="msapplication-TileColor" content="#452818">
+<meta name="description" content="Orçamentos de resíduos industriais — Cerrado Ambiental">
 <title>ResíduosPRO</title>
 <link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
 :root{
-  --bg:#f8f0dd;--bg2:#f0e4c8;--bg3:#e8d8b5;
-  --card:#fffdf7;--card2:#fdf5e4;
+  --bg:#f8f0dd;--bg2:#f0e4c8;--bg3:#e8d8b4;
+  --card:#fffdf6;--card2:#fdf4e0;
   --accent:#db6a1d;--accent2:#c55e18;--accent-light:#f79959;
-  --accent-dim:rgba(219,106,29,0.11);
-  --dark:#452818;--dark2:#5c3822;
-  --text:#452818;--text2:#7a4e30;--text3:#b07a55;
-  --border:rgba(219,106,29,0.18);--border2:rgba(219,106,29,0.09);
+  --accent-dim:rgba(219,106,29,0.11);--accent-dim2:rgba(219,106,29,0.06);
+  --dark:#452818;--dark2:#5c3822;--dark3:#3a2014;
+  --text:#452818;--text2:#7a4e30;--text3:#b07a55;--text4:#c8a882;
+  --border:rgba(219,106,29,0.16);--border2:rgba(219,106,29,0.08);
   --danger:#b03020;--warn:#c87020;--success:#2a7a40;
-  --radius:18px;--radius-sm:11px;--radius-xs:7px;
+  --nav-h:68px;
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bottom:env(safe-area-inset-bottom,0px);
-  --shadow:0 2px 10px rgba(69,40,24,0.09);
+  --safe-left:env(safe-area-inset-left,0px);
+  --safe-right:env(safe-area-inset-right,0px);
 }
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;overflow:hidden}
-body{display:flex;flex-direction:column}
 
-.header{padding:calc(var(--safe-top) + 14px) 18px 14px;background:var(--dark);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.logo{font-size:19px;font-weight:800;letter-spacing:-0.5px;color:#f8f0dd}
-.logo span{color:var(--accent-light)}
-.header-sub{font-size:10px;color:rgba(248,240,221,0.45);font-weight:400;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-.icon-btn{width:38px;height:38px;border-radius:var(--radius-sm);background:rgba(248,240,221,0.10);border:1px solid rgba(248,240,221,0.14);color:#f8f0dd;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;}
+html{height:100%;background:var(--dark)}
+body{
+  height:100%;display:flex;flex-direction:column;
+  background:var(--bg);color:var(--text);
+  font-family:'Syne',sans-serif;overflow:hidden;
+  padding-top:var(--safe-top);
+}
 
-.tabs{display:flex;background:var(--dark);border-bottom:2px solid rgba(247,153,89,0.18);flex-shrink:0;}
-.tab{flex:1;padding:11px 2px;text-align:center;font-size:11px;font-weight:700;letter-spacing:0.2px;color:rgba(248,240,221,0.38);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;}
-.tab.active{color:var(--accent-light);border-bottom-color:var(--accent-light)}
+/* ── HEADER ── */
+.header{
+  background:var(--dark);
+  padding:14px 18px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;position:relative;z-index:10;
+}
+.header-left{display:flex;align-items:center;gap:10px}
+.header-logo-mark{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;
+  flex-shrink:0;
+}
+.header-text{}
+.header-title{font-size:17px;font-weight:800;color:#f8f0dd;letter-spacing:-0.3px;line-height:1}
+.header-sub{font-size:10px;color:rgba(248,240,221,0.42);letter-spacing:0.8px;text-transform:uppercase;margin-top:2px}
+.header-btn{
+  width:38px;height:38px;border-radius:11px;
+  background:rgba(248,240,221,0.09);border:1px solid rgba(248,240,221,0.12);
+  color:rgba(248,240,221,0.75);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  flex-shrink:0;
+}
 
-.screen{display:none;flex:1;overflow-y:auto;padding:14px 13px calc(var(--safe-bottom) + 24px)}
+/* ── CONTENT AREA ── */
+.content{
+  flex:1;overflow:hidden;position:relative;
+  display:flex;flex-direction:column;
+}
+
+/* ── SCREENS ── */
+.screen{
+  display:none;flex:1;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:16px 14px calc(var(--nav-h) + var(--safe-bottom) + 16px);
+}
 .screen.active{display:block}
 
-.card{background:var(--card);border:1px solid var(--border2);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
-.card-title{font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:7px;}
-.cticon{width:24px;height:24px;border-radius:6px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:calc(var(--nav-h) + var(--safe-bottom));
+  background:var(--dark);
+  border-top:1px solid rgba(247,153,89,0.15);
+  display:flex;align-items:flex-start;
+  padding-top:8px;
+  padding-bottom:var(--safe-bottom);
+  z-index:50;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:6px 4px;cursor:pointer;
+  transition:all .18s;position:relative;
+}
+.nav-icon{
+  font-size:22px;line-height:1;
+  transition:transform .18s;
+}
+.nav-label{
+  font-size:10px;font-weight:700;letter-spacing:0.3px;
+  color:rgba(248,240,221,0.35);transition:color .18s;
+  text-transform:uppercase;
+}
+.nav-item.active .nav-label{color:var(--accent-light)}
+.nav-item.active .nav-icon{transform:scale(1.12)}
+.nav-dot{
+  width:4px;height:4px;border-radius:50%;
+  background:var(--accent-light);
+  position:absolute;top:2px;
+  opacity:0;transition:opacity .18s;
+}
+.nav-item.active .nav-dot{opacity:1}
 
-.field{margin-bottom:13px}.field:last-child{margin-bottom:0}
-label{display:block;font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:5px;}
-input[type=text],input[type=number],select,textarea{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:13px 14px;color:var(--text);font-family:'Syne',sans-serif;font-size:15px;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;}
-input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#fff}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath fill='%23db6a1d' d='M0 0l5 7 5-7z'/%3E%3C/svg%3E");background-color:var(--bg);background-repeat:no-repeat;background-position:right 13px center;padding-right:36px;}
-textarea{resize:none;min-height:78px;line-height:1.55}
-input[type=number]{font-family:'DM Mono',monospace;font-size:16px}
-::placeholder{color:var(--text3);opacity:0.55}
+/* ── SECTION HEADER ── */
+.screen-header{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:18px;padding-bottom:14px;
+  border-bottom:1px solid var(--border2);
+}
+.screen-icon{
+  width:40px;height:40px;border-radius:12px;
+  background:var(--accent-dim);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  flex-shrink:0;
+}
+.screen-title{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-0.3px}
+.screen-sub{font-size:12px;color:var(--text3);margin-top:1px}
 
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* ── CARDS ── */
+.card{
+  background:var(--card);border:1px solid var(--border2);
+  border-radius:16px;padding:16px;margin-bottom:12px;
+  box-shadow:0 1px 8px rgba(69,40,24,0.07);
+}
+.card-head{
+  display:flex;align-items:center;gap:8px;margin-bottom:14px;
+}
+.card-icon{
+  width:28px;height:28px;border-radius:8px;
+  background:var(--accent-dim);
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  flex-shrink:0;
+}
+.card-label{
+  font-size:12px;font-weight:700;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--text3);
+}
 
-.residuo-row{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:13px;margin-bottom:8px;position:relative;}
-.del-btn{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:6px;background:rgba(176,48,32,0.09);border:none;color:var(--danger);font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:sans-serif;line-height:1;}
-.residuo-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.residuo-num{width:22px;height:22px;border-radius:50%;background:var(--accent);font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.residuo-label{font-size:13px;font-weight:700;color:var(--text2)}
+/* ── FORM ELEMENTS ── */
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field-label{
+  font-size:11px;font-weight:700;letter-spacing:0.8px;
+  text-transform:uppercase;color:var(--text3);
+  margin-bottom:6px;display:block;
+}
+.inp{
+  width:100%;background:var(--bg);border:1.5px solid var(--border);
+  border-radius:12px;padding:14px 15px;
+  color:var(--text);font-family:'Syne',sans-serif;font-size:16px;
+  outline:none;transition:border-color .2s,background .2s;
+  -webkit-appearance:none;appearance:none;
+  /* Prevent zoom on iOS */
+  font-size:16px;
+}
+.inp:focus{border-color:var(--accent);background:#fff}
+.inp::placeholder{color:var(--text4)}
+.inp-mono{font-family:'DM Mono',monospace;font-size:16px}
+.inp-select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23db6a1d' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;
+  padding-right:38px;cursor:pointer;
+}
+textarea.inp{resize:none;min-height:80px;line-height:1.6}
 
-.btn{width:100%;padding:15px;border-radius:var(--radius-sm);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;letter-spacing:0.2px;cursor:pointer;border:none;transition:all .15s;}
-.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(219,106,29,0.28)}
-.btn-primary:active{transform:scale(0.98);background:var(--accent2)}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ── RESIDUO ROW ── */
+.res-row{
+  background:var(--bg);border:1.5px solid var(--border);
+  border-radius:12px;padding:14px;margin-bottom:10px;
+  position:relative;
+}
+.res-row:last-child{margin-bottom:0}
+.res-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.res-num{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--accent);font-size:12px;font-weight:700;
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.res-title{font-size:13px;font-weight:700;color:var(--text2);flex:1}
+.res-del{
+  width:28px;height:28px;border-radius:8px;
+  background:rgba(176,48,32,0.08);border:none;
+  color:var(--danger);font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-family:sans-serif;line-height:1;flex-shrink:0;
+}
+
+/* ── BUTTONS ── */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:16px;border-radius:14px;
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+  letter-spacing:0.2px;cursor:pointer;border:none;
+  transition:transform .12s,opacity .12s;
+  -webkit-user-select:none;user-select:none;
+}
+.btn:active{transform:scale(0.97);opacity:0.9}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 16px rgba(219,106,29,0.30)}
 .btn-dark{background:var(--dark);color:#f8f0dd}
-.btn-dark:active{transform:scale(0.98)}
-.btn-secondary{background:var(--accent-dim);color:var(--accent);border:1.5px solid var(--border)}
-.btn-secondary:active{transform:scale(0.98)}
+.btn-ghost{background:var(--accent-dim);color:var(--accent);border:1.5px solid var(--border)}
 .btn-outline{background:transparent;color:var(--text2);border:1.5px solid var(--border)}
-.btn-sm{padding:9px 15px;font-size:13px;width:auto}
+.btn-sm{padding:11px 16px;font-size:13px;border-radius:11px;width:auto}
+.btn-row{display:flex;gap:8px}
+.btn-row .btn{flex:1}
 
-.rbox{background:var(--dark);border-radius:var(--radius);padding:18px;margin-bottom:12px;box-shadow:0 4px 20px rgba(69,40,24,0.18);}
-.rbox-light{background:var(--card);border:1px solid var(--border2);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
-.rrow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border2);}
-.rrow:last-child{border-bottom:none}
-.rlabel{font-size:13px;color:var(--text2)}
-.rval{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--text)}
-.rval.pos{color:var(--success)}.rval.neg{color:var(--danger)}.rval.acc{color:var(--accent)}
+/* ── RESULT BOX DARK ── */
+.rbox-dark{
+  background:var(--dark);border-radius:16px;
+  padding:18px;margin-bottom:12px;
+  box-shadow:0 4px 24px rgba(69,40,24,0.20);
+  position:relative;overflow:hidden;
+}
+.rbox-dark::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:120px;height:120px;border-radius:50%;
+  background:rgba(219,106,29,0.10);
+}
+.rbox-light{
+  background:var(--card);border:1px solid var(--border2);
+  border-radius:16px;padding:16px;margin-bottom:12px;
+  box-shadow:0 1px 8px rgba(69,40,24,0.07);
+}
 
-.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
-.badge-ok{background:rgba(42,122,64,0.13);color:#1a6030;border:1px solid rgba(42,122,64,0.28)}
-.badge-warn{background:rgba(200,112,32,0.13);color:#8a4800;border:1px solid rgba(200,112,32,0.28)}
-.badge-bad{background:rgba(176,48,32,0.11);color:var(--danger);border:1px solid rgba(176,48,32,0.24)}
+/* RESULT ROWS */
+.rr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border2);}
+.rr:last-child{border-bottom:none}
+.rl{font-size:13px;color:var(--text2)}
+.rv{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--text)}
+.rv.acc{color:var(--accent)}.rv.pos{color:var(--success)}.rv.neg{color:var(--danger)}
+.rv.big{font-size:22px;color:var(--accent)}
 
-.mbar{background:rgba(255,255,255,0.14);border-radius:20px;height:8px;margin:8px 0;overflow:hidden}
-.mfill{height:100%;border-radius:20px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+/* BADGE */
+.badge{display:inline-flex;align-items:center;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;}
+.b-ok{background:rgba(42,122,64,0.14);color:#1a6030;border:1px solid rgba(42,122,64,0.25)}
+.b-warn{background:rgba(200,112,32,0.14);color:#8a4800;border:1px solid rgba(200,112,32,0.25)}
+.b-bad{background:rgba(176,48,32,0.12);color:var(--danger);border:1px solid rgba(176,48,32,0.22)}
+
+/* MARGEM BAR */
+.mbar{background:rgba(255,255,255,0.12);border-radius:20px;height:6px;margin:10px 0 6px;overflow:hidden}
+.mfill{height:100%;border-radius:20px;transition:width .6s cubic-bezier(.4,0,.2,1)}
 .mlabels{display:flex;justify-content:space-between}
-.mlabel{font-size:10px;color:rgba(248,240,221,0.42)}
+.ml{font-size:10px;color:rgba(248,240,221,0.38)}
 
-.proposta-preview{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:15px;font-size:12.5px;line-height:1.75;color:var(--text2);font-family:'DM Mono',monospace;white-space:pre-wrap;max-height:340px;overflow-y:auto;}
+/* PROPOSTA */
+.proposta-txt{
+  background:var(--bg);border:1.5px solid var(--border);
+  border-radius:12px;padding:16px;
+  font-size:12px;line-height:1.8;color:var(--text2);
+  font-family:'DM Mono',monospace;white-space:pre-wrap;
+  max-height:320px;overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
 
-.hist-item{background:var(--card);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:14px;margin-bottom:8px;cursor:pointer;transition:border-color .2s;box-shadow:var(--shadow);}
-.hist-item:active{border-color:var(--accent)}
-.hist-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
-.hist-cliente{font-size:14px;font-weight:700;color:var(--text)}
-.hist-data{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace}
-.hist-bottom{display:flex;justify-content:space-between;align-items:center}
-.hist-valor{font-family:'DM Mono',monospace;font-size:15px;color:var(--accent);font-weight:500}
+/* HISTÓRICO */
+.hist-card{
+  background:var(--card);border:1.5px solid var(--border2);
+  border-radius:14px;padding:15px;margin-bottom:10px;
+  cursor:pointer;transition:border-color .15s;
+  box-shadow:0 1px 8px rgba(69,40,24,0.07);
+  active:border-color:var(--accent);
+}
+.hist-card:active{border-color:var(--accent)}
+.hist-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.hist-name{font-size:15px;font-weight:700;color:var(--text)}
+.hist-date{font-size:11px;color:var(--text4);font-family:'DM Mono',monospace}
+.hist-bot{display:flex;justify-content:space-between;align-items:center}
+.hist-val{font-family:'DM Mono',monospace;font-size:16px;color:var(--accent);font-weight:500}
 
-.empty{text-align:center;padding:52px 20px;color:var(--text3)}
-.empty-icon{font-size:38px;margin-bottom:14px;opacity:0.5}
-.empty-title{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--text2)}
-.empty-sub{font-size:13px;line-height:1.6}
+/* EMPTY */
+.empty{text-align:center;padding:60px 24px;color:var(--text3)}
+.empty-ico{font-size:44px;margin-bottom:14px;opacity:0.45;display:block}
+.empty-t{font-size:16px;font-weight:700;color:var(--text2);margin-bottom:8px}
+.empty-s{font-size:13px;line-height:1.6}
 
-.modal-overlay{position:fixed;inset:0;background:rgba(69,40,24,0.52);display:flex;align-items:flex-end;z-index:100;opacity:0;pointer-events:none;transition:opacity .25s;}
-.modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--bg);border-radius:var(--radius) var(--radius) 0 0;border-top:1.5px solid var(--border);padding:20px 14px calc(var(--safe-bottom) + 28px);width:100%;max-height:92vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);}
-.modal-overlay.open .modal{transform:translateY(0)}
-.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
-.modal-title{font-size:18px;font-weight:800;margin-bottom:18px;color:var(--text)}
+/* MODAL */
+.overlay{
+  position:fixed;inset:0;background:rgba(58,32,20,0.60);
+  display:flex;align-items:flex-end;z-index:100;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--bg);
+  border-radius:22px 22px 0 0;
+  border-top:1.5px solid var(--border);
+  padding:0 0 0;
+  width:100%;max-height:90vh;
+  transform:translateY(100%);
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+}
+.overlay.open .modal{transform:translateY(0)}
+.modal-handle-wrap{padding:14px 0 0;display:flex;justify-content:center}
+.modal-handle{width:44px;height:5px;background:var(--border);border-radius:3px}
+.modal-head{
+  padding:14px 18px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border2);flex-shrink:0;
+}
+.modal-title{font-size:18px;font-weight:800;color:var(--text)}
+.modal-close{
+  width:32px;height:32px;border-radius:9px;
+  background:var(--accent-dim);border:none;
+  color:var(--accent);font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.modal-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px calc(var(--safe-bottom) + 20px)}
 
-.cfg-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border2);}
-.cfg-row:last-child{border-bottom:none}
-.cfg-label{font-size:14px;font-weight:600;color:var(--text)}
-.cfg-sub{font-size:11px;color:var(--text3);margin-top:2px}
-.cfg-input{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-xs);padding:8px 11px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;width:105px;text-align:right;outline:none;}
-.cfg-input:focus{border-color:var(--accent)}
+/* CONFIG ROWS */
+.cfg-r{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border2);}
+.cfg-r:last-child{border-bottom:none}
+.cfg-l{font-size:14px;font-weight:600;color:var(--text)}
+.cfg-s{font-size:11px;color:var(--text3);margin-top:2px}
+.cfg-i{
+  background:var(--bg);border:1.5px solid var(--border);
+  border-radius:9px;padding:9px 12px;
+  color:var(--text);font-family:'DM Mono',monospace;font-size:14px;
+  width:108px;text-align:right;outline:none;-webkit-appearance:none;
+}
+.cfg-i:focus{border-color:var(--accent)}
+.cfg-i-wide{width:168px;text-align:left}
 
-.slabel{font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+/* SLABEL */
+.slabel{font-size:11px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;display:block}
 
-.toast{position:fixed;bottom:calc(var(--safe-bottom) + 76px);left:50%;transform:translateX(-50%) translateY(14px);background:var(--dark);border:1px solid rgba(247,153,89,0.28);border-radius:var(--radius-sm);padding:11px 20px;font-size:13px;font-weight:600;color:#f8f0dd;opacity:0;transition:all .3s;z-index:200;white-space:nowrap;box-shadow:0 4px 18px rgba(69,40,24,0.28);}
+/* TOAST */
+.toast{
+  position:fixed;bottom:calc(var(--nav-h) + var(--safe-bottom) + 12px);
+  left:50%;transform:translateX(-50%) translateY(10px);
+  background:var(--dark3);border:1px solid rgba(247,153,89,0.25);
+  border-radius:12px;padding:12px 22px;
+  font-size:13px;font-weight:600;color:#f8f0dd;
+  opacity:0;transition:all .28s;z-index:200;
+  white-space:nowrap;pointer-events:none;
+  box-shadow:0 4px 20px rgba(58,32,20,0.35);
+}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* INSTALL BANNER */
+.install-banner{
+  background:var(--dark);
+  padding:12px 16px;
+  display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid rgba(247,153,89,0.15);
+  flex-shrink:0;
+}
+.install-banner.hidden{display:none}
+.install-text{flex:1;font-size:12px;color:rgba(248,240,221,0.7);line-height:1.4}
+.install-text strong{color:var(--accent-light)}
+.install-btn{
+  background:var(--accent);color:#fff;border:none;
+  border-radius:9px;padding:8px 14px;
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
+  cursor:pointer;white-space:nowrap;flex-shrink:0;
+}
+.install-close{
+  color:rgba(248,240,221,0.4);font-size:20px;cursor:pointer;
+  background:none;border:none;padding:0 2px;line-height:1;flex-shrink:0;
+}
+
+/* DIVIDER */
+.div{height:1px;background:var(--border2);margin:14px 0}
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="header">
-  <div>
-    <div class="logo">Resíduos<span>PRO</span></div>
-    <div class="header-sub">Cerrado Ambiental</div>
-  </div>
-  <button class="icon-btn" onclick="openConfig()">⚙️</button>
-</div>
-
-<div class="tabs">
-  <div class="tab active" onclick="setTab('orcamento',this)">📋 Orçamento</div>
-  <div class="tab" onclick="setTab('resultado',this)">📊 Resultado</div>
-  <div class="tab" onclick="setTab('proposta',this)">📄 Proposta</div>
-  <div class="tab" onclick="setTab('historico',this)">🗂️ Histórico</div>
-</div>
-
-<div id="screen-orcamento" class="screen active">
-  <div class="card">
-    <div class="card-title"><div class="cticon">👤</div>Dados do Cliente</div>
-    <div class="field"><label>Nome / Razão Social</label><input type="text" id="cli-nome" placeholder="Empresa ABC Ltda" autocomplete="off"></div>
-    <div class="grid2">
-      <div class="field"><label>CNPJ</label><input type="text" id="cli-cnpj" placeholder="00.000.000/0000-00" maxlength="18" oninput="maskCNPJ(this)"></div>
-      <div class="field"><label>Contato</label><input type="text" id="cli-contato" placeholder="Nome"></div>
+  <div class="header-left">
+    <div class="header-logo-mark">C</div>
+    <div class="header-text">
+      <div class="header-title">ResíduosPRO</div>
+      <div class="header-sub">Cerrado Ambiental</div>
     </div>
   </div>
+  <button class="header-btn" onclick="openModal('modal-config')" aria-label="Configurações">⚙️</button>
+</div>
 
-  <div class="card">
-    <div class="card-title"><div class="cticon">🚛</div>Transporte</div>
-    <div class="grid2">
-      <div class="field"><label>Trajeto (km)</label><input type="number" id="trajeto" placeholder="0" value="0" oninput="calcular()"></div>
-      <div class="field"><label>Veículo</label>
-        <select id="veiculo" onchange="calcular()">
-          <option value="FIORINO">Fiorino</option>
-          <option value="FURGAO">Furgão</option>
-          <option value="BAU" selected>Baú</option>
-          <option value="MAIOR">Maior</option>
-        </select>
+<!-- INSTALL BANNER -->
+<div class="install-banner hidden" id="install-banner">
+  <div class="install-text"><strong>Instalar app</strong><br>Adicione à tela inicial para acesso rápido</div>
+  <button class="install-btn" onclick="doInstall()">Instalar</button>
+  <button class="install-close" onclick="hideBanner()">×</button>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- ORÇAMENTO -->
+  <div id="screen-orcamento" class="screen active">
+    <div class="screen-header">
+      <div class="screen-icon">📋</div>
+      <div>
+        <div class="screen-title">Novo Orçamento</div>
+        <div class="screen-sub">Preencha os dados do cliente e serviço</div>
       </div>
     </div>
-    <div class="field"><label>Acréscimos de Cabeça (R$)</label><input type="number" id="acresc-cabeca" placeholder="0,00" value="0" oninput="calcular()"></div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-icon">👤</div><div class="card-label">Cliente</div></div>
+      <div class="field">
+        <label class="field-label">Nome / Razão Social</label>
+        <input class="inp" type="text" id="cli-nome" placeholder="Empresa ABC Ltda" autocomplete="off" autocorrect="off">
+      </div>
+      <div class="g2">
+        <div class="field">
+          <label class="field-label">CNPJ</label>
+          <input class="inp inp-mono" type="text" id="cli-cnpj" placeholder="00.000.000/0000-00" maxlength="18" inputmode="numeric" oninput="maskCNPJ(this)">
+        </div>
+        <div class="field">
+          <label class="field-label">Contato</label>
+          <input class="inp" type="text" id="cli-contato" placeholder="Nome" autocorrect="off">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-icon">🚛</div><div class="card-label">Transporte</div></div>
+      <div class="g2">
+        <div class="field">
+          <label class="field-label">Trajeto (km)</label>
+          <input class="inp inp-mono" type="number" id="trajeto" placeholder="0" value="" inputmode="numeric" oninput="calcular()">
+        </div>
+        <div class="field">
+          <label class="field-label">Veículo</label>
+          <select class="inp inp-select" id="veiculo" onchange="calcular()">
+            <option value="FIORINO">Fiorino</option>
+            <option value="FURGAO">Furgão</option>
+            <option value="BAU" selected>Baú</option>
+            <option value="MAIOR">Maior</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Acréscimos de Cabeça (R$)</label>
+        <input class="inp inp-mono" type="number" id="acresc-cabeca" placeholder="0,00" value="" inputmode="decimal" oninput="calcular()">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-icon">♻️</div><div class="card-label">Resíduos</div></div>
+      <div id="residuos-list"></div>
+      <button class="btn btn-ghost" onclick="addResiduo()" style="margin-top:6px">
+        <span style="font-size:18px">+</span> Adicionar Resíduo
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-icon">📝</div><div class="card-label">Observações</div></div>
+      <div class="field">
+        <textarea class="inp" id="obs" placeholder="Condições especiais, detalhes do serviço..." rows="3"></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="goToResultado()">
+      <span>Calcular Orçamento</span><span style="font-size:18px">→</span>
+    </button>
+    <div style="height:4px"></div>
   </div>
 
-  <div class="card">
-    <div class="card-title"><div class="cticon">♻️</div>Resíduos</div>
-    <div id="residuos-list"></div>
-    <button class="btn btn-secondary" onclick="addResiduo()" style="margin-top:4px">+ Adicionar Resíduo</button>
+  <!-- RESULTADO -->
+  <div id="screen-resultado" class="screen">
+    <div class="screen-header">
+      <div class="screen-icon">📊</div>
+      <div>
+        <div class="screen-title">Resultado</div>
+        <div class="screen-sub">Análise financeira do orçamento</div>
+      </div>
+    </div>
+    <div id="resultado-content">
+      <div class="empty">
+        <span class="empty-ico">📊</span>
+        <div class="empty-t">Nenhum cálculo ainda</div>
+        <div class="empty-s">Preencha o orçamento e toque em "Calcular"</div>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <div class="card-title"><div class="cticon">📝</div>Observações</div>
-    <div class="field"><textarea id="obs" placeholder="Condições especiais, validade, detalhes do serviço..."></textarea></div>
+  <!-- PROPOSTA -->
+  <div id="screen-proposta" class="screen">
+    <div class="screen-header">
+      <div class="screen-icon">📄</div>
+      <div>
+        <div class="screen-title">Proposta</div>
+        <div class="screen-sub">Documento pronto para enviar</div>
+      </div>
+    </div>
+    <div id="proposta-content">
+      <div class="empty">
+        <span class="empty-ico">📄</span>
+        <div class="empty-t">Nenhuma proposta</div>
+        <div class="empty-s">Calcule o resultado e toque em "Gerar Proposta"</div>
+      </div>
+    </div>
   </div>
 
-  <button class="btn btn-primary" onclick="goToResultado()">Calcular e Ver Resultado →</button>
-  <div style="height:8px"></div>
-</div>
-
-<div id="screen-resultado" class="screen">
-  <div id="resultado-content">
-    <div class="empty"><div class="empty-icon">📊</div><div class="empty-title">Nenhum orçamento calculado</div><div class="empty-sub">Preencha os dados na aba Orçamento e clique em Calcular</div></div>
+  <!-- HISTÓRICO -->
+  <div id="screen-historico" class="screen">
+    <div class="screen-header" style="margin-bottom:14px">
+      <div class="screen-icon">🗂️</div>
+      <div style="flex:1">
+        <div class="screen-title">Histórico</div>
+        <div class="screen-sub">Orçamentos salvos</div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="limparHistorico()">Limpar</button>
+    </div>
+    <div id="historico-list"></div>
   </div>
-</div>
 
-<div id="screen-proposta" class="screen">
-  <div id="proposta-content">
-    <div class="empty"><div class="empty-icon">📄</div><div class="empty-title">Nenhuma proposta gerada</div><div class="empty-sub">Calcule o resultado primeiro para gerar a proposta</div></div>
+</div><!-- /content -->
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="nav-item active" onclick="navTo('orcamento',this)" id="nav-orcamento">
+    <div class="nav-dot"></div>
+    <div class="nav-icon">📋</div>
+    <div class="nav-label">Orçamento</div>
   </div>
-</div>
-
-<div id="screen-historico" class="screen">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-    <div class="slabel" style="margin:0">Orçamentos Salvos</div>
-    <button class="btn btn-outline btn-sm" onclick="limparHistorico()">Limpar tudo</button>
+  <div class="nav-item" onclick="navTo('resultado',this)" id="nav-resultado">
+    <div class="nav-dot"></div>
+    <div class="nav-icon">📊</div>
+    <div class="nav-label">Resultado</div>
   </div>
-  <div id="historico-list"></div>
-</div>
+  <div class="nav-item" onclick="navTo('proposta',this)" id="nav-proposta">
+    <div class="nav-dot"></div>
+    <div class="nav-icon">📄</div>
+    <div class="nav-label">Proposta</div>
+  </div>
+  <div class="nav-item" onclick="navTo('historico',this)" id="nav-historico">
+    <div class="nav-dot"></div>
+    <div class="nav-icon">🗂️</div>
+    <div class="nav-label">Histórico</div>
+  </div>
+</nav>
 
-<!-- CONFIG MODAL -->
-<div class="modal-overlay" id="modal-config" onclick="closeModalOnOverlay(event,'modal-config')">
+<!-- MODAL CONFIG -->
+<div class="overlay" id="modal-config" onclick="overlayClick(event,'modal-config')">
   <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">⚙️ Configurações</div>
-
-    <div class="slabel">Empresa</div>
-    <div class="card" style="margin-bottom:16px">
-      <div class="cfg-row"><div><div class="cfg-label">Nome</div></div><input class="cfg-input" id="cfg-empresa" style="width:170px;text-align:left" placeholder="Cerrado Ambiental"></div>
-      <div class="cfg-row"><div><div class="cfg-label">CNPJ</div></div><input class="cfg-input" id="cfg-cnpj" style="width:170px;text-align:left" placeholder="00.000.000/0001-00"></div>
-      <div class="cfg-row"><div><div class="cfg-label">Telefone</div></div><input class="cfg-input" id="cfg-tel" style="width:170px;text-align:left" placeholder="(62) 99999-9999"></div>
-      <div class="cfg-row"><div><div class="cfg-label">Validade proposta</div><div class="cfg-sub">dias</div></div><input class="cfg-input" id="cfg-validade" type="number" value="15"></div>
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+    <div class="modal-head">
+      <div class="modal-title">⚙️ Configurações</div>
+      <button class="modal-close" onclick="closeModal('modal-config')">×</button>
     </div>
+    <div class="modal-body">
 
-    <div class="slabel">Custo Fornecedor — Transporte (R$/km)</div>
-    <div class="card" style="margin-bottom:16px">
-      <div class="cfg-row"><div><div class="cfg-label">Fiorino</div></div><input class="cfg-input" id="cfg-tf" type="number" step="0.01" value="1.75"></div>
-      <div class="cfg-row"><div><div class="cfg-label">Furgão</div></div><input class="cfg-input" id="cfg-tfu" type="number" step="0.01" value="3.35"></div>
-      <div class="cfg-row"><div><div class="cfg-label">Baú</div></div><input class="cfg-input" id="cfg-tb" type="number" step="0.01" value="7.00"></div>
-      <div class="cfg-row"><div><div class="cfg-label">Maior</div></div><input class="cfg-input" id="cfg-tm" type="number" step="0.01" value="10.00"></div>
-      <div class="cfg-row"><div><div class="cfg-label">Diária</div></div><input class="cfg-input" id="cfg-td" type="number" step="0.01" value="0.00"></div>
+      <span class="slabel">Empresa</span>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cfg-r"><div><div class="cfg-l">Nome</div></div><input class="cfg-i cfg-i-wide" id="cfg-empresa" placeholder="Cerrado Ambiental"></div>
+        <div class="cfg-r"><div><div class="cfg-l">CNPJ</div></div><input class="cfg-i cfg-i-wide" id="cfg-cnpj" placeholder="00.000.000/0001-00"></div>
+        <div class="cfg-r"><div><div class="cfg-l">Telefone</div></div><input class="cfg-i cfg-i-wide" id="cfg-tel" placeholder="(62) 99999-9999"></div>
+        <div class="cfg-r"><div><div class="cfg-l">Validade</div><div class="cfg-s">dias para expirar</div></div><input class="cfg-i" id="cfg-validade" type="number" value="15"></div>
+      </div>
+
+      <span class="slabel">Custo Fornecedor — Transporte (R$/km)</span>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cfg-r"><div class="cfg-l">Fiorino</div><input class="cfg-i" id="cfg-tf" type="number" step="0.01" value="1.75"></div>
+        <div class="cfg-r"><div class="cfg-l">Furgão</div><input class="cfg-i" id="cfg-tfu" type="number" step="0.01" value="3.35"></div>
+        <div class="cfg-r"><div class="cfg-l">Baú</div><input class="cfg-i" id="cfg-tb" type="number" step="0.01" value="7.00"></div>
+        <div class="cfg-r"><div class="cfg-l">Maior</div><input class="cfg-i" id="cfg-tm" type="number" step="0.01" value="10.00"></div>
+        <div class="cfg-r"><div class="cfg-l">Diária</div><input class="cfg-i" id="cfg-td" type="number" step="0.01" value="0.00"></div>
+      </div>
+
+      <span class="slabel">Preço ao Cliente — Transporte (R$/km)</span>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cfg-r"><div class="cfg-l">Fiorino</div><input class="cfg-i" id="cfg-cf" type="number" step="0.01" value="4.20"></div>
+        <div class="cfg-r"><div class="cfg-l">Furgão</div><input class="cfg-i" id="cfg-cfu" type="number" step="0.01" value="5.00"></div>
+        <div class="cfg-r"><div class="cfg-l">Baú</div><input class="cfg-i" id="cfg-cb" type="number" step="0.01" value="8.50"></div>
+        <div class="cfg-r"><div class="cfg-l">Maior</div><input class="cfg-i" id="cfg-cm" type="number" step="0.01" value="14.00"></div>
+        <div class="cfg-r"><div class="cfg-l">Diária</div><input class="cfg-i" id="cfg-cd" type="number" step="0.01" value="0.00"></div>
+      </div>
+
+      <span class="slabel">Custo Fornecedor — Destinação (R$/kg)</span>
+      <div class="card" style="margin-bottom:16px" id="cfg-dest-forn"></div>
+
+      <span class="slabel">Preço ao Cliente — Destinação (R$/kg)</span>
+      <div class="card" style="margin-bottom:16px" id="cfg-dest-cli"></div>
+
+      <span class="slabel">Financeiro</span>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cfg-r"><div><div class="cfg-l">Imposto (%)</div><div class="cfg-s">sobre total da nota</div></div><input class="cfg-i" id="cfg-imposto" type="number" step="0.01" value="15.45"></div>
+        <div class="cfg-r"><div><div class="cfg-l">Margem mínima</div><div class="cfg-s">alerta abaixo disso</div></div><input class="cfg-i" id="cfg-margem-min" type="number" step="1" value="30"></div>
+      </div>
+
+      <button class="btn btn-primary" onclick="salvarConfig()">✓ Salvar Configurações</button>
+      <div style="height:10px"></div>
+      <button class="btn btn-outline" onclick="closeModal('modal-config')">Fechar</button>
     </div>
-
-    <div class="slabel">Preço ao Cliente — Transporte (R$/km)</div>
-    <div class="card" style="margin-bottom:16px">
-      <div class="cfg-row"><div><div class="cfg-label">Fiorino</div></div><input class="cfg-input" id="cfg-cf" type="number" step="0.01" value="4.20"></div>
-      <div class="cfg-row"><div><div class="cfg-label">Furgão</div></div><input class="cfg-input" id="cfg-cfu" type="number" step="0.01" value="5.00"></div>
-      <div class="cfg-row"><div><div class="cfg-label">Baú</div></div><input class="cfg-input" id="cfg-cb" type="number" step="0.01" value="8.50"></div>
-      <div class="cfg-row"><div><div class="cfg-label">Maior</div></div><input class="cfg-input" id="cfg-cm" type="number" step="0.01" value="14.00"></div>
-      <div class="cfg-row"><div><div class="cfg-label">Diária</div></div><input class="cfg-input" id="cfg-cd" type="number" step="0.01" value="0.00"></div>
-    </div>
-
-    <div class="slabel">Custo Fornecedor — Destinação (R$/kg)</div>
-    <div class="card" style="margin-bottom:16px" id="cfg-dest-forn"></div>
-
-    <div class="slabel">Preço ao Cliente — Destinação (R$/kg)</div>
-    <div class="card" style="margin-bottom:16px" id="cfg-dest-cli"></div>
-
-    <div class="slabel">Financeiro</div>
-    <div class="card" style="margin-bottom:16px">
-      <div class="cfg-row"><div><div class="cfg-label">Imposto (%)</div><div class="cfg-sub">sobre total da nota</div></div><input class="cfg-input" id="cfg-imposto" type="number" step="0.01" value="15.45"></div>
-      <div class="cfg-row"><div><div class="cfg-label">Margem mínima (%)</div><div class="cfg-sub">alerta abaixo disso</div></div><input class="cfg-input" id="cfg-margem-min" type="number" step="1" value="30"></div>
-    </div>
-
-    <button class="btn btn-primary" onclick="salvarConfig()">Salvar Configurações</button>
-    <div style="height:10px"></div>
-    <button class="btn btn-outline" onclick="closeModal('modal-config')">Fechar</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const DEST_KEYS=['ATERRO CLASSE I','BLEND CLASSE I','INCIN CLASSE I','EFLUENTE CLASSE I','ATERRO CLASSE II','BLEND CLASSE II','INCIN CLASSE II','EFLUENTE CLASSE II','COMPOST CLASSE II'];
-const DEF={empresa:'Cerrado Transportes e Soluções Ambientais',cnpj:'',tel:'',validade:15,imposto:15.45,margemMin:30,
-  transp:{forn:{FIORINO:1.75,FURGAO:3.35,BAU:7.00,MAIOR:10.00,DIARIA:0},cli:{FIORINO:4.20,FURGAO:5.00,BAU:8.50,MAIOR:14.00,DIARIA:0}},
-  dest:{forn:{'ATERRO CLASSE I':0.60,'BLEND CLASSE I':0.50,'INCIN CLASSE I':3.20,'EFLUENTE CLASSE I':0.50,'ATERRO CLASSE II':0.135,'BLEND CLASSE II':0.50,'INCIN CLASSE II':0.50,'EFLUENTE CLASSE II':0.30,'COMPOST CLASSE II':0.04},
-        cli: {'ATERRO CLASSE I':1.50,'BLEND CLASSE I':2.00,'INCIN CLASSE I':5.00,'EFLUENTE CLASSE I':1.80,'ATERRO CLASSE II':0.55,'BLEND CLASSE II':1.00,'INCIN CLASSE II':5.50,'EFLUENTE CLASSE II':1.00,'COMPOST CLASSE II':0.35}}};
+// ── DADOS ──────────────────────────────────────────────
+const DEST_KEYS=['ATERRO CLASSE I','BLEND CLASSE I','INCIN CLASSE I','EFLUENTE CLASSE I',
+  'ATERRO CLASSE II','BLEND CLASSE II','INCIN CLASSE II','EFLUENTE CLASSE II','COMPOST CLASSE II'];
 
-let cfg=lc();
-let residuos=[{id:1,peso:0,dest:'ATERRO CLASSE II',descricao:''}];
-let nextId=2,ultimoCalculo=null;
+const DEF={
+  empresa:'Cerrado Transportes e Soluções Ambientais',cnpj:'',tel:'',validade:15,
+  imposto:15.45,margemMin:30,
+  transp:{
+    forn:{FIORINO:1.75,FURGAO:3.35,BAU:7.00,MAIOR:10.00,DIARIA:0},
+    cli: {FIORINO:4.20,FURGAO:5.00,BAU:8.50,MAIOR:14.00,DIARIA:0}
+  },
+  dest:{
+    forn:{'ATERRO CLASSE I':0.60,'BLEND CLASSE I':0.50,'INCIN CLASSE I':3.20,'EFLUENTE CLASSE I':0.50,
+          'ATERRO CLASSE II':0.135,'BLEND CLASSE II':0.50,'INCIN CLASSE II':0.50,'EFLUENTE CLASSE II':0.30,'COMPOST CLASSE II':0.04},
+    cli: {'ATERRO CLASSE I':1.50,'BLEND CLASSE I':2.00,'INCIN CLASSE I':5.00,'EFLUENTE CLASSE I':1.80,
+          'ATERRO CLASSE II':0.55,'BLEND CLASSE II':1.00,'INCIN CLASSE II':5.50,'EFLUENTE CLASSE II':1.00,'COMPOST CLASSE II':0.35}
+  }
+};
 
-function lc(){try{const s=localStorage.getItem('rpro_cfg');return s?JSON.parse(s):JSON.parse(JSON.stringify(DEF));}catch(e){return JSON.parse(JSON.stringify(DEF));}}
-function sc(c){localStorage.setItem('rpro_cfg',JSON.stringify(c));}
+let cfg=loadCfg(),residuos=[{id:1,peso:0,dest:'ATERRO CLASSE II',desc:''}],nextId=2,ultimoCalculo=null;
+let deferredPrompt=null;
+
+// ── PWA INSTALL ──────────────────────────────────────
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  document.getElementById('install-banner').classList.remove('hidden');
+});
+window.addEventListener('appinstalled',()=>{
+  hideBanner();toast('✅ App instalado com sucesso!');
+});
+function doInstall(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(r=>{
+    if(r.outcome==='accepted')hideBanner();
+    deferredPrompt=null;
+  });
+}
+function hideBanner(){document.getElementById('install-banner').classList.add('hidden');}
+
+// ── CONFIG ─────────────────────────────────────────────
+function loadCfg(){
+  try{const s=localStorage.getItem('rpro_cfg');return s?JSON.parse(s):JSON.parse(JSON.stringify(DEF));}
+  catch(e){return JSON.parse(JSON.stringify(DEF));}
+}
+function saveCfg(c){localStorage.setItem('rpro_cfg',JSON.stringify(c));}
 
 function openConfig(){
-  v('cfg-empresa').value=cfg.empresa||'';v('cfg-cnpj').value=cfg.cnpj||'';v('cfg-tel').value=cfg.tel||'';
-  v('cfg-validade').value=cfg.validade||15;v('cfg-tf').value=cfg.transp.forn.FIORINO;v('cfg-tfu').value=cfg.transp.forn.FURGAO;
-  v('cfg-tb').value=cfg.transp.forn.BAU;v('cfg-tm').value=cfg.transp.forn.MAIOR;v('cfg-td').value=cfg.transp.forn.DIARIA;
-  v('cfg-cf').value=cfg.transp.cli.FIORINO;v('cfg-cfu').value=cfg.transp.cli.FURGAO;v('cfg-cb').value=cfg.transp.cli.BAU;
-  v('cfg-cm').value=cfg.transp.cli.MAIOR;v('cfg-cd').value=cfg.transp.cli.DIARIA;v('cfg-imposto').value=cfg.imposto;v('cfg-margem-min').value=cfg.margemMin||30;
-  const fE=v('cfg-dest-forn');fE.innerHTML='';const cE=v('cfg-dest-cli');cE.innerHTML='';
+  g('cfg-empresa').value=cfg.empresa||'';g('cfg-cnpj').value=cfg.cnpj||'';g('cfg-tel').value=cfg.tel||'';
+  g('cfg-validade').value=cfg.validade||15;
+  g('cfg-tf').value=cfg.transp.forn.FIORINO;g('cfg-tfu').value=cfg.transp.forn.FURGAO;
+  g('cfg-tb').value=cfg.transp.forn.BAU;g('cfg-tm').value=cfg.transp.forn.MAIOR;g('cfg-td').value=cfg.transp.forn.DIARIA;
+  g('cfg-cf').value=cfg.transp.cli.FIORINO;g('cfg-cfu').value=cfg.transp.cli.FURGAO;
+  g('cfg-cb').value=cfg.transp.cli.BAU;g('cfg-cm').value=cfg.transp.cli.MAIOR;g('cfg-cd').value=cfg.transp.cli.DIARIA;
+  g('cfg-imposto').value=cfg.imposto;g('cfg-margem-min').value=cfg.margemMin||30;
+  const fE=g('cfg-dest-forn'),cE=g('cfg-dest-cli');fE.innerHTML='';cE.innerHTML='';
   DEST_KEYS.forEach(k=>{
-    fE.innerHTML+=`<div class="cfg-row"><div><div class="cfg-label">${k}</div></div><input class="cfg-input" id="cdf-${esc(k)}" type="number" step="0.001" value="${cfg.dest.forn[k]}"></div>`;
-    cE.innerHTML+=`<div class="cfg-row"><div><div class="cfg-label">${k}</div></div><input class="cfg-input" id="cdc-${esc(k)}" type="number" step="0.01" value="${cfg.dest.cli[k]}"></div>`;
+    fE.innerHTML+=`<div class="cfg-r"><div class="cfg-l">${k}</div><input class="cfg-i" id="cdf-${esc(k)}" type="number" step="0.001" value="${cfg.dest.forn[k]}"></div>`;
+    cE.innerHTML+=`<div class="cfg-r"><div class="cfg-l">${k}</div><input class="cfg-i" id="cdc-${esc(k)}" type="number" step="0.01" value="${cfg.dest.cli[k]}"></div>`;
   });
-  openModal('modal-config');
 }
 
 function salvarConfig(){
-  cfg.empresa=v('cfg-empresa').value||'Cerrado Ambiental';cfg.cnpj=v('cfg-cnpj').value;cfg.tel=v('cfg-tel').value;
-  cfg.validade=parseInt(v('cfg-validade').value)||15;
-  cfg.transp.forn.FIORINO=pf('cfg-tf');cfg.transp.forn.FURGAO=pf('cfg-tfu');cfg.transp.forn.BAU=pf('cfg-tb');cfg.transp.forn.MAIOR=pf('cfg-tm');cfg.transp.forn.DIARIA=pf('cfg-td');
-  cfg.transp.cli.FIORINO=pf('cfg-cf');cfg.transp.cli.FURGAO=pf('cfg-cfu');cfg.transp.cli.BAU=pf('cfg-cb');cfg.transp.cli.MAIOR=pf('cfg-cm');cfg.transp.cli.DIARIA=pf('cfg-cd');
+  cfg.empresa=g('cfg-empresa').value||'Cerrado Ambiental';
+  cfg.cnpj=g('cfg-cnpj').value;cfg.tel=g('cfg-tel').value;
+  cfg.validade=parseInt(g('cfg-validade').value)||15;
+  cfg.transp.forn.FIORINO=pf('cfg-tf');cfg.transp.forn.FURGAO=pf('cfg-tfu');
+  cfg.transp.forn.BAU=pf('cfg-tb');cfg.transp.forn.MAIOR=pf('cfg-tm');cfg.transp.forn.DIARIA=pf('cfg-td');
+  cfg.transp.cli.FIORINO=pf('cfg-cf');cfg.transp.cli.FURGAO=pf('cfg-cfu');
+  cfg.transp.cli.BAU=pf('cfg-cb');cfg.transp.cli.MAIOR=pf('cfg-cm');cfg.transp.cli.DIARIA=pf('cfg-cd');
   cfg.imposto=pf('cfg-imposto');cfg.margemMin=pf('cfg-margem-min');
   DEST_KEYS.forEach(k=>{cfg.dest.forn[k]=pf('cdf-'+esc(k));cfg.dest.cli[k]=pf('cdc-'+esc(k));});
-  sc(cfg);closeModal('modal-config');toast('✅ Configurações salvas!');calcular();
+  saveCfg(cfg);closeModal('modal-config');toast('✅ Configurações salvas!');
 }
 
+// ── RESÍDUOS ───────────────────────────────────────────
 function renderResiduos(){
-  const el=v('residuos-list');el.innerHTML='';
+  const el=g('residuos-list');el.innerHTML='';
   residuos.forEach((r,i)=>{
     const opts=DEST_KEYS.map(k=>`<option value="${k}"${r.dest===k?' selected':''}>${k}</option>`).join('');
-    el.innerHTML+=`<div class="residuo-row">
-      <div class="residuo-header"><div class="residuo-num">${i+1}</div><div class="residuo-label">Resíduo ${i+1}</div>${residuos.length>1?`<button class="del-btn" onclick="delResiduo(${r.id})">×</button>`:''}</div>
-      <div class="field"><label>Descrição</label><input type="text" placeholder="Ex: Óleo lubrificante usado" value="${r.descricao||''}" oninput="updRes(${r.id},'descricao',this.value)" autocomplete="off"></div>
-      <div class="grid2">
-        <div class="field"><label>Peso (kg)</label><input type="number" placeholder="0" value="${r.peso||''}" oninput="updRes(${r.id},'peso',+this.value);calcular()"></div>
-        <div class="field"><label>Destinação</label><select onchange="updRes(${r.id},'dest',this.value);calcular()">${opts}</select></div>
+    el.innerHTML+=`
+    <div class="res-row">
+      <div class="res-head">
+        <div class="res-num">${i+1}</div>
+        <div class="res-title">Resíduo ${i+1}</div>
+        ${residuos.length>1?`<button class="res-del" onclick="delRes(${r.id})">×</button>`:''}
+      </div>
+      <div class="field">
+        <label class="field-label">Descrição</label>
+        <input class="inp" type="text" placeholder="Ex: Óleo lubrificante usado" value="${r.desc||''}" oninput="updRes(${r.id},'desc',this.value)" autocomplete="off" autocorrect="off">
+      </div>
+      <div class="g2">
+        <div class="field">
+          <label class="field-label">Peso (kg)</label>
+          <input class="inp inp-mono" type="number" placeholder="0" value="${r.peso||''}" inputmode="decimal" oninput="updRes(${r.id},'peso',+this.value);calcular()">
+        </div>
+        <div class="field">
+          <label class="field-label">Destinação</label>
+          <select class="inp inp-select" onchange="updRes(${r.id},'dest',this.value);calcular()">${opts}</select>
+        </div>
       </div>
     </div>`;
   });
 }
 
-function addResiduo(){residuos.push({id:nextId++,peso:0,dest:'ATERRO CLASSE II',descricao:''});renderResiduos();}
-function delResiduo(id){residuos=residuos.filter(r=>r.id!==id);renderResiduos();calcular();}
+function addResiduo(){residuos.push({id:nextId++,peso:0,dest:'ATERRO CLASSE II',desc:''});renderResiduos();}
+function delRes(id){residuos=residuos.filter(r=>r.id!==id);renderResiduos();calcular();}
 function updRes(id,f,val){const r=residuos.find(x=>x.id===id);if(r)r[f]=val;}
 
+// ── CÁLCULO ────────────────────────────────────────────
 function calcular(){
-  const km=+v('trajeto').value||0,veic=v('veiculo').value,ac=+v('acresc-cabeca').value||0;
+  const km=+g('trajeto').value||0,veic=g('veiculo').value,ac=+g('acresc-cabeca').value||0;
   const ctf=km*(cfg.transp.forn[veic]||0);
   let ptc=km*(cfg.transp.cli[veic]||0);
-  if(km>=900)ptc+=cfg.transp.cli.DIARIA*(residuos.reduce((s,r)=>s+r.peso,0)/1000||0);
+  if(km>=900)ptc+=cfg.transp.cli.DIARIA*(residuos.reduce((s,r)=>s+(+r.peso||0),0)/1000||0);
   let cdf=0,pdc=0;
   const itens=residuos.map(r=>{
     const kg=+r.peso||0,cf=(cfg.dest.forn[r.dest]||0)*kg,cc=(cfg.dest.cli[r.dest]||0)*kg;
     cdf+=cf;pdc+=cc;return{...r,custForn:cf,precCli:cc};
   });
   const tot=ptc+pdc+ac,imp=tot*(cfg.imposto/100),ct=ctf+cdf+imp,sob=tot-ct,mar=tot>0?sob/tot:0;
-  ultimoCalculo={km,veic,acrescCabeca:ac,custTranspForn:ctf,precTranspCli:ptc,custDestForn:cdf,precDestCli:pdc,itens,totalNota:tot,imposto:imp,custTotal:ct,sobra:sob,margem:mar,
-    cliente:{nome:v('cli-nome').value,cnpj:v('cli-cnpj').value,contato:v('cli-contato').value},obs:v('obs').value,data:new Date().toLocaleDateString('pt-BR')};
+  ultimoCalculo={km,veic,ac,ctf,ptc,cdf,pdc,itens,tot,imp,ct,sob,mar,
+    cli:{nome:g('cli-nome').value,cnpj:g('cli-cnpj').value,contato:g('cli-contato').value},
+    obs:g('obs').value,data:new Date().toLocaleDateString('pt-BR')};
   return ultimoCalculo;
 }
 
-function goToResultado(){renderResultado(calcular());setTabById('resultado');}
+function goToResultado(){
+  const r=calcular();
+  if(!r.tot){toast('⚠️ Preencha pelo menos o trajeto ou um resíduo');return;}
+  renderResultado(r);navTo('resultado',g('nav-resultado'));
+}
 
+// ── RESULTADO ──────────────────────────────────────────
 function renderResultado(r){
   if(!r)return;
-  const mm=cfg.margemMin||30,pct=(r.margem*100),ok=pct>=mm,warn=pct>=(mm*0.75)&&pct<mm;
-  const bc=ok?'badge-ok':warn?'badge-warn':'badge-bad',fc=ok?'#2a7a40':warn?'#c87020':'#b03020';
+  const mm=cfg.margemMin||30,pct=r.mar*100,ok=pct>=mm,warn=pct>=(mm*0.75)&&pct<mm;
+  const bc=ok?'b-ok':warn?'b-warn':'b-bad',fc=ok?'#2a7a40':warn?'#c87020':'#b03020';
   const bw=Math.min(100,Math.max(0,pct)).toFixed(1);
   let ih='';
-  r.itens.forEach((it,i)=>{if((it.peso||0)>0){ih+=`<div class="rrow"><div><div style="font-size:13px;font-weight:600;color:var(--text)">${it.descricao||'Resíduo '+(i+1)}</div><div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px">${it.dest} · ${fmt(it.peso)} kg</div></div><div style="text-align:right"><div class="rval acc" style="font-weight:600">${brl(it.precCli)}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">custo ${brl(it.custForn)}</div></div></div>`;}});
-  v('resultado-content').innerHTML=`
-  <div class="rbox">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-      <div style="font-size:11px;color:rgba(248,240,221,0.5);font-weight:700;letter-spacing:1px;text-transform:uppercase">Margem de Lucro</div>
+  r.itens.forEach((it,i)=>{
+    if((it.peso||0)>0){
+      ih+=`<div class="rr">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text)">${it.desc||'Resíduo '+(i+1)}</div>
+          <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px">${it.dest} · ${fmt(it.peso)} kg</div>
+        </div>
+        <div style="text-align:right">
+          <div class="rv acc" style="font-weight:600">${brl(it.precCli)}</div>
+          <div style="font-size:11px;color:var(--text4);margin-top:2px">custo ${brl(it.custForn)}</div>
+        </div>
+      </div>`;
+    }
+  });
+
+  g('resultado-content').innerHTML=`
+  <div class="rbox-dark">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;position:relative;z-index:1">
+      <div style="font-size:11px;color:rgba(248,240,221,0.45);font-weight:700;letter-spacing:1.2px;text-transform:uppercase">Margem de Lucro</div>
       <div class="badge ${bc}">${pct.toFixed(1)}%</div>
     </div>
-    <div style="font-size:30px;font-weight:800;color:#fff;margin-bottom:12px;font-family:'DM Mono',monospace">${brl(r.sobra)}</div>
-    <div class="mbar"><div class="mfill" style="width:${bw}%;background:${fc}"></div></div>
-    <div class="mlabels"><span class="mlabel">0%</span><span class="mlabel">mín ${mm}%</span><span class="mlabel">100%</span></div>
+    <div style="font-size:32px;font-weight:800;color:#fff;font-family:'DM Mono',monospace;margin-bottom:14px;position:relative;z-index:1">${brl(r.sob)}</div>
+    <div class="mbar" style="position:relative;z-index:1"><div class="mfill" style="width:${bw}%;background:${fc}"></div></div>
+    <div class="mlabels"><span class="ml">0%</span><span class="ml">mín ${mm}%</span><span class="ml">100%</span></div>
   </div>
+
   <div class="rbox-light">
-    <div class="card-title" style="margin-bottom:12px"><div class="cticon">🚛</div>Transporte — ${r.veic}</div>
-    <div class="rrow"><div class="rlabel">Custo fornecedor (${fmt(r.km)} km)</div><div class="rval">${brl(r.custTranspForn)}</div></div>
-    <div class="rrow"><div class="rlabel">Cobrado do cliente</div><div class="rval acc">${brl(r.precTranspCli)}</div></div>
-    ${r.acrescCabeca>0?`<div class="rrow"><div class="rlabel">Acréscimo de cabeça</div><div class="rval acc">${brl(r.acrescCabeca)}</div></div>`:''}
+    <div class="card-head" style="margin-bottom:12px"><div class="card-icon">🚛</div><div class="card-label">Transporte — ${r.veic}</div></div>
+    <div class="rr"><div class="rl">Custo fornecedor (${fmt(r.km)} km)</div><div class="rv">${brl(r.ctf)}</div></div>
+    <div class="rr"><div class="rl">Cobrado do cliente</div><div class="rv acc">${brl(r.ptc)}</div></div>
+    ${r.ac>0?`<div class="rr"><div class="rl">Acréscimo de cabeça</div><div class="rv acc">${brl(r.ac)}</div></div>`:''}
   </div>
-  ${ih?`<div class="rbox-light"><div class="card-title" style="margin-bottom:12px"><div class="cticon">♻️</div>Destinação</div>${ih}</div>`:''}
+
+  ${ih?`<div class="rbox-light">
+    <div class="card-head" style="margin-bottom:12px"><div class="card-icon">♻️</div><div class="card-label">Destinação</div></div>
+    ${ih}
+  </div>`:''}
+
   <div class="rbox-light">
-    <div class="card-title" style="margin-bottom:12px"><div class="cticon">💰</div>Resumo</div>
-    <div class="rrow"><div class="rlabel" style="font-weight:700;color:var(--text)">Total da Nota</div><div class="rval" style="font-size:20px;color:var(--accent);font-weight:600">${brl(r.totalNota)}</div></div>
-    <div class="rrow"><div class="rlabel">Imposto (${cfg.imposto}%)</div><div class="rval neg">− ${brl(r.imposto)}</div></div>
-    <div class="rrow"><div class="rlabel">Custo total</div><div class="rval neg">− ${brl(r.custTotal)}</div></div>
+    <div class="card-head" style="margin-bottom:12px"><div class="card-icon">💰</div><div class="card-label">Resumo</div></div>
+    <div class="rr">
+      <div class="rl" style="font-weight:700;color:var(--text)">Total da Nota</div>
+      <div class="rv" style="font-size:20px;color:var(--accent);font-weight:700">${brl(r.tot)}</div>
+    </div>
+    <div class="rr"><div class="rl">Imposto (${cfg.imposto}%)</div><div class="rv neg">− ${brl(r.imp)}</div></div>
+    <div class="rr"><div class="rl">Custo total</div><div class="rv neg">− ${brl(r.ct)}</div></div>
   </div>
-  <div style="display:flex;gap:8px;margin-bottom:8px">
+
+  <div class="btn-row">
     <button class="btn btn-primary" style="flex:2" onclick="gerarProposta()">📄 Gerar Proposta</button>
     <button class="btn btn-outline" style="flex:1" onclick="salvarHistorico()">💾 Salvar</button>
   </div>`;
 }
 
+// ── PROPOSTA ───────────────────────────────────────────
 function gerarProposta(){
-  const r=ultimoCalculo;if(!r||!r.totalNota){toast('⚠️ Calcule o orçamento primeiro');return;}
+  const r=ultimoCalculo;
+  if(!r||!r.tot){toast('⚠️ Calcule o orçamento primeiro');return;}
   const hj=new Date(),val=new Date(hj);val.setDate(val.getDate()+(cfg.validade||15));
   const fd=d=>d.toLocaleDateString('pt-BR');
   const np=`${hj.getFullYear()}${String(hj.getMonth()+1).padStart(2,'0')}${String(hj.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*900)+100)}`;
   let lr='';
-  r.itens.forEach((it,i)=>{if((it.peso||0)>0){lr+=`  • ${it.descricao||'Resíduo '+(i+1)}\n    Peso: ${fmt(it.peso)} kg | Dest.: ${it.dest}\n    R$ ${(cfg.dest.cli[it.dest]||0).toFixed(2)}/kg | Subtotal: ${brl(it.precCli)}\n\n`;}});
-  const txt=`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nPROPOSTA COMERCIAL Nº ${np}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nPRESTADOR\n${cfg.empresa||'Cerrado Ambiental'}${cfg.cnpj?'\nCNPJ: '+cfg.cnpj:''}${cfg.tel?'\nTel: '+cfg.tel:''}\n\nCLIENTE\n${r.cliente.nome||'—'}${r.cliente.cnpj?'\nCNPJ: '+r.cliente.cnpj:''}${r.cliente.contato?'\nContato: '+r.cliente.contato:''}\n\nData: ${fd(hj)} | Validade: ${fd(val)}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSERVIÇOS\n\n▸ COLETA E TRANSPORTE\n  Veículo: ${r.veic} | Trajeto: ${fmt(r.km)} km\n  Valor: ${brl(r.precTranspCli)}${r.acrescCabeca>0?'\n  Acréscimos: '+brl(r.acrescCabeca):''}\n\n▸ TRATAMENTO E DESTINAÇÃO\n${lr}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nVALOR TOTAL: ${brl(r.totalNota)}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${r.obs?'\nOBSERVAÇÕES\n'+r.obs+'\n\n':''}\nServiços em conformidade com a legislação\nambiental vigente. Documentação de\ndestinação fornecida após execução.\n\n${cfg.empresa||'Cerrado Ambiental'}`;
-  v('proposta-content').innerHTML=`<div class="card"><div class="card-title" style="margin-bottom:12px"><div class="cticon">📄</div>Proposta Gerada</div><div class="proposta-preview" id="txt-proposta">${txt}</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" style="flex:1;min-width:120px" onclick="copiarProposta()">📋 Copiar</button><button class="btn btn-dark" style="flex:1;min-width:120px" onclick="whatsappProposta()">💬 WhatsApp</button></div><div style="height:8px"></div>`;
-  setTabById('proposta');
+  r.itens.forEach((it,i)=>{
+    if((it.peso||0)>0){lr+=`  • ${it.desc||'Resíduo '+(i+1)}\n    Peso: ${fmt(it.peso)} kg | Dest.: ${it.dest}\n    R$ ${(cfg.dest.cli[it.dest]||0).toFixed(2)}/kg | Subtotal: ${brl(it.precCli)}\n\n`;}
+  });
+  const txt=`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nPROPOSTA COMERCIAL Nº ${np}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nPRESTADOR\n${cfg.empresa||'Cerrado Ambiental'}${cfg.cnpj?'\nCNPJ: '+cfg.cnpj:''}${cfg.tel?'\nTel: '+cfg.tel:''}\n\nCLIENTE\n${r.cli.nome||'—'}${r.cli.cnpj?'\nCNPJ: '+r.cli.cnpj:''}${r.cli.contato?'\nContato: '+r.cli.contato:''}\n\nData: ${fd(hj)} | Validade: ${fd(val)}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSERVIÇOS\n\n▸ COLETA E TRANSPORTE\n  Veículo: ${r.veic} | Trajeto: ${fmt(r.km)} km\n  Valor: ${brl(r.ptc)}${r.ac>0?'\n  Acréscimos: '+brl(r.ac):''}\n\n▸ TRATAMENTO E DESTINAÇÃO\n${lr}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nVALOR TOTAL: ${brl(r.tot)}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${r.obs?'\nOBSERVAÇÕES\n'+r.obs+'\n\n':''}\nServiços em conformidade com a legislação\nambiental vigente. Documentação de\ndestinação fornecida após a execução.\n\n${cfg.empresa||'Cerrado Ambiental'}`;
+
+  g('proposta-content').innerHTML=`
+  <div class="card">
+    <div class="card-head" style="margin-bottom:12px"><div class="card-icon">📄</div><div class="card-label">Proposta Gerada</div></div>
+    <div class="proposta-txt" id="txt-proposta">${txt}</div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="copiarProposta()">📋 Copiar</button>
+    <button class="btn btn-dark" onclick="whatsappProposta()">💬 WhatsApp</button>
+  </div>`;
+  navTo('proposta',g('nav-proposta'));
 }
 
-function copiarProposta(){const t=v('txt-proposta').innerText;navigator.clipboard.writeText(t).then(()=>toast('✅ Copiado!')).catch(()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);toast('✅ Copiado!');});}
-function whatsappProposta(){window.open('https://wa.me/?text='+encodeURIComponent(v('txt-proposta').innerText),'_blank');}
+function copiarProposta(){
+  const t=g('txt-proposta').innerText;
+  navigator.clipboard.writeText(t).then(()=>toast('✅ Copiado!')).catch(()=>{
+    const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);toast('✅ Copiado!');
+  });
+}
+function whatsappProposta(){window.open('https://wa.me/?text='+encodeURIComponent(g('txt-proposta').innerText),'_blank');}
 
+// ── HISTÓRICO ──────────────────────────────────────────
 function salvarHistorico(){
   const r=ultimoCalculo;if(!r)return;
-  try{let h=JSON.parse(localStorage.getItem('rpro_hist')||'[]');h.unshift({...r,id:Date.now()});if(h.length>50)h=h.slice(0,50);localStorage.setItem('rpro_hist',JSON.stringify(h));toast('💾 Orçamento salvo!');renderHistorico();}catch(e){}
+  try{
+    let h=JSON.parse(localStorage.getItem('rpro_hist')||'[]');
+    h.unshift({...r,id:Date.now()});
+    if(h.length>50)h=h.slice(0,50);
+    localStorage.setItem('rpro_hist',JSON.stringify(h));
+    toast('💾 Salvo no histórico!');renderHistorico();
+  }catch(e){}
 }
 
 function renderHistorico(){
   try{
-    const h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),el=v('historico-list');
-    if(!h.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🗂️</div><div class="empty-title">Nenhum orçamento salvo</div><div class="empty-sub">Seus orçamentos aparecerão aqui após salvar</div></div>`;return;}
-    el.innerHTML=h.map(x=>`<div class="hist-item" onclick="carregarHistorico(${x.id})"><div class="hist-top"><div class="hist-cliente">${x.cliente?.nome||'Sem nome'}</div><div class="hist-data">${x.data||''}</div></div><div class="hist-bottom"><div class="hist-valor">${brl(x.totalNota)}</div><div class="badge ${(x.margem*100)>=(cfg.margemMin||30)?'badge-ok':'badge-warn'}">${(x.margem*100).toFixed(1)}% margem</div></div></div>`).join('');
+    const h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),el=g('historico-list');
+    if(!h.length){
+      el.innerHTML=`<div class="empty"><span class="empty-ico">🗂️</span><div class="empty-t">Nenhum orçamento salvo</div><div class="empty-s">Seus orçamentos aparecerão aqui após salvar</div></div>`;
+      return;
+    }
+    el.innerHTML=h.map(x=>`
+    <div class="hist-card" onclick="carregarHist(${x.id})">
+      <div class="hist-top">
+        <div class="hist-name">${x.cli?.nome||'Sem nome'}</div>
+        <div class="hist-date">${x.data||''}</div>
+      </div>
+      <div class="hist-bot">
+        <div class="hist-val">${brl(x.tot)}</div>
+        <div class="badge ${(x.mar*100)>=(cfg.margemMin||30)?'b-ok':'b-warn'}">${(x.mar*100).toFixed(1)}% margem</div>
+      </div>
+    </div>`).join('');
   }catch(e){}
 }
 
-function carregarHistorico(id){
-  try{const h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),x=h.find(i=>i.id===id);if(!x)return;ultimoCalculo=x;renderResultado(x);setTabById('resultado');toast('📋 Orçamento carregado');}catch(e){}
+function carregarHist(id){
+  try{
+    const h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),x=h.find(i=>i.id===id);
+    if(!x)return;ultimoCalculo=x;renderResultado(x);navTo('resultado',g('nav-resultado'));toast('📋 Orçamento carregado');
+  }catch(e){}
 }
 
-function limparHistorico(){if(confirm('Apagar todo o histórico?')){localStorage.removeItem('rpro_hist');renderHistorico();toast('🗑️ Histórico limpo');}}
+function limparHistorico(){
+  if(confirm('Apagar todo o histórico?')){localStorage.removeItem('rpro_hist');renderHistorico();toast('🗑️ Histórico limpo');}
+}
 
-function setTab(id,el){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));v('screen-'+id).classList.add('active');el.classList.add('active');if(id==='historico')renderHistorico();}
-function setTabById(id){const s=['orcamento','resultado','proposta','historico'],i=s.indexOf(id);if(i>=0){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));v('screen-'+id).classList.add('active');document.querySelectorAll('.tab')[i].classList.add('active');}}
+// ── NAV ────────────────────────────────────────────────
+function navTo(id,el){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  g('screen-'+id).classList.add('active');
+  el.classList.add('active');
+  if(id==='historico')renderHistorico();
+  if(id==='config')openConfig();
+}
 
-function openModal(id){v(id).classList.add('open');}
-function closeModal(id){v(id).classList.remove('open');}
-function closeModalOnOverlay(e,id){if(e.target===v(id))closeModal(id);}
+// ── MODAL ──────────────────────────────────────────────
+function openModal(id){
+  if(id==='modal-config')openConfig();
+  g(id).classList.add('open');
+}
+function closeModal(id){g(id).classList.remove('open');}
+function overlayClick(e,id){if(e.target===g(id))closeModal(id);}
 
-function v(id){return document.getElementById(id);}
-function pf(id){return parseFloat(v(id).value)||0;}
+// ── UTILS ──────────────────────────────────────────────
+function g(id){return document.getElementById(id);}
+function pf(id){return parseFloat(g(id).value)||0;}
 function brl(n){return 'R$ '+Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmt(n){return Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:0});}
 function esc(s){return s.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'');}
-function maskCNPJ(el){let v=el.value.replace(/\D/g,'');v=v.replace(/^(\d{2})(\d)/,'$1.$2');v=v.replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3');v=v.replace(/\.(\d{3})(\d)/,'.$1/$2');v=v.replace(/(\d{4})(\d)/,'$1-$2');el.value=v;}
-function toast(msg,dur=2200){const t=v('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
+function maskCNPJ(el){
+  let v=el.value.replace(/\D/g,'');
+  v=v.replace(/^(\d{2})(\d)/,'$1.$2');
+  v=v.replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3');
+  v=v.replace(/\.(\d{3})(\d)/,'.$1/$2');
+  v=v.replace(/(\d{4})(\d)/,'$1-$2');
+  el.value=v;
+}
+function toast(msg,dur=2400){
+  const t=g('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
 
+// ── INIT ───────────────────────────────────────────────
 renderResiduos();
 renderHistorico();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js')
+    .then(()=>console.log('SW registrado'))
+    .catch(e=>console.log('SW erro:',e));
+}
 </script>
 </body>
 </html>
