@@ -386,29 +386,19 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
 /* AUTOCOMPLETE */
 .ac-wrap{position:relative}
 .ac-list{
-  position:absolute;top:calc(100% - 2px);left:0;right:0;
-  background:var(--card);border:1.5px solid var(--accent);
-  border-top:none;border-radius:0 0 12px 12px;
-  max-height:210px;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  z-index:99;box-shadow:0 8px 24px rgba(69,40,24,0.18);
-  display:none;
+  position:absolute;top:100%;left:0;right:0;
+  background:#fffdf6;border:2px solid #db6a1d;border-top:none;
+  border-radius:0 0 12px 12px;max-height:220px;overflow-y:auto;
+  z-index:999;box-shadow:0 8px 24px rgba(69,40,24,0.20);display:none;
 }
 .ac-list.open{display:block}
-.ac-item{
-  padding:11px 14px;font-size:13px;color:var(--text);
-  border-bottom:1px solid var(--border2);cursor:pointer;
-  display:flex;align-items:flex-start;gap:8px;
-}
+.ac-item{padding:10px 14px;font-size:13px;color:#452818;border-bottom:1px solid #f0e4c8;cursor:pointer;display:flex;align-items:flex-start;gap:8px;}
+.ac-item:hover{background:#f8f0dd}
 .ac-item:last-child{border-bottom:none}
-.ac-item:active{background:var(--accent-dim)}
 .ac-item-text{flex:1;line-height:1.4}
-.ac-badge{
-  font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;
-  white-space:nowrap;flex-shrink:0;margin-top:1px;
-}
-.ac-badge-per{background:rgba(176,48,32,0.12);color:var(--danger);border:1px solid rgba(176,48,32,0.2)}
-.ac-badge-ok{background:rgba(42,122,64,0.10);color:var(--success);border:1px solid rgba(42,122,64,0.2)}
-.ac-open .inp{border-radius:12px 12px 0 0}
+.ac-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap;flex-shrink:0;margin-top:2px;}
+.ac-badge-per{background:rgba(176,48,32,0.12);color:#b03020;border:1px solid rgba(176,48,32,0.2)}
+.ac-badge-ok{background:rgba(42,122,64,0.10);color:#2a7a40;border:1px solid rgba(42,122,64,0.2)}
 </style>
 </head>
 <body>
@@ -754,9 +744,9 @@ function renderResiduos(){
       </div>`;
     // Eventos via JS (evita problemas com aspas no template)
     const inp = div.querySelector('#ac-inp-'+r.id);
-    inp.addEventListener('input', e => acSearch(r.id, e.target.value));
-    inp.addEventListener('focus', e => acSearch(r.id, e.target.value));
-    inp.addEventListener('blur', () => setTimeout(()=>acClose(r.id),400));
+    inp.addEventListener('input', function(e){ acSearch(r.id, e.target.value); });
+    inp.addEventListener('focus', function(e){ if(e.target.value.length>=2) acSearch(r.id, e.target.value); });
+    inp.addEventListener('blur',  function(){ setTimeout(function(){ acHide(r.id); }, 150); });
     const pesoInp = div.querySelectorAll('input.inp-mono')[0];
     pesoInp.addEventListener('input', e => { updRes(r.id,'peso',+e.target.value); calcular(); });
     const sel = div.querySelector('select');
@@ -982,77 +972,66 @@ function toast(msg,dur=2400){
 
 // ── AUTOCOMPLETE IBAMA ──────────────────────────────────────────
 function acSearch(id, query) {
-  const list = g('ac-list-'+id);
-  const inp  = g('ac-inp-'+id);
+  var list = g('ac-list-' + id);
+  var inp  = g('ac-inp-' + id);
   if (!list || !inp) return;
-
-  const q = (query||'').trim().toLowerCase();
-  if (q.length < 2) { acClose(id); return; }
-
-  const src = (typeof IBAMA !== 'undefined') ? IBAMA : [];
-  const results = src.filter(r =>
-    r.desc.toLowerCase().includes(q) || r.codigo.includes(q)
-  ).slice(0, 40);
-
-  if (!results.length) { acClose(id); return; }
-
-  list.innerHTML = '';
-  results.forEach(function(r) {
-    var item = document.createElement('div');
-    item.className = 'ac-item';
-    item.dataset.desc = r.desc;
-    item.dataset.codigo = r.codigo;
-    item.dataset.perigoso = r.perigoso ? '1' : '0';
-    item.innerHTML =
-      '<div class="ac-item-text">' +
-        '<div style="font-size:10px;color:#b07a55;font-family:monospace;margin-bottom:2px">' + r.codigo + '</div>' +
-        '<div>' + hlText(r.desc, q) + '</div>' +
-      '</div>' +
-      '<div class="ac-badge ' + (r.perigoso ? 'ac-badge-per' : 'ac-badge-ok') + '">' +
-        (r.perigoso ? '⚠️ Per.' : '✓ N.Per.') +
-      '</div>';
-    function selectThis() {
-      acSelect(id, item.dataset.desc, item.dataset.codigo, item.dataset.perigoso === '1');
+  var q = (query||'').trim().toLowerCase();
+  if (q.length < 2) { acHide(id); return; }
+  var src = (typeof IBAMA !== 'undefined') ? IBAMA : [];
+  var results = [], i;
+  for (i = 0; i < src.length && results.length < 50; i++) {
+    if (src[i].desc.toLowerCase().indexOf(q) >= 0 || src[i].codigo.indexOf(q) >= 0) {
+      results.push(src[i]);
     }
-    item.addEventListener('mousedown', function(e){ e.preventDefault(); selectThis(); });
-    item.addEventListener('touchend',  function(e){ e.preventDefault(); selectThis(); });
-    list.appendChild(item);
-  });
-
+  }
+  if (!results.length) { acHide(id); return; }
+  var rows = '';
+  for (i = 0; i < results.length; i++) {
+    var r = results[i];
+    rows += '<div class="ac-item" data-desc="' + r.desc.replace(/"/g,'&quot;') +
+            '" data-codigo="' + r.codigo + '" data-per="' + (r.perigoso?'1':'0') + '">' +
+            '<div class="ac-item-text">' +
+              '<div style="font-size:10px;color:#b07a55;font-family:monospace;margin-bottom:2px">' + r.codigo + '</div>' +
+              '<div>' + hlText(r.desc, q) + '</div>' +
+            '</div>' +
+            '<span class="ac-badge ' + (r.perigoso?'ac-badge-per':'ac-badge-ok') + '">' + (r.perigoso?'⚠️ Per.':'✓ OK') + '</span>' +
+            '</div>';
+  }
+  // Prevenir blur ao clicar na lista
+  list.onmousedown = function(e){ e.preventDefault(); };
+  list.innerHTML = rows;
+  var items = list.querySelectorAll('.ac-item');
+  for (i = 0; i < items.length; i++) {
+    items[i].onclick = function(){
+      acSelect(id, this.dataset.desc, this.dataset.codigo, this.dataset.per === '1');
+    };
+  }
   list.classList.add('open');
   inp.style.borderRadius = '12px 12px 0 0';
-  // Impedir fechamento ao passar o mouse na lista
-  list.onmouseenter = function(){ list.dataset.hovering = '1'; };
-  list.onmouseleave = function(){ list.dataset.hovering = '0'; };
 }
 
 function acSelect(id, desc, codigo, perigoso) {
-  var inp = g('ac-inp-'+id);
+  var inp = g('ac-inp-' + id);
   if (inp) { inp.value = desc; inp.style.borderRadius = ''; }
   updRes(id, 'desc', desc);
   updRes(id, 'codigo', codigo);
   updRes(id, 'perigoso', !!perigoso);
-  acClose(id);
-  var badgeEl = g('badge-'+id);
-  if (badgeEl) {
-    var codSpan = codigo
-      ? '<span style="font-size:11px;font-family:monospace;background:#e8d8b4;color:#7a4e30;padding:3px 10px;border-radius:8px;border:1px solid #d4b896;margin-right:4px">' + codigo + '</span>'
-      : '';
-    var perSpan = perigoso
-      ? '<span style="font-size:11px;font-weight:700;background:rgba(176,48,32,0.12);color:#b03020;padding:3px 10px;border-radius:20px;border:1px solid rgba(176,48,32,0.22)">⚠️ Perigoso</span>'
-      : '<span style="font-size:11px;font-weight:700;background:rgba(42,122,64,0.12);color:#1a6030;padding:3px 10px;border-radius:20px;border:1px solid rgba(42,122,64,0.22)">✓ Não Perigoso</span>';
-    badgeEl.innerHTML = '<div style="margin-bottom:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">' + codSpan + perSpan + '</div>';
+  acHide(id);
+  var b = g('badge-' + id);
+  if (b && codigo) {
+    b.innerHTML =
+      '<div style="margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">' +
+      '<span style="font-size:11px;font-family:monospace;background:#e8d8b4;color:#5c3822;padding:3px 10px;border-radius:8px;border:1px solid #c8a882">' + codigo + '</span>' +
+      '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;' +
+      (perigoso ? 'background:rgba(176,48,32,0.12);color:#b03020;border:1px solid rgba(176,48,32,0.25)' :
+                  'background:rgba(42,122,64,0.12);color:#1a6030;border:1px solid rgba(42,122,64,0.25)') + '">' +
+      (perigoso ? '⚠️ Perigoso' : '✓ Não Perigoso') + '</span></div>';
   }
 }
 
-function acClose(id) {
-  var list = g('ac-list-'+id);
-  var inp  = g('ac-inp-'+id);
-  // Não fechar se mouse estiver sobre a lista
-  if (list && list.dataset.hovering === '1') {
-    setTimeout(function(){ acClose(id); }, 200);
-    return;
-  }
+function acHide(id) {
+  var list = g('ac-list-' + id);
+  var inp  = g('ac-inp-' + id);
   if (list) list.classList.remove('open');
   if (inp)  inp.style.borderRadius = '';
 }
@@ -1060,9 +1039,8 @@ function acClose(id) {
 function hlText(text, q) {
   if (!q) return text;
   try {
-    var esc = q.split('').map(function(c){ return c.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g,'\\$&'); }).join('');
-    var re = new RegExp('(' + esc + ')','gi');
-    return text.replace(re,'<strong style="color:var(--accent)">$1</strong>');
+    var re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','gi');
+    return text.replace(re,'<strong style="color:#db6a1d">$1</strong>');
   } catch(e){ return text; }
 }
 
