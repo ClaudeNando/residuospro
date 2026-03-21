@@ -740,9 +740,9 @@ function renderResiduos(){
           <div class="ac-list" id="ac-list-${r.id}"></div>
         </div>
       </div>
-      ${r.codigo||r.perigoso!==undefined?`<div style="margin-bottom:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-        ${r.codigo?`<span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);background:var(--bg3);padding:3px 10px;border-radius:8px;border:1px solid var(--border)">${r.codigo}</span>`:''}
-        ${r.perigoso!==undefined?`<span class="badge ${r.perigoso?'b-bad':'b-ok'}">${r.perigoso?'⚠️ Perigoso':'✓ Não Perigoso'}</span>`:''}
+      ${r.codigo?`<div style="margin-bottom:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);background:var(--bg3);padding:3px 10px;border-radius:8px;border:1px solid var(--border2)">${r.codigo}</span>
+        <span class="badge ${r.perigoso?'b-bad':'b-ok'}">${r.perigoso?'⚠️ Perigoso':'✓ Não Perigoso'}</span>
       </div>`:''}
       <div class="g2">
         <div class="field">
