@@ -383,22 +383,13 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
 /* DIVIDER */
 .div{height:1px;background:var(--border2);margin:14px 0}
 
-/* AUTOCOMPLETE */
-.ac-wrap{position:relative}
-.ac-list{
-  position:absolute;top:100%;left:0;right:0;
-  background:#fffdf6;border:2px solid #db6a1d;border-top:none;
-  border-radius:0 0 12px 12px;max-height:220px;overflow-y:auto;
-  z-index:999;box-shadow:0 8px 24px rgba(69,40,24,0.20);display:none;
-}
-.ac-list.open{display:block}
-.ac-item{padding:10px 14px;font-size:13px;color:#452818;border-bottom:1px solid #f0e4c8;cursor:pointer;display:flex;align-items:flex-start;gap:8px;}
-.ac-item:hover{background:#f8f0dd}
-.ac-item:last-child{border-bottom:none}
-.ac-item-text{flex:1;line-height:1.4}
-.ac-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap;flex-shrink:0;margin-top:2px;}
-.ac-badge-per{background:rgba(176,48,32,0.12);color:#b03020;border:1px solid rgba(176,48,32,0.2)}
-.ac-badge-ok{background:rgba(42,122,64,0.10);color:#2a7a40;border:1px solid rgba(42,122,64,0.2)}
+/* AUTOCOMPLETE — usa datalist nativo */
+.datalist-inp{ position:relative }
+.res-badge{ margin-top:8px; margin-bottom:10px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; min-height:28px; }
+.code-tag{ font-size:11px;font-family:monospace;background:#e8d8b4;color:#5c3822;padding:3px 10px;border-radius:8px;border:1px solid #c8a882; }
+.per-tag{ font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px; }
+.per-tag.danger{ background:rgba(176,48,32,0.12);color:#b03020;border:1px solid rgba(176,48,32,0.25); }
+.per-tag.safe{   background:rgba(42,122,64,0.12); color:#1a6030;border:1px solid rgba(42,122,64,0.25); }
 </style>
 </head>
 <body>
@@ -709,10 +700,19 @@ function salvarConfig(){
 function renderResiduos(){
   var el = g('residuos-list');
   el.innerHTML = '';
+
+  // Injetar datalist uma vez
+  if (!g('ibama-list') && typeof IBAMA_DATALIST !== 'undefined') {
+    var tmp = document.createElement('div');
+    tmp.innerHTML = IBAMA_DATALIST;
+    document.body.appendChild(tmp.firstChild);
+  }
+
   residuos.forEach(function(r, i) {
     var opts = DEST_KEYS.map(function(k){
       return '<option value="'+k+'"'+(r.dest===k?' selected':'')+'>'+k+'</option>';
     }).join('');
+
     var div = document.createElement('div');
     div.className = 'res-row';
     div.innerHTML =
@@ -722,10 +722,9 @@ function renderResiduos(){
         (residuos.length>1 ? '<button class="res-del" type="button">×</button>' : '') +
       '</div>' +
       '<div class="field">' +
-        '<label class="field-label">Descrição <span style="font-size:10px;color:var(--text3);font-weight:400;text-transform:none">— busque na lista IBAMA</span></label>' +
-        '<input class="inp" type="text" placeholder="Digite para buscar..." autocomplete="off" value="'+(r.desc||'')+'">' +
-        '<div id="badge-'+r.id+'" style="margin-top:6px">'+makeBadge(r)+'</div>' +
-        '<div class="ac-list" id="ac-list-'+r.id+'"></div>' +
+        '<label class="field-label">Descrição — busque na lista IBAMA</label>' +
+        '<input class="inp" type="text" list="ibama-list" placeholder="Digite código ou descrição..." autocomplete="off" value="'+(r.desc||'')+'">' +
+        '<div class="res-badge" id="badge-'+r.id+'">'+makeBadge(r)+'</div>' +
       '</div>' +
       '<div class="g2">' +
         '<div class="field"><label class="field-label">Peso (kg)</label>' +
@@ -740,25 +739,37 @@ function renderResiduos(){
     var delBtn = div.querySelector('.res-del');
     if (delBtn) delBtn.onclick = function(){ delRes(r.id); };
 
-    // ── Input de busca IBAMA ──
+    // Input descrição com datalist
     var inp = div.querySelector('input[type=text]');
-    var list = div.querySelector('.ac-list');
-
-    // Prevenir blur ao clicar na lista (funciona em todos os browsers)
-    list.addEventListener('mousedown', function(e){ e.preventDefault(); });
-    list.addEventListener('touchstart', function(e){ e.preventDefault(); }, {passive:false});
-
-    inp.addEventListener('input', function(){
-      showList(r.id, inp, list, this.value);
+    inp.addEventListener('change', function(){
+      var val = this.value;
+      // Formato: "16.01.17 — Sucatas metálicas ferrosas"
+      var match = val.match(/^(\d{2}\.\d{2}\.\d{2})\s*[—\-]\s*(.+)$/);
+      if (match) {
+        var cod  = match[1].trim();
+        var desc = match[2].trim();
+        updRes(r.id, 'desc',    desc);
+        updRes(r.id, 'codigo',  cod);
+        // Descobrir se perigoso
+        var found = null;
+        if (typeof IBAMA !== 'undefined') {
+          for (var k=0; k<IBAMA.length; k++) {
+            if (IBAMA[k].codigo === cod) { found = IBAMA[k]; break; }
+          }
+        }
+        updRes(r.id, 'perigoso', found ? !!found.perigoso : false);
+        var b = g('badge-'+r.id);
+        if (b) b.innerHTML = makeBadge(residuos.find(function(x){ return x.id===r.id; })||{});
+      } else {
+        updRes(r.id, 'desc', val);
+        updRes(r.id, 'codigo', '');
+        updRes(r.id, 'perigoso', false);
+        var b2 = g('badge-'+r.id);
+        if (b2) b2.innerHTML = '';
+      }
     });
-    inp.addEventListener('focus', function(){
-      if (this.value.length >= 2) showList(r.id, inp, list, this.value);
-    });
-    inp.addEventListener('blur', function(){
-      hideList(list, inp);
-    });
 
-    // Peso
+    // Input peso
     var pesoInp = div.querySelector('input.inp-mono');
     pesoInp.addEventListener('input', function(){
       updRes(r.id, 'peso', +this.value); calcular();
@@ -774,66 +785,11 @@ function renderResiduos(){
   });
 }
 
-function showList(id, inp, list, query) {
-  var q = (query||'').trim().toLowerCase();
-  if (q.length < 2) { hideList(list, inp); return; }
-  var src = (typeof IBAMA !== 'undefined') ? IBAMA : [];
-  var results = [], i;
-  for (i = 0; i < src.length && results.length < 50; i++) {
-    if (src[i].desc.toLowerCase().indexOf(q) >= 0 || src[i].codigo.indexOf(q) >= 0) {
-      results.push(src[i]);
-    }
-  }
-  if (!results.length) { hideList(list, inp); return; }
-
-  list.innerHTML = '';
-  for (i = 0; i < results.length; i++) {
-    var r = results[i];
-    var item = document.createElement('div');
-    item.className = 'ac-item';
-    item.innerHTML =
-      '<div class="ac-item-text">' +
-        '<div style="font-size:10px;color:#b07a55;font-family:monospace;margin-bottom:2px">'+r.codigo+'</div>' +
-        '<div>'+r.desc+'</div>' +
-      '</div>' +
-      '<span class="ac-badge '+(r.perigoso?'ac-badge-per':'ac-badge-ok')+'">'+(r.perigoso?'⚠️':'✓')+'</span>';
-
-    // Closure com IIFE para capturar r
-    (function(res){
-      function doSelect(){
-        inp.value = res.desc;
-        updRes(id, 'desc', res.desc);
-        updRes(id, 'codigo', res.codigo);
-        updRes(id, 'perigoso', !!res.perigoso);
-        hideList(list, inp);
-        var b = g('badge-'+id);
-        if (b) b.innerHTML = makeBadge(residuos.find(function(x){ return x.id===id; })||{});
-      }
-      item.addEventListener('mouseup',  function(e){ e.preventDefault(); doSelect(); });
-      item.addEventListener('touchend', function(e){ e.preventDefault(); doSelect(); });
-    })(r);
-
-    list.appendChild(item);
-  }
-  list.classList.add('open');
-  inp.style.borderRadius = '12px 12px 0 0';
-}
-
-function hideList(list, inp) {
-  list.classList.remove('open');
-  if (inp) inp.style.borderRadius = '';
-}
-
 function makeBadge(r){
-  if (!r.codigo) return '';
-  return '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">' +
-    '<span style="font-size:11px;font-family:monospace;background:#e8d8b4;color:#5c3822;padding:3px 10px;border-radius:8px;border:1px solid #c8a882">'+r.codigo+'</span>' +
-    '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;'+
-      (r.perigoso
-        ? 'background:rgba(176,48,32,0.12);color:#b03020;border:1px solid rgba(176,48,32,0.25)'
-        : 'background:rgba(42,122,64,0.12);color:#1a6030;border:1px solid rgba(42,122,64,0.25)')+'">' +
-      (r.perigoso ? '⚠️ Perigoso' : '✓ Não Perigoso') +
-    '</span></div>';
+  if (!r || !r.codigo) return '';
+  return '<span class="code-tag">'+r.codigo+'</span>' +
+    '<span class="per-tag '+(r.perigoso?'danger':'safe')+'">' +
+    (r.perigoso ? '⚠️ Perigoso' : '✓ Não Perigoso')+'</span>';
 }
 
 function addResiduo(){residuos.push({id:nextId++,peso:0,dest:'ATERRO CLASSE II',desc:''});renderResiduos();}
@@ -1040,14 +996,6 @@ function toast(msg,dur=2400){
 }
 
 
-// ── AUTOCOMPLETE IBAMA (funções movidas para renderResiduos) ──
-function hlText(text, q) {
-  if (!q) return text;
-  try {
-    var re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','gi');
-    return text.replace(re,'<strong style="color:#db6a1d">$1</strong>');
-  } catch(e){ return text; }
-}
 
 // ── INIT ───────────────────────────────────────────────
 renderResiduos();
