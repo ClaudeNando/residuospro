@@ -700,109 +700,103 @@ function salvarConfig(){
 function renderResiduos(){
   var el = g('residuos-list');
   el.innerHTML = '';
-
-  // Gerar datalist a partir do array IBAMA (sem risco de escaping)
-  if (!g('ibama-list') && typeof IBAMA !== 'undefined') {
-    var dl = document.createElement('datalist');
-    dl.id = 'ibama-list';
-    for (var n = 0; n < IBAMA.length; n++) {
-      var op = document.createElement('option');
-      op.value = IBAMA[n].codigo + ' | ' + IBAMA[n].desc;
-      dl.appendChild(op);
-    }
-    document.body.appendChild(dl);
-  }
-
   residuos.forEach(function(r, i) {
-    var opts = DEST_KEYS.map(function(k){
+    var destOpts = DEST_KEYS.map(function(k){
       return '<option value="'+k+'"'+(r.dest===k?' selected':'')+'>'+k+'</option>';
     }).join('');
 
+    // Opções IBAMA para o select
+    var ibamaOpts = '<option value="">— Selecione ou busque —</option>';
+    if (typeof IBAMA !== 'undefined') {
+      for (var n = 0; n < IBAMA.length; n++) {
+        var item = IBAMA[n];
+        var sel = (r.codigo && r.codigo === item.codigo) ? ' selected' : '';
+        ibamaOpts += '<option value="'+item.codigo+'"'+sel+'>'+item.codigo+' | '+item.desc+'</option>';
+      }
+    }
+
     var div = document.createElement('div');
     div.className = 'res-row';
-
-    // Montar HTML interno
-    var headHtml =
+    div.innerHTML =
       '<div class="res-head">' +
         '<div class="res-num">'+(i+1)+'</div>' +
         '<div class="res-title">Resíduo '+(i+1)+'</div>' +
         (residuos.length>1 ? '<button class="res-del" type="button">×</button>' : '') +
-      '</div>';
-
-    var fieldHtml =
+      '</div>' +
       '<div class="field">' +
-        '<label class="field-label">Descrição — busque na lista IBAMA</label>' +
-        '<input class="inp ibama-inp" type="text" list="ibama-list" ' +
-          'placeholder="Digite código ou descrição..." autocomplete="off">' +
-        '<div class="res-badge" id="badge-'+r.id+'"></div>' +
-      '</div>';
-
-    var gridHtml =
+        '<label class="field-label">Busca rápida — filtre na lista IBAMA</label>' +
+        '<input class="inp ibama-search" type="text" placeholder="Digite para filtrar..." autocomplete="off">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label class="field-label">Resíduo IBAMA</label>' +
+        '<select class="inp ibama-sel" size="1">'+ibamaOpts+'</select>' +
+        '<div class="res-badge" id="badge-'+r.id+'">'+makeBadge(r)+'</div>' +
+      '</div>' +
       '<div class="g2">' +
         '<div class="field"><label class="field-label">Peso (kg)</label>' +
           '<input class="inp inp-mono peso-inp" type="number" placeholder="0" inputmode="decimal">' +
         '</div>' +
         '<div class="field"><label class="field-label">Destinação</label>' +
-          '<select class="inp inp-select dest-sel">'+opts+'</select>' +
+          '<select class="inp inp-select dest-sel">'+destOpts+'</select>' +
         '</div>' +
       '</div>';
-
-    div.innerHTML = headHtml + fieldHtml + gridHtml;
-
-    // Setar valores atuais via JS (evita problema de aspas no innerHTML)
-    var ibamaInp = div.querySelector('.ibama-inp');
-    if (r.desc) {
-      ibamaInp.value = r.codigo ? r.codigo + ' | ' + r.desc : r.desc;
-      // Mostrar badge se tiver codigo
-      if (r.codigo) {
-        var b0 = div.querySelector('#badge-'+r.id);
-        if (b0) b0.innerHTML = makeBadge(r);
-      }
-    }
 
     var pesoInp = div.querySelector('.peso-inp');
     if (r.peso) pesoInp.value = r.peso;
 
-    // Eventos
     var delBtn = div.querySelector('.res-del');
     if (delBtn) delBtn.onclick = function(){ delRes(r.id); };
 
-    // Evento na busca IBAMA — usa input E change
-    function handleIbamaInput() {
-      var val = ibamaInp.value;
-      console.log('IBAMA input val:', JSON.stringify(val));
-      // Formato esperado: "16.01.17 | Sucatas metálicas ferrosas"
-      var parts = val.split(' | ');
-      if (parts.length >= 2 && /^\d{2}\.\d{2}\.\d{2}$/.test(parts[0].trim())) {
-        var cod  = parts[0].trim();
-        var desc = parts.slice(1).join(' | ').trim();
-        updRes(r.id, 'desc', desc);
-        updRes(r.id, 'codigo', cod);
-        var found = null;
-        for (var k = 0; k < IBAMA.length; k++) {
-          if (IBAMA[k].codigo === cod) { found = IBAMA[k]; break; }
-        }
-        updRes(r.id, 'perigoso', found ? !!found.perigoso : false);
-        var b = g('badge-'+r.id);
-        var res = residuos.find(function(x){ return x.id===r.id; });
-        if (b && res) b.innerHTML = makeBadge(res);
-      } else {
-        updRes(r.id, 'desc', val);
-        updRes(r.id, 'codigo', '');
-        var b2 = g('badge-'+r.id);
-        if (b2) b2.innerHTML = '';
-      }
-    }
+    // Campo de busca — filtra o select
+    var searchInp = div.querySelector('.ibama-search');
+    var ibamaSelect = div.querySelector('.ibama-sel');
 
-    ibamaInp.addEventListener('input',  handleIbamaInput);
-    ibamaInp.addEventListener('change', handleIbamaInput);
+    // Preencher busca com valor atual
+    if (r.desc) searchInp.value = r.desc;
+
+    searchInp.addEventListener('input', function(){
+      var q = this.value.toLowerCase();
+      var opts = ibamaSelect.options;
+      for (var k = 0; k < opts.length; k++) {
+        if (k === 0) continue; // skip placeholder
+        var txt = opts[k].text.toLowerCase();
+        opts[k].style.display = (q.length < 2 || txt.indexOf(q) >= 0) ? '' : 'none';
+      }
+      // Auto-selecionar se só restar um
+      var visible = [];
+      for (var k = 1; k < opts.length; k++) {
+        if (opts[k].style.display !== 'none') visible.push(k);
+      }
+      if (visible.length === 1) {
+        ibamaSelect.selectedIndex = visible[0];
+        ibamaSelect.dispatchEvent(new Event('change'));
+      }
+    });
+
+    // Seleção no select IBAMA
+    ibamaSelect.addEventListener('change', function(){
+      var cod = this.value;
+      if (!cod) return;
+      var found = null;
+      for (var k = 0; k < IBAMA.length; k++) {
+        if (IBAMA[k].codigo === cod) { found = IBAMA[k]; break; }
+      }
+      if (found) {
+        searchInp.value = found.desc;
+        updRes(r.id, 'desc',    found.desc);
+        updRes(r.id, 'codigo',  found.codigo);
+        updRes(r.id, 'perigoso', !!found.perigoso);
+        var b = g('badge-'+r.id);
+        if (b) b.innerHTML = makeBadge(found);
+      }
+    });
 
     pesoInp.addEventListener('input', function(){
       updRes(r.id, 'peso', +this.value); calcular();
     });
 
-    var sel = div.querySelector('.dest-sel');
-    sel.addEventListener('change', function(){
+    var destSel = div.querySelector('.dest-sel');
+    destSel.addEventListener('change', function(){
       updRes(r.id, 'dest', this.value); calcular();
     });
 
