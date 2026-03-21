@@ -776,18 +776,25 @@ function renderResiduos(){
     // Seleção no select IBAMA
     ibamaSelect.addEventListener('change', function(){
       var cod = this.value;
+      console.log('SELECT CHANGE cod=', JSON.stringify(cod));
       if (!cod) return;
       var found = null;
       for (var k = 0; k < IBAMA.length; k++) {
         if (IBAMA[k].codigo === cod) { found = IBAMA[k]; break; }
       }
+      console.log('FOUND=', JSON.stringify(found));
       if (found) {
         searchInp.value = found.desc;
         updRes(r.id, 'desc',    found.desc);
         updRes(r.id, 'codigo',  found.codigo);
         updRes(r.id, 'perigoso', !!found.perigoso);
         var b = g('badge-'+r.id);
-        if (b) b.innerHTML = makeBadge(found);
+        console.log('BADGE EL=', b ? 'found' : 'NULL', 'id=badge-'+r.id);
+        if (b) {
+          var html = makeBadge(found);
+          console.log('BADGE HTML=', html);
+          b.innerHTML = html;
+        }
       }
     });
 
