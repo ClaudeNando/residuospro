@@ -717,45 +717,63 @@ function salvarConfig(){
 
 // ── RESÍDUOS ───────────────────────────────────────────
 function renderResiduos(){
-  const el=g('residuos-list');el.innerHTML='';
+  const el=g('residuos-list');
+  el.innerHTML='';
   residuos.forEach((r,i)=>{
     const opts=DEST_KEYS.map(k=>`<option value="${k}"${r.dest===k?' selected':''}>${k}</option>`).join('');
-    el.innerHTML+=`
-    <div class="res-row">
+    const delBtn = residuos.length>1 ? `<button class="res-del" onclick="delRes(${r.id})">×</button>` : '';
+    const badgeHtml = makeBadge(r);
+    const div = document.createElement('div');
+    div.className = 'res-row';
+    div.innerHTML = `
       <div class="res-head">
         <div class="res-num">${i+1}</div>
         <div class="res-title">Resíduo ${i+1}</div>
-        ${residuos.length>1?`<button class="res-del" onclick="delRes(${r.id})">×</button>`:''}
+        ${delBtn}
       </div>
       <div class="field">
         <label class="field-label">Descrição <span style="font-size:10px;color:var(--text3);font-weight:400;text-transform:none">— busque na lista IBAMA</span></label>
         <div class="ac-wrap" id="ac-wrap-${r.id}">
           <input class="inp" type="text" id="ac-inp-${r.id}"
             placeholder="Digite para buscar na lista do IBAMA..."
-            value="${r.desc||''}"
-            oninput="acSearch(${r.id},this.value)"
-            onfocus="acSearch(${r.id},this.value)"
-            onblur="setTimeout(()=>acClose(${r.id}),200)"
+            value="${escHtml(r.desc||'')}"
             autocomplete="off" autocorrect="off" autocapitalize="none">
           <div class="ac-list" id="ac-list-${r.id}"></div>
         </div>
       </div>
-      ${r.codigo?`<div style="margin-bottom:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-        <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);background:var(--bg3);padding:3px 10px;border-radius:8px;border:1px solid var(--border2)">${r.codigo}</span>
-        <span class="badge ${r.perigoso?'b-bad':'b-ok'}">${r.perigoso?'⚠️ Perigoso':'✓ Não Perigoso'}</span>
-      </div>`:''}
+      <div id="badge-${r.id}">${badgeHtml}</div>
       <div class="g2">
         <div class="field">
           <label class="field-label">Peso (kg)</label>
-          <input class="inp inp-mono" type="number" placeholder="0" value="${r.peso||''}" inputmode="decimal" oninput="updRes(${r.id},'peso',+this.value);calcular()">
+          <input class="inp inp-mono" type="number" placeholder="0" value="${r.peso||''}" inputmode="decimal">
         </div>
         <div class="field">
           <label class="field-label">Destinação</label>
-          <select class="inp inp-select" onchange="updRes(${r.id},'dest',this.value);calcular()">${opts}</select>
+          <select class="inp inp-select">${opts}</select>
         </div>
-      </div>
-    </div>`;
+      </div>`;
+    // Eventos via JS (evita problemas com aspas no template)
+    const inp = div.querySelector('#ac-inp-'+r.id);
+    inp.addEventListener('input', e => acSearch(r.id, e.target.value));
+    inp.addEventListener('focus', e => acSearch(r.id, e.target.value));
+    inp.addEventListener('blur', () => setTimeout(()=>acClose(r.id),200));
+    const pesoInp = div.querySelectorAll('input.inp-mono')[0];
+    pesoInp.addEventListener('input', e => { updRes(r.id,'peso',+e.target.value); calcular(); });
+    const sel = div.querySelector('select');
+    sel.addEventListener('change', e => { updRes(r.id,'dest',e.target.value); calcular(); });
+    el.appendChild(div);
   });
+}
+
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function makeBadge(r){
+  if(!r.codigo) return '';
+  const per = r.perigoso;
+  return `<div style="margin-bottom:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+    <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);background:var(--bg3);padding:3px 10px;border-radius:8px;border:1px solid var(--border2)">${r.codigo}</span>
+    <span class="badge ${per?'b-bad':'b-ok'}">${per?'⚠️ Perigoso':'✓ Não Perigoso'}</span>
+  </div>`;
 }
 
 function addResiduo(){residuos.push({id:nextId++,peso:0,dest:'ATERRO CLASSE II',desc:''});renderResiduos();}
@@ -994,13 +1012,16 @@ function acSearch(id, query) {
 }
 
 function acSelect(id, desc, codigo, perigoso) {
+  // Atualizar input sem re-renderizar (evita perda de foco)
   const inp = document.getElementById('ac-inp-'+id);
   if (inp) inp.value = desc;
   updRes(id, 'desc', desc);
   updRes(id, 'codigo', codigo);
   updRes(id, 'perigoso', perigoso);
   acClose(id);
-  renderResiduos();
+  // Atualizar só o badge
+  const badgeEl = document.getElementById('badge-'+id);
+  if(badgeEl) badgeEl.innerHTML = makeBadge(residuos.find(r=>r.id===id)||{});
 }
 
 function acClose(id) {
