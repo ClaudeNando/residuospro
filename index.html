@@ -1024,20 +1024,21 @@ function acSearch(id, query) {
 }
 
 function acSelect(id, desc, codigo, perigoso) {
-  const inp = g('ac-inp-'+id);
+  var inp = g('ac-inp-'+id);
   if (inp) { inp.value = desc; inp.style.borderRadius = ''; }
   updRes(id, 'desc', desc);
   updRes(id, 'codigo', codigo);
-  updRes(id, 'perigoso', perigoso);
+  updRes(id, 'perigoso', !!perigoso);
   acClose(id);
-  // Atualizar badge sem re-renderizar
-  const badgeEl = g('badge-'+id);
+  var badgeEl = g('badge-'+id);
   if (badgeEl) {
-    badgeEl.innerHTML =
-      '<div style="margin-bottom:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">' +
-        '<span style="font-size:11px;font-family:monospace;color:var(--text3);background:var(--bg3);padding:3px 10px;border-radius:8px;border:1px solid var(--border2)">' + codigo + '</span>' +
-        '<span class="badge ' + (perigoso ? 'b-bad' : 'b-ok') + '">' + (perigoso ? '⚠️ Perigoso' : '✓ Não Perigoso') + '</span>' +
-      '</div>';
+    var codSpan = codigo
+      ? '<span style="font-size:11px;font-family:monospace;background:#e8d8b4;color:#7a4e30;padding:3px 10px;border-radius:8px;border:1px solid #d4b896;margin-right:4px">' + codigo + '</span>'
+      : '';
+    var perSpan = perigoso
+      ? '<span style="font-size:11px;font-weight:700;background:rgba(176,48,32,0.12);color:#b03020;padding:3px 10px;border-radius:20px;border:1px solid rgba(176,48,32,0.22)">⚠️ Perigoso</span>'
+      : '<span style="font-size:11px;font-weight:700;background:rgba(42,122,64,0.12);color:#1a6030;padding:3px 10px;border-radius:20px;border:1px solid rgba(42,122,64,0.22)">✓ Não Perigoso</span>';
+    badgeEl.innerHTML = '<div style="margin-bottom:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">' + codSpan + perSpan + '</div>';
   }
 }
 
