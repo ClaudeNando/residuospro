@@ -980,63 +980,80 @@ function toast(msg,dur=2400){
 }
 
 
-// ── AUTOCOMPLETE IBAMA ─────────────────────────────────
+// ── AUTOCOMPLETE IBAMA ──────────────────────────────────────────
 function acSearch(id, query) {
-  const list = document.getElementById('ac-list-'+id);
-  const wrap = document.getElementById('ac-wrap-'+id);
-  if (!list) return;
-  
-  const q = query.trim().toLowerCase();
+  const list = g('ac-list-'+id);
+  const inp  = g('ac-inp-'+id);
+  if (!list || !inp) return;
+
+  const q = (query||'').trim().toLowerCase();
   if (q.length < 2) { acClose(id); return; }
-  
-  const results = (typeof IBAMA !== 'undefined' ? IBAMA : [])
-    .filter(r => r.desc.toLowerCase().includes(q) || r.codigo.includes(q))
-    .slice(0, 40);
-  
+
+  const src = (typeof IBAMA !== 'undefined') ? IBAMA : [];
+  const results = src.filter(r =>
+    r.desc.toLowerCase().includes(q) || r.codigo.includes(q)
+  ).slice(0, 40);
+
   if (!results.length) { acClose(id); return; }
-  
-  list.innerHTML = results.map(r => {
-    const safeDesc = r.desc.replace(/'/g,"\'");
-    const safeCod = r.codigo.replace(/'/g,"\'");
-    return `<div class="ac-item" onmousedown="acSelect(${id},'${safeDesc}','${safeCod}',${r.perigoso})">
-      <div class="ac-item-text">
-        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px">${r.codigo}</div>
-        <div>${highlight(r.desc, q)}</div>
-      </div>
-      <div class="ac-badge ${r.perigoso?'ac-badge-per':'ac-badge-ok'}">${r.perigoso?'⚠️ Perigoso':'✓ Não per.'}</div>
-    </div>`;
-  }).join('');
-  
+
+  list.innerHTML = '';
+  results.forEach(r => {
+    const item = document.createElement('div');
+    item.className = 'ac-item';
+    item.innerHTML =
+      '<div class="ac-item-text">' +
+        '<div style="font-size:10px;color:var(--text3);font-family:monospace;margin-bottom:2px">' + r.codigo + '</div>' +
+        '<div>' + hlText(r.desc, q) + '</div>' +
+      '</div>' +
+      '<div class="ac-badge ' + (r.perigoso ? 'ac-badge-per' : 'ac-badge-ok') + '">' +
+        (r.perigoso ? '⚠️ Per.' : '✓ N.Per.') +
+      '</div>';
+    item.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      acSelect(id, r.desc, r.codigo, r.perigoso);
+    });
+    item.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      acSelect(id, r.desc, r.codigo, r.perigoso);
+    }, {passive:false});
+    list.appendChild(item);
+  });
+
   list.classList.add('open');
-  wrap.querySelector('.inp').style.borderRadius='12px 12px 0 0';
+  inp.style.borderRadius = '12px 12px 0 0';
 }
 
 function acSelect(id, desc, codigo, perigoso) {
-  // Atualizar input sem re-renderizar (evita perda de foco)
-  const inp = document.getElementById('ac-inp-'+id);
-  if (inp) inp.value = desc;
+  const inp = g('ac-inp-'+id);
+  if (inp) { inp.value = desc; inp.style.borderRadius = ''; }
   updRes(id, 'desc', desc);
   updRes(id, 'codigo', codigo);
   updRes(id, 'perigoso', perigoso);
   acClose(id);
-  // Atualizar só o badge
-  const badgeEl = document.getElementById('badge-'+id);
-  if(badgeEl) badgeEl.innerHTML = makeBadge(residuos.find(r=>r.id===id)||{});
-}
-
-function acClose(id) {
-  const list = document.getElementById('ac-list-'+id);
-  const wrap = document.getElementById('ac-wrap-'+id);
-  if (list) list.classList.remove('open');
-  if (wrap) {
-    const inp = wrap.querySelector('.inp');
-    if (inp) inp.style.borderRadius='';
+  // Atualizar badge sem re-renderizar
+  const badgeEl = g('badge-'+id);
+  if (badgeEl) {
+    badgeEl.innerHTML =
+      '<div style="margin-bottom:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">' +
+        '<span style="font-size:11px;font-family:monospace;color:var(--text3);background:var(--bg3);padding:3px 10px;border-radius:8px;border:1px solid var(--border2)">' + codigo + '</span>' +
+        '<span class="badge ' + (perigoso ? 'b-bad' : 'b-ok') + '">' + (perigoso ? '⚠️ Perigoso' : '✓ Não Perigoso') + '</span>' +
+      '</div>';
   }
 }
 
-function highlight(text, query) {
-  const regex = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-  return text.replace(regex, '<strong style="color:var(--accent)">$1</strong>');
+function acClose(id) {
+  const list = g('ac-list-'+id);
+  const inp  = g('ac-inp-'+id);
+  if (list) list.classList.remove('open');
+  if (inp)  inp.style.borderRadius = '';
+}
+
+function hlText(text, q) {
+  if (!q) return text;
+  try {
+    const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\]/g,'\$&') + ')', 'gi');
+    return text.replace(re, '<strong style="color:var(--accent)">$1</strong>');
+  } catch(e) { return text; }
 }
 
 // ── INIT ───────────────────────────────────────────────
