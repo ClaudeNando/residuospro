@@ -707,63 +707,133 @@ function salvarConfig(){
 
 // ── RESÍDUOS ───────────────────────────────────────────
 function renderResiduos(){
-  const el=g('residuos-list');
-  el.innerHTML='';
-  residuos.forEach((r,i)=>{
-    const opts=DEST_KEYS.map(k=>`<option value="${k}"${r.dest===k?' selected':''}>${k}</option>`).join('');
-    const delBtn = residuos.length>1 ? `<button class="res-del" onclick="delRes(${r.id})">×</button>` : '';
-    const badgeHtml = makeBadge(r);
-    const div = document.createElement('div');
+  var el = g('residuos-list');
+  el.innerHTML = '';
+  residuos.forEach(function(r, i) {
+    var opts = DEST_KEYS.map(function(k){
+      return '<option value="'+k+'"'+(r.dest===k?' selected':'')+'>'+k+'</option>';
+    }).join('');
+    var div = document.createElement('div');
     div.className = 'res-row';
-    div.innerHTML = `
-      <div class="res-head">
-        <div class="res-num">${i+1}</div>
-        <div class="res-title">Resíduo ${i+1}</div>
-        ${delBtn}
-      </div>
-      <div class="field">
-        <label class="field-label">Descrição <span style="font-size:10px;color:var(--text3);font-weight:400;text-transform:none">— busque na lista IBAMA</span></label>
-        <div class="ac-wrap" id="ac-wrap-${r.id}">
-          <input class="inp" type="text" id="ac-inp-${r.id}"
-            placeholder="Digite para buscar na lista do IBAMA..."
-            value="${escHtml(r.desc||'')}"
-            autocomplete="off" autocorrect="off" autocapitalize="none">
-          <div class="ac-list" id="ac-list-${r.id}"></div>
-        </div>
-      </div>
-      <div id="badge-${r.id}">${badgeHtml}</div>
-      <div class="g2">
-        <div class="field">
-          <label class="field-label">Peso (kg)</label>
-          <input class="inp inp-mono" type="number" placeholder="0" value="${r.peso||''}" inputmode="decimal">
-        </div>
-        <div class="field">
-          <label class="field-label">Destinação</label>
-          <select class="inp inp-select">${opts}</select>
-        </div>
-      </div>`;
-    // Eventos via JS (evita problemas com aspas no template)
-    const inp = div.querySelector('#ac-inp-'+r.id);
-    inp.addEventListener('input', function(e){ acSearch(r.id, e.target.value); });
-    inp.addEventListener('focus', function(e){ if(e.target.value.length>=2) acSearch(r.id, e.target.value); });
-    inp.addEventListener('blur',  function(){ setTimeout(function(){ acHide(r.id); }, 150); });
-    const pesoInp = div.querySelectorAll('input.inp-mono')[0];
-    pesoInp.addEventListener('input', e => { updRes(r.id,'peso',+e.target.value); calcular(); });
-    const sel = div.querySelector('select');
-    sel.addEventListener('change', e => { updRes(r.id,'dest',e.target.value); calcular(); });
+    div.innerHTML =
+      '<div class="res-head">' +
+        '<div class="res-num">'+(i+1)+'</div>' +
+        '<div class="res-title">Resíduo '+(i+1)+'</div>' +
+        (residuos.length>1 ? '<button class="res-del" type="button">×</button>' : '') +
+      '</div>' +
+      '<div class="field">' +
+        '<label class="field-label">Descrição <span style="font-size:10px;color:var(--text3);font-weight:400;text-transform:none">— busque na lista IBAMA</span></label>' +
+        '<input class="inp" type="text" placeholder="Digite para buscar..." autocomplete="off" value="'+(r.desc||'')+'">' +
+        '<div id="badge-'+r.id+'" style="margin-top:6px">'+makeBadge(r)+'</div>' +
+        '<div class="ac-list" id="ac-list-'+r.id+'"></div>' +
+      '</div>' +
+      '<div class="g2">' +
+        '<div class="field"><label class="field-label">Peso (kg)</label>' +
+          '<input class="inp inp-mono" type="number" placeholder="0" value="'+(r.peso||'')+'" inputmode="decimal">' +
+        '</div>' +
+        '<div class="field"><label class="field-label">Destinação</label>' +
+          '<select class="inp inp-select">'+opts+'</select>' +
+        '</div>' +
+      '</div>';
+
+    // Botão deletar
+    var delBtn = div.querySelector('.res-del');
+    if (delBtn) delBtn.onclick = function(){ delRes(r.id); };
+
+    // ── Input de busca IBAMA ──
+    var inp = div.querySelector('input[type=text]');
+    var list = div.querySelector('.ac-list');
+
+    // Prevenir blur ao clicar na lista (funciona em todos os browsers)
+    list.addEventListener('mousedown', function(e){ e.preventDefault(); });
+    list.addEventListener('touchstart', function(e){ e.preventDefault(); }, {passive:false});
+
+    inp.addEventListener('input', function(){
+      showList(r.id, inp, list, this.value);
+    });
+    inp.addEventListener('focus', function(){
+      if (this.value.length >= 2) showList(r.id, inp, list, this.value);
+    });
+    inp.addEventListener('blur', function(){
+      hideList(list, inp);
+    });
+
+    // Peso
+    var pesoInp = div.querySelector('input.inp-mono');
+    pesoInp.addEventListener('input', function(){
+      updRes(r.id, 'peso', +this.value); calcular();
+    });
+
+    // Destinação
+    var sel = div.querySelector('select');
+    sel.addEventListener('change', function(){
+      updRes(r.id, 'dest', this.value); calcular();
+    });
+
     el.appendChild(div);
   });
 }
 
-function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showList(id, inp, list, query) {
+  var q = (query||'').trim().toLowerCase();
+  if (q.length < 2) { hideList(list, inp); return; }
+  var src = (typeof IBAMA !== 'undefined') ? IBAMA : [];
+  var results = [], i;
+  for (i = 0; i < src.length && results.length < 50; i++) {
+    if (src[i].desc.toLowerCase().indexOf(q) >= 0 || src[i].codigo.indexOf(q) >= 0) {
+      results.push(src[i]);
+    }
+  }
+  if (!results.length) { hideList(list, inp); return; }
+
+  list.innerHTML = '';
+  for (i = 0; i < results.length; i++) {
+    var r = results[i];
+    var item = document.createElement('div');
+    item.className = 'ac-item';
+    item.innerHTML =
+      '<div class="ac-item-text">' +
+        '<div style="font-size:10px;color:#b07a55;font-family:monospace;margin-bottom:2px">'+r.codigo+'</div>' +
+        '<div>'+r.desc+'</div>' +
+      '</div>' +
+      '<span class="ac-badge '+(r.perigoso?'ac-badge-per':'ac-badge-ok')+'">'+(r.perigoso?'⚠️':'✓')+'</span>';
+
+    // Closure com IIFE para capturar r
+    (function(res){
+      function doSelect(){
+        inp.value = res.desc;
+        updRes(id, 'desc', res.desc);
+        updRes(id, 'codigo', res.codigo);
+        updRes(id, 'perigoso', !!res.perigoso);
+        hideList(list, inp);
+        var b = g('badge-'+id);
+        if (b) b.innerHTML = makeBadge(residuos.find(function(x){ return x.id===id; })||{});
+      }
+      item.addEventListener('mouseup',  function(e){ e.preventDefault(); doSelect(); });
+      item.addEventListener('touchend', function(e){ e.preventDefault(); doSelect(); });
+    })(r);
+
+    list.appendChild(item);
+  }
+  list.classList.add('open');
+  inp.style.borderRadius = '12px 12px 0 0';
+}
+
+function hideList(list, inp) {
+  list.classList.remove('open');
+  if (inp) inp.style.borderRadius = '';
+}
 
 function makeBadge(r){
-  if(!r.codigo) return '';
-  const per = r.perigoso;
-  return `<div style="margin-bottom:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-    <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);background:var(--bg3);padding:3px 10px;border-radius:8px;border:1px solid var(--border2)">${r.codigo}</span>
-    <span class="badge ${per?'b-bad':'b-ok'}">${per?'⚠️ Perigoso':'✓ Não Perigoso'}</span>
-  </div>`;
+  if (!r.codigo) return '';
+  return '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">' +
+    '<span style="font-size:11px;font-family:monospace;background:#e8d8b4;color:#5c3822;padding:3px 10px;border-radius:8px;border:1px solid #c8a882">'+r.codigo+'</span>' +
+    '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;'+
+      (r.perigoso
+        ? 'background:rgba(176,48,32,0.12);color:#b03020;border:1px solid rgba(176,48,32,0.25)'
+        : 'background:rgba(42,122,64,0.12);color:#1a6030;border:1px solid rgba(42,122,64,0.25)')+'">' +
+      (r.perigoso ? '⚠️ Perigoso' : '✓ Não Perigoso') +
+    '</span></div>';
 }
 
 function addResiduo(){residuos.push({id:nextId++,peso:0,dest:'ATERRO CLASSE II',desc:''});renderResiduos();}
@@ -970,72 +1040,7 @@ function toast(msg,dur=2400){
 }
 
 
-// ── AUTOCOMPLETE IBAMA ──────────────────────────────────────────
-function acSearch(id, query) {
-  var list = g('ac-list-' + id);
-  var inp  = g('ac-inp-' + id);
-  if (!list || !inp) return;
-  var q = (query||'').trim().toLowerCase();
-  if (q.length < 2) { acHide(id); return; }
-  var src = (typeof IBAMA !== 'undefined') ? IBAMA : [];
-  var results = [], i;
-  for (i = 0; i < src.length && results.length < 50; i++) {
-    if (src[i].desc.toLowerCase().indexOf(q) >= 0 || src[i].codigo.indexOf(q) >= 0) {
-      results.push(src[i]);
-    }
-  }
-  if (!results.length) { acHide(id); return; }
-  var rows = '';
-  for (i = 0; i < results.length; i++) {
-    var r = results[i];
-    rows += '<div class="ac-item" data-desc="' + r.desc.replace(/"/g,'&quot;') +
-            '" data-codigo="' + r.codigo + '" data-per="' + (r.perigoso?'1':'0') + '">' +
-            '<div class="ac-item-text">' +
-              '<div style="font-size:10px;color:#b07a55;font-family:monospace;margin-bottom:2px">' + r.codigo + '</div>' +
-              '<div>' + hlText(r.desc, q) + '</div>' +
-            '</div>' +
-            '<span class="ac-badge ' + (r.perigoso?'ac-badge-per':'ac-badge-ok') + '">' + (r.perigoso?'⚠️ Per.':'✓ OK') + '</span>' +
-            '</div>';
-  }
-  // Prevenir blur ao clicar na lista
-  list.onmousedown = function(e){ e.preventDefault(); };
-  list.innerHTML = rows;
-  var items = list.querySelectorAll('.ac-item');
-  for (i = 0; i < items.length; i++) {
-    items[i].onclick = function(){
-      acSelect(id, this.dataset.desc, this.dataset.codigo, this.dataset.per === '1');
-    };
-  }
-  list.classList.add('open');
-  inp.style.borderRadius = '12px 12px 0 0';
-}
-
-function acSelect(id, desc, codigo, perigoso) {
-  var inp = g('ac-inp-' + id);
-  if (inp) { inp.value = desc; inp.style.borderRadius = ''; }
-  updRes(id, 'desc', desc);
-  updRes(id, 'codigo', codigo);
-  updRes(id, 'perigoso', !!perigoso);
-  acHide(id);
-  var b = g('badge-' + id);
-  if (b && codigo) {
-    b.innerHTML =
-      '<div style="margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">' +
-      '<span style="font-size:11px;font-family:monospace;background:#e8d8b4;color:#5c3822;padding:3px 10px;border-radius:8px;border:1px solid #c8a882">' + codigo + '</span>' +
-      '<span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;' +
-      (perigoso ? 'background:rgba(176,48,32,0.12);color:#b03020;border:1px solid rgba(176,48,32,0.25)' :
-                  'background:rgba(42,122,64,0.12);color:#1a6030;border:1px solid rgba(42,122,64,0.25)') + '">' +
-      (perigoso ? '⚠️ Perigoso' : '✓ Não Perigoso') + '</span></div>';
-  }
-}
-
-function acHide(id) {
-  var list = g('ac-list-' + id);
-  var inp  = g('ac-inp-' + id);
-  if (list) list.classList.remove('open');
-  if (inp)  inp.style.borderRadius = '';
-}
-
+// ── AUTOCOMPLETE IBAMA (funções movidas para renderResiduos) ──
 function hlText(text, q) {
   if (!q) return text;
   try {
