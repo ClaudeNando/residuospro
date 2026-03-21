@@ -756,7 +756,7 @@ function renderResiduos(){
     const inp = div.querySelector('#ac-inp-'+r.id);
     inp.addEventListener('input', e => acSearch(r.id, e.target.value));
     inp.addEventListener('focus', e => acSearch(r.id, e.target.value));
-    inp.addEventListener('blur', () => setTimeout(()=>acClose(r.id),200));
+    inp.addEventListener('blur', () => setTimeout(()=>acClose(r.id),400));
     const pesoInp = div.querySelectorAll('input.inp-mono')[0];
     pesoInp.addEventListener('input', e => { updRes(r.id,'peso',+e.target.value); calcular(); });
     const sel = div.querySelector('select');
@@ -997,30 +997,33 @@ function acSearch(id, query) {
   if (!results.length) { acClose(id); return; }
 
   list.innerHTML = '';
-  results.forEach(r => {
-    const item = document.createElement('div');
+  results.forEach(function(r) {
+    var item = document.createElement('div');
     item.className = 'ac-item';
+    item.dataset.desc = r.desc;
+    item.dataset.codigo = r.codigo;
+    item.dataset.perigoso = r.perigoso ? '1' : '0';
     item.innerHTML =
       '<div class="ac-item-text">' +
-        '<div style="font-size:10px;color:var(--text3);font-family:monospace;margin-bottom:2px">' + r.codigo + '</div>' +
+        '<div style="font-size:10px;color:#b07a55;font-family:monospace;margin-bottom:2px">' + r.codigo + '</div>' +
         '<div>' + hlText(r.desc, q) + '</div>' +
       '</div>' +
       '<div class="ac-badge ' + (r.perigoso ? 'ac-badge-per' : 'ac-badge-ok') + '">' +
         (r.perigoso ? '⚠️ Per.' : '✓ N.Per.') +
       '</div>';
-    item.addEventListener('mousedown', function(e) {
-      e.preventDefault();
-      acSelect(id, r.desc, r.codigo, r.perigoso);
-    });
-    item.addEventListener('touchstart', function(e) {
-      e.preventDefault();
-      acSelect(id, r.desc, r.codigo, r.perigoso);
-    }, {passive:false});
+    function selectThis() {
+      acSelect(id, item.dataset.desc, item.dataset.codigo, item.dataset.perigoso === '1');
+    }
+    item.addEventListener('mousedown', function(e){ e.preventDefault(); selectThis(); });
+    item.addEventListener('touchend',  function(e){ e.preventDefault(); selectThis(); });
     list.appendChild(item);
   });
 
   list.classList.add('open');
   inp.style.borderRadius = '12px 12px 0 0';
+  // Impedir fechamento ao passar o mouse na lista
+  list.onmouseenter = function(){ list.dataset.hovering = '1'; };
+  list.onmouseleave = function(){ list.dataset.hovering = '0'; };
 }
 
 function acSelect(id, desc, codigo, perigoso) {
@@ -1043,8 +1046,13 @@ function acSelect(id, desc, codigo, perigoso) {
 }
 
 function acClose(id) {
-  const list = g('ac-list-'+id);
-  const inp  = g('ac-inp-'+id);
+  var list = g('ac-list-'+id);
+  var inp  = g('ac-inp-'+id);
+  // Não fechar se mouse estiver sobre a lista
+  if (list && list.dataset.hovering === '1') {
+    setTimeout(function(){ acClose(id); }, 200);
+    return;
+  }
   if (list) list.classList.remove('open');
   if (inp)  inp.style.borderRadius = '';
 }
