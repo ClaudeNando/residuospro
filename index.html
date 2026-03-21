@@ -1051,9 +1051,10 @@ function acClose(id) {
 function hlText(text, q) {
   if (!q) return text;
   try {
-    const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\]/g,'\$&') + ')', 'gi');
-    return text.replace(re, '<strong style="color:var(--accent)">$1</strong>');
-  } catch(e) { return text; }
+    var esc = q.split('').map(function(c){ return c.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g,'\\$&'); }).join('');
+    var re = new RegExp('(' + esc + ')','gi');
+    return text.replace(re,'<strong style="color:var(--accent)">$1</strong>');
+  } catch(e){ return text; }
 }
 
 // ── INIT ───────────────────────────────────────────────
