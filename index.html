@@ -616,6 +616,19 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
   </div>
 </div>
 
+
+<!-- MODAL BUSCA IBAMA -->
+<div class="ibama-modal hidden" id="ibama-modal">
+  <div class="ibama-box">
+    <div class="ibama-search-wrap">
+      <input class="ibama-search-inp" id="ibama-search-inp" type="text"
+        placeholder="Digite código ou descrição..." autocomplete="off" autocorrect="off">
+    </div>
+    <div class="ibama-results" id="ibama-results"></div>
+  </div>
+  <button class="ibama-close" onclick="ibamaClose()">Fechar</button>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
