@@ -707,7 +707,7 @@ function renderResiduos(){
     div.className = 'res-row';
 
     var btnLabel = r.desc
-      ? '<span>'+r.desc+'</span>'
+      ? '<span>'+(r.codigo ? r.codigo+' — '+r.desc : r.desc)+'</span>'
       : '<span class="ibama-btn-placeholder">Toque para buscar na lista IBAMA...</span>';
 
     div.innerHTML =
@@ -784,7 +784,8 @@ function ibamaRender(query) {
   var q = query.toLowerCase().trim();
   var src = (typeof IBAMA !== 'undefined') ? IBAMA : [];
   var results = q.length < 2 ? src.slice(0, 80) : src.filter(function(r){
-    return r.desc.toLowerCase().indexOf(q) >= 0 || r.codigo.indexOf(q) >= 0;
+    var lbl = r.label || (r.codigo + ' ' + r.desc);
+    return lbl.toLowerCase().indexOf(q) >= 0;
   }).slice(0, 80);
 
   var el = g('ibama-results');
@@ -797,10 +798,10 @@ function ibamaRender(query) {
   results.forEach(function(r) {
     var item = document.createElement('div');
     item.className = 'ibama-item';
+    var label = r.label || (r.codigo + ' — ' + r.desc);
     item.innerHTML =
-      '<div class="ibama-item-code">'+r.codigo+'</div>' +
-      '<div class="ibama-item-desc">'+r.desc+'</div>' +
-      '<div class="ibama-item-per '+(r.perigoso?'per':'nper')+'">'+(r.perigoso?'⚠️':'✓')+'</div>';
+      '<div class="ibama-item-desc">'+label+'</div>' +
+      '<div class="ibama-item-per '+(r.perigoso?'per':'nper')+'">'+(r.perigoso?'⚠️ Per.':'✓')+'</div>';
     item.onclick = function(){
       ibamaSelect(r);
     };
@@ -817,9 +818,10 @@ function ibamaSelect(r) {
   updRes(id, 'perigoso', !!r.perigoso);
 
   // Atualizar botão
+  var lbl = r.label || (r.codigo + ' — ' + r.desc);
   if (_ibamaCurrentBtn) {
     _ibamaCurrentBtn.innerHTML =
-      '<span>'+r.desc+'</span><span class="ibama-btn-arrow">▼</span>';
+      '<span>'+lbl+'</span><span class="ibama-btn-arrow">▼</span>';
   }
 
   // Atualizar badge
@@ -837,10 +839,12 @@ document.addEventListener('DOMContentLoaded', function(){
       ibamaRender(this.value);
     });
   }
-  // Fechar clicando fora
-  g('ibama-modal').addEventListener('click', function(e){
-    if (e.target === this) ibamaClose();
-  });
+  var modal = g('ibama-modal');
+  if (modal) {
+    modal.addEventListener('click', function(e){
+      if (e.target === this) ibamaClose();
+    });
+  }
 });
 
 function addResiduo(){residuos.push({id:nextId++,peso:0,dest:'ATERRO CLASSE II',desc:''});renderResiduos();}
