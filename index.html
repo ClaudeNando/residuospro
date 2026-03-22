@@ -2,583 +2,241 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#452818">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ResíduosPRO">
-<meta name="application-name" content="ResíduosPRO">
-<meta name="msapplication-TileColor" content="#452818">
-<meta name="description" content="Orçamentos de resíduos industriais — Cerrado Ambiental">
 <title>ResíduosPRO</title>
 <link rel="manifest" href="manifest.json">
-<script src="ibama.js"></script>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<script src="ibama.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#f8f0dd;--bg2:#f0e4c8;--bg3:#e8d8b4;
-  --card:#fffdf6;--card2:#fdf4e0;
+  --bg:#f8f0dd;--bg2:#f0e4c8;--bg3:#e8d8b4;--card:#fffdf6;
   --accent:#db6a1d;--accent2:#c55e18;--accent-light:#f79959;
-  --accent-dim:rgba(219,106,29,0.11);--accent-dim2:rgba(219,106,29,0.06);
-  --dark:#452818;--dark2:#5c3822;--dark3:#3a2014;
+  --accent-dim:rgba(219,106,29,0.11);
+  --dark:#452818;--dark2:#5c3822;
   --text:#452818;--text2:#7a4e30;--text3:#b07a55;--text4:#c8a882;
-  --border:rgba(219,106,29,0.16);--border2:rgba(219,106,29,0.08);
-  --danger:#b03020;--warn:#c87020;--success:#2a7a40;
+  --border:rgba(219,106,29,0.18);--border2:rgba(219,106,29,0.09);
+  --danger:#b03020;--success:#2a7a40;
   --nav-h:68px;
-  --safe-top:env(safe-area-inset-top,0px);
-  --safe-bottom:env(safe-area-inset-bottom,0px);
-  --safe-left:env(safe-area-inset-left,0px);
-  --safe-right:env(safe-area-inset-right,0px);
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
 }
-
-html{height:100%;background:var(--dark)}
-body{
-  height:100%;display:flex;flex-direction:column;
-  background:var(--bg);color:var(--text);
-  font-family:'Syne',sans-serif;overflow:hidden;
-  padding-top:var(--safe-top);
-}
-
-/* ── HEADER ── */
-.header{
-  background:var(--dark);
-  padding:14px 18px 12px;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;position:relative;z-index:10;
-}
-.header-left{display:flex;align-items:center;gap:10px}
-.header-logo-mark{
-  width:36px;height:36px;border-radius:10px;
-  background:var(--accent);
-  display:flex;align-items:center;justify-content:center;
-  font-size:20px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;
-  flex-shrink:0;
-}
-.header-text{}
-.header-title{font-size:17px;font-weight:800;color:#f8f0dd;letter-spacing:-0.3px;line-height:1}
-.header-sub{font-size:10px;color:rgba(248,240,221,0.42);letter-spacing:0.8px;text-transform:uppercase;margin-top:2px}
-.header-btn{
-  width:38px;height:38px;border-radius:11px;
-  background:rgba(248,240,221,0.09);border:1px solid rgba(248,240,221,0.12);
-  color:rgba(248,240,221,0.75);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:18px;
-  flex-shrink:0;
-}
-
-/* ── CONTENT AREA ── */
-.content{
-  flex:1;overflow:hidden;position:relative;
-  display:flex;flex-direction:column;
-}
-
-/* ── SCREENS ── */
-.screen{
-  display:none;flex:1;
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:16px 14px calc(var(--nav-h) + var(--safe-bottom) + 16px);
-}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;overflow:hidden}
+body{display:flex;flex-direction:column;padding-top:var(--st)}
+.hdr{background:var(--dark);padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-mark{width:36px;height:36px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;flex-shrink:0}
+.hdr-title{font-size:17px;font-weight:800;color:#f8f0dd;letter-spacing:-0.3px;line-height:1}
+.hdr-sub{font-size:10px;color:rgba(248,240,221,0.42);letter-spacing:0.8px;text-transform:uppercase;margin-top:2px}
+.hdr-btn{width:38px;height:38px;border-radius:11px;background:rgba(248,240,221,0.09);border:1px solid rgba(248,240,221,0.12);color:rgba(248,240,221,0.75);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px}
+.content{flex:1;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.screen{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px calc(var(--nav-h) + var(--sb) + 16px)}
 .screen.active{display:block}
-
-/* ── BOTTOM NAV ── */
-.bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;
-  height:calc(var(--nav-h) + var(--safe-bottom));
-  background:var(--dark);
-  border-top:1px solid rgba(247,153,89,0.15);
-  display:flex;align-items:flex-start;
-  padding-top:8px;
-  padding-bottom:var(--safe-bottom);
-  z-index:50;
-}
-.nav-item{
-  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
-  padding:6px 4px;cursor:pointer;
-  transition:all .18s;position:relative;
-}
-.nav-icon{
-  font-size:22px;line-height:1;
-  transition:transform .18s;
-}
-.nav-label{
-  font-size:10px;font-weight:700;letter-spacing:0.3px;
-  color:rgba(248,240,221,0.35);transition:color .18s;
-  text-transform:uppercase;
-}
+.nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + var(--sb));background:var(--dark);border-top:1px solid rgba(247,153,89,0.15);display:flex;align-items:flex-start;padding-top:8px;padding-bottom:var(--sb);z-index:50}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;cursor:pointer}
+.nav-icon{font-size:22px;line-height:1;transition:transform .18s}
+.nav-label{font-size:10px;font-weight:700;letter-spacing:0.3px;color:rgba(248,240,221,0.35);text-transform:uppercase}
 .nav-item.active .nav-label{color:var(--accent-light)}
 .nav-item.active .nav-icon{transform:scale(1.12)}
-.nav-dot{
-  width:4px;height:4px;border-radius:50%;
-  background:var(--accent-light);
-  position:absolute;top:2px;
-  opacity:0;transition:opacity .18s;
-}
-.nav-item.active .nav-dot{opacity:1}
-
-/* ── SECTION HEADER ── */
-.screen-header{
-  display:flex;align-items:center;gap:10px;
-  margin-bottom:18px;padding-bottom:14px;
-  border-bottom:1px solid var(--border2);
-}
-.screen-icon{
-  width:40px;height:40px;border-radius:12px;
-  background:var(--accent-dim);
-  display:flex;align-items:center;justify-content:center;font-size:20px;
-  flex-shrink:0;
-}
-.screen-title{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-0.3px}
-.screen-sub{font-size:12px;color:var(--text3);margin-top:1px}
-
-/* ── CARDS ── */
-.card{
-  background:var(--card);border:1px solid var(--border2);
-  border-radius:16px;padding:16px;margin-bottom:12px;
-  box-shadow:0 1px 8px rgba(69,40,24,0.07);
-}
-.card-head{
-  display:flex;align-items:center;gap:8px;margin-bottom:14px;
-}
-.card-icon{
-  width:28px;height:28px;border-radius:8px;
-  background:var(--accent-dim);
-  display:flex;align-items:center;justify-content:center;font-size:15px;
-  flex-shrink:0;
-}
-.card-label{
-  font-size:12px;font-weight:700;letter-spacing:1.2px;
-  text-transform:uppercase;color:var(--text3);
-}
-
-/* ── FORM ELEMENTS ── */
-.field{margin-bottom:14px}
-.field:last-child{margin-bottom:0}
-.field-label{
-  font-size:11px;font-weight:700;letter-spacing:0.8px;
-  text-transform:uppercase;color:var(--text3);
-  margin-bottom:6px;display:block;
-}
-.inp{
-  width:100%;background:var(--bg);border:1.5px solid var(--border);
-  border-radius:12px;padding:14px 15px;
-  color:var(--text);font-family:'Syne',sans-serif;font-size:16px;
-  outline:none;transition:border-color .2s,background .2s;
-  -webkit-appearance:none;appearance:none;
-  /* Prevent zoom on iOS */
-  font-size:16px;
-}
+.shdr{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border2)}
+.shdr-icon{width:40px;height:40px;border-radius:12px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.shdr-title{font-size:20px;font-weight:800;letter-spacing:-0.3px}
+.shdr-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.card{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 1px 8px rgba(69,40,24,0.07)}
+.card-head{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.card-icon{width:28px;height:28px;border-radius:8px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.card-lbl{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3)}
+.field{margin-bottom:14px}.field:last-child{margin-bottom:0}
+.flabel{font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;display:block}
+.inp{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:14px 15px;color:var(--text);font-family:'Syne',sans-serif;font-size:16px;outline:none;transition:border-color .2s;-webkit-appearance:none}
 .inp:focus{border-color:var(--accent);background:#fff}
 .inp::placeholder{color:var(--text4)}
-.inp-mono{font-family:'DM Mono',monospace;font-size:16px}
-.inp-select{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23db6a1d' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 14px center;
-  padding-right:38px;cursor:pointer;
-}
+.inp-mono{font-family:'DM Mono',monospace}
+.sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23db6a1d' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;cursor:pointer}
 textarea.inp{resize:none;min-height:80px;line-height:1.6}
-
-/* GRID */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-
-/* ── RESIDUO ROW ── */
-.res-row{
-  background:var(--bg);border:1.5px solid var(--border);
-  border-radius:12px;padding:14px;margin-bottom:10px;
-  position:relative;
-}
-.res-row:last-child{margin-bottom:0}
+.res-row{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
 .res-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.res-num{
-  width:24px;height:24px;border-radius:50%;
-  background:var(--accent);font-size:12px;font-weight:700;
-  color:#fff;display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
-}
+.res-num{width:24px;height:24px;border-radius:50%;background:var(--accent);font-size:12px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .res-title{font-size:13px;font-weight:700;color:var(--text2);flex:1}
-.res-del{
-  width:28px;height:28px;border-radius:8px;
-  background:rgba(176,48,32,0.08);border:none;
-  color:var(--danger);font-size:20px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-family:sans-serif;line-height:1;flex-shrink:0;
-}
-
-/* ── BUTTONS ── */
-.btn{
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  width:100%;padding:16px;border-radius:14px;
-  font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
-  letter-spacing:0.2px;cursor:pointer;border:none;
-  transition:transform .12s,opacity .12s;
-  -webkit-user-select:none;user-select:none;
-}
-.btn:active{transform:scale(0.97);opacity:0.9}
+.res-del{width:28px;height:28px;border-radius:8px;background:rgba(176,48,32,0.08);border:none;color:var(--danger);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:sans-serif;line-height:1;flex-shrink:0}
+.ibama-btn{width:100%;padding:13px 15px;border-radius:12px;background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:15px;text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:border-color .2s}
+.ibama-btn:hover{border-color:var(--accent)}
+.ibama-placeholder{color:var(--text4)}
+.ibama-value{color:var(--text);flex:1;text-align:left;line-height:1.3;font-size:14px}
+.res-badge{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px;min-height:4px}
+.code-tag{font-size:11px;font-family:'DM Mono',monospace;background:#e8d8b4;color:#5c3822;padding:3px 10px;border-radius:8px;border:1px solid #c8a882}
+.per-tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.per-tag.danger{background:rgba(176,48,32,0.12);color:#b03020;border:1px solid rgba(176,48,32,0.25)}
+.per-tag.safe{background:rgba(42,122,64,0.12);color:#1a6030;border:1px solid rgba(42,122,64,0.25)}
+.ibama-overlay{position:fixed;inset:0;background:rgba(58,32,20,0.7);z-index:500;display:flex;flex-direction:column;padding:50px 12px 12px}
+.ibama-overlay.hidden{display:none}
+.ibama-box{background:var(--card);border-radius:18px;display:flex;flex-direction:column;max-height:100%;overflow:hidden;box-shadow:0 8px 40px rgba(58,32,20,0.35)}
+.ibama-search-wrap{padding:14px;border-bottom:1px solid var(--border2);flex-shrink:0}
+.ibama-sinp{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-family:'Syne',sans-serif;font-size:16px;outline:none}
+.ibama-sinp:focus{border-color:var(--accent)}
+.ibama-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ibama-item{padding:12px 16px;border-bottom:1px solid var(--border2);cursor:pointer;display:flex;align-items:center;gap:10px}
+.ibama-item:hover{background:var(--accent-dim)}
+.ibama-item-txt{flex:1;font-size:13px;color:var(--text);line-height:1.4}
+.ibama-item-per{font-size:11px;font-weight:700;flex-shrink:0}
+.ibama-item-per.p{color:var(--danger)}.ibama-item-per.n{color:var(--success)}
+.ibama-empty{padding:40px;text-align:center;color:var(--text3);font-size:14px}
+.ibama-close-btn{width:100%;padding:14px;margin-top:8px;border-radius:12px;background:var(--dark);color:#f8f0dd;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;border:none;cursor:pointer;flex-shrink:0}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border-radius:14px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border:none;transition:transform .12s}
+.btn:active{transform:scale(0.97)}
 .btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 16px rgba(219,106,29,0.30)}
 .btn-dark{background:var(--dark);color:#f8f0dd}
 .btn-ghost{background:var(--accent-dim);color:var(--accent);border:1.5px solid var(--border)}
 .btn-outline{background:transparent;color:var(--text2);border:1.5px solid var(--border)}
 .btn-sm{padding:11px 16px;font-size:13px;border-radius:11px;width:auto}
-.btn-row{display:flex;gap:8px}
-.btn-row .btn{flex:1}
-
-/* ── RESULT BOX DARK ── */
-.rbox-dark{
-  background:var(--dark);border-radius:16px;
-  padding:18px;margin-bottom:12px;
-  box-shadow:0 4px 24px rgba(69,40,24,0.20);
-  position:relative;overflow:hidden;
-}
-.rbox-dark::before{
-  content:'';position:absolute;top:-30px;right:-30px;
-  width:120px;height:120px;border-radius:50%;
-  background:rgba(219,106,29,0.10);
-}
-.rbox-light{
-  background:var(--card);border:1px solid var(--border2);
-  border-radius:16px;padding:16px;margin-bottom:12px;
-  box-shadow:0 1px 8px rgba(69,40,24,0.07);
-}
-
-/* RESULT ROWS */
-.rr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border2);}
-.rr:last-child{border-bottom:none}
-.rl{font-size:13px;color:var(--text2)}
-.rv{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--text)}
-.rv.acc{color:var(--accent)}.rv.pos{color:var(--success)}.rv.neg{color:var(--danger)}
-.rv.big{font-size:22px;color:var(--accent)}
-
-/* BADGE */
-.badge{display:inline-flex;align-items:center;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;}
-.b-ok{background:rgba(42,122,64,0.14);color:#1a6030;border:1px solid rgba(42,122,64,0.25)}
-.b-warn{background:rgba(200,112,32,0.14);color:#8a4800;border:1px solid rgba(200,112,32,0.25)}
-.b-bad{background:rgba(176,48,32,0.12);color:var(--danger);border:1px solid rgba(176,48,32,0.22)}
-
-/* MARGEM BAR */
+.btn-row{display:flex;gap:8px}.btn-row .btn{flex:1}
+.rbox-dark{background:var(--dark);border-radius:16px;padding:18px;margin-bottom:12px}
+.rbox-light{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:12px}
+.rrow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border2)}.rrow:last-child{border-bottom:none}
+.rl{font-size:13px;color:var(--text2)}.rv{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--text)}
+.rv.acc{color:var(--accent)}.rv.neg{color:var(--danger)}
 .mbar{background:rgba(255,255,255,0.12);border-radius:20px;height:6px;margin:10px 0 6px;overflow:hidden}
 .mfill{height:100%;border-radius:20px;transition:width .6s cubic-bezier(.4,0,.2,1)}
 .mlabels{display:flex;justify-content:space-between}
 .ml{font-size:10px;color:rgba(248,240,221,0.38)}
-
-/* PROPOSTA */
-.proposta-txt{
-  background:var(--bg);border:1.5px solid var(--border);
-  border-radius:12px;padding:16px;
-  font-size:12px;line-height:1.8;color:var(--text2);
-  font-family:'DM Mono',monospace;white-space:pre-wrap;
-  max-height:320px;overflow-y:auto;-webkit-overflow-scrolling:touch;
-}
-
-/* HISTÓRICO */
-.hist-card{
-  background:var(--card);border:1.5px solid var(--border2);
-  border-radius:14px;padding:15px;margin-bottom:10px;
-  cursor:pointer;transition:border-color .15s;
-  box-shadow:0 1px 8px rgba(69,40,24,0.07);
-  active:border-color:var(--accent);
-}
-.hist-card:active{border-color:var(--accent)}
+.badge{display:inline-flex;align-items:center;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700}
+.b-ok{background:rgba(42,122,64,0.14);color:#1a6030;border:1px solid rgba(42,122,64,0.25)}
+.b-warn{background:rgba(200,112,32,0.14);color:#8a4800;border:1px solid rgba(200,112,32,0.25)}
+.b-bad{background:rgba(176,48,32,0.12);color:var(--danger);border:1px solid rgba(176,48,32,0.22)}
+.proposta-txt{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:16px;font-size:12px;line-height:1.8;color:var(--text2);font-family:'DM Mono',monospace;white-space:pre-wrap;max-height:340px;overflow-y:auto}
+.hist-card{background:var(--card);border:1.5px solid var(--border2);border-radius:14px;padding:15px;margin-bottom:10px;cursor:pointer}.hist-card:active{border-color:var(--accent)}
 .hist-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.hist-name{font-size:15px;font-weight:700;color:var(--text)}
-.hist-date{font-size:11px;color:var(--text4);font-family:'DM Mono',monospace}
+.hist-name{font-size:15px;font-weight:700}.hist-date{font-size:11px;color:var(--text4);font-family:'DM Mono',monospace}
 .hist-bot{display:flex;justify-content:space-between;align-items:center}
 .hist-val{font-family:'DM Mono',monospace;font-size:16px;color:var(--accent);font-weight:500}
-
-/* EMPTY */
 .empty{text-align:center;padding:60px 24px;color:var(--text3)}
 .empty-ico{font-size:44px;margin-bottom:14px;opacity:0.45;display:block}
 .empty-t{font-size:16px;font-weight:700;color:var(--text2);margin-bottom:8px}
 .empty-s{font-size:13px;line-height:1.6}
-
-/* MODAL */
-.overlay{
-  position:fixed;inset:0;background:rgba(58,32,20,0.60);
-  display:flex;align-items:flex-end;z-index:100;
-  opacity:0;pointer-events:none;transition:opacity .25s;
-}
+.overlay{position:fixed;inset:0;background:rgba(58,32,20,0.60);display:flex;align-items:flex-end;z-index:100;opacity:0;pointer-events:none;transition:opacity .25s}
 .overlay.open{opacity:1;pointer-events:all}
-.modal{
-  background:var(--bg);
-  border-radius:22px 22px 0 0;
-  border-top:1.5px solid var(--border);
-  padding:0 0 0;
-  width:100%;max-height:90vh;
-  transform:translateY(100%);
-  transition:transform .32s cubic-bezier(.4,0,.2,1);
-  display:flex;flex-direction:column;
-}
+.modal{background:var(--bg);border-radius:22px 22px 0 0;border-top:1.5px solid var(--border);width:100%;max-height:90vh;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
 .overlay.open .modal{transform:translateY(0)}
-.modal-handle-wrap{padding:14px 0 0;display:flex;justify-content:center}
+.modal-handle-wrap{padding:14px 0 0;display:flex;justify-content:center;flex-shrink:0}
 .modal-handle{width:44px;height:5px;background:var(--border);border-radius:3px}
-.modal-head{
-  padding:14px 18px 12px;
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--border2);flex-shrink:0;
-}
-.modal-title{font-size:18px;font-weight:800;color:var(--text)}
-.modal-close{
-  width:32px;height:32px;border-radius:9px;
-  background:var(--accent-dim);border:none;
-  color:var(--accent);font-size:18px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-}
-.modal-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px calc(var(--safe-bottom) + 20px)}
-
-/* CONFIG ROWS */
-.cfg-r{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border2);}
-.cfg-r:last-child{border-bottom:none}
-.cfg-l{font-size:14px;font-weight:600;color:var(--text)}
-.cfg-s{font-size:11px;color:var(--text3);margin-top:2px}
-.cfg-i{
-  background:var(--bg);border:1.5px solid var(--border);
-  border-radius:9px;padding:9px 12px;
-  color:var(--text);font-family:'DM Mono',monospace;font-size:14px;
-  width:108px;text-align:right;outline:none;-webkit-appearance:none;
-}
-.cfg-i:focus{border-color:var(--accent)}
-.cfg-i-wide{width:168px;text-align:left}
-
-/* SLABEL */
+.modal-head{padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border2);flex-shrink:0}
+.modal-title{font-size:18px;font-weight:800}
+.modal-close-btn{width:32px;height:32px;border-radius:9px;background:var(--accent-dim);border:none;color:var(--accent);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.modal-body{flex:1;overflow-y:auto;padding:16px 16px calc(var(--sb) + 20px)}
 .slabel{font-size:11px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;display:block}
-
-/* TOAST */
-.toast{
-  position:fixed;bottom:calc(var(--nav-h) + var(--safe-bottom) + 12px);
-  left:50%;transform:translateX(-50%) translateY(10px);
-  background:var(--dark3);border:1px solid rgba(247,153,89,0.25);
-  border-radius:12px;padding:12px 22px;
-  font-size:13px;font-weight:600;color:#f8f0dd;
-  opacity:0;transition:all .28s;z-index:200;
-  white-space:nowrap;pointer-events:none;
-  box-shadow:0 4px 20px rgba(58,32,20,0.35);
-}
+.cfg-r{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border2)}.cfg-r:last-child{border-bottom:none}
+.cfg-l{font-size:14px;font-weight:600}.cfg-s{font-size:11px;color:var(--text3);margin-top:2px}
+.cfg-i{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;width:108px;text-align:right;outline:none;-webkit-appearance:none}
+.cfg-i:focus{border-color:var(--accent)}.cfg-i-wide{width:168px;text-align:left}
+.toast{position:fixed;bottom:calc(var(--nav-h) + var(--sb) + 12px);left:50%;transform:translateX(-50%) translateY(10px);background:var(--dark);border:1px solid rgba(247,153,89,0.25);border-radius:12px;padding:12px 22px;font-size:13px;font-weight:600;color:#f8f0dd;opacity:0;transition:all .28s;z-index:200;white-space:nowrap;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* INSTALL BANNER */
-.install-banner{
-  background:var(--dark);
-  padding:12px 16px;
-  display:flex;align-items:center;gap:12px;
-  border-bottom:1px solid rgba(247,153,89,0.15);
-  flex-shrink:0;
-}
-.install-banner.hidden{display:none}
-.install-text{flex:1;font-size:12px;color:rgba(248,240,221,0.7);line-height:1.4}
-.install-text strong{color:var(--accent-light)}
-.install-btn{
-  background:var(--accent);color:#fff;border:none;
-  border-radius:9px;padding:8px 14px;
-  font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
-  cursor:pointer;white-space:nowrap;flex-shrink:0;
-}
-.install-close{
-  color:rgba(248,240,221,0.4);font-size:20px;cursor:pointer;
-  background:none;border:none;padding:0 2px;line-height:1;flex-shrink:0;
-}
-
-/* DIVIDER */
-.div{height:1px;background:var(--border2);margin:14px 0}
-
-.res-badge{ margin-top:8px; margin-bottom:10px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; min-height:28px; }
-.code-tag{ font-size:11px;font-family:monospace;background:#e8d8b4;color:#5c3822;padding:3px 10px;border-radius:8px;border:1px solid #c8a882; }
-.per-tag{ font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px; }
-.per-tag.danger{ background:rgba(176,48,32,0.12);color:#b03020;border:1px solid rgba(176,48,32,0.25); }
-.per-tag.safe{   background:rgba(42,122,64,0.12); color:#1a6030;border:1px solid rgba(42,122,64,0.25); }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="header-left">
-    <div class="header-logo-mark">C</div>
-    <div class="header-text">
-      <div class="header-title">ResíduosPRO</div>
-      <div class="header-sub">Cerrado Ambiental</div>
-    </div>
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-mark">C</div>
+    <div><div class="hdr-title">ResíduosPRO</div><div class="hdr-sub">Cerrado Ambiental</div></div>
   </div>
-  <button class="header-btn" onclick="openModal('modal-config')" aria-label="Configurações">⚙️</button>
+  <button class="hdr-btn" onclick="abrirCfg()">⚙️</button>
 </div>
 
-<!-- INSTALL BANNER -->
-<div class="install-banner hidden" id="install-banner">
-  <div class="install-text"><strong>Instalar app</strong><br>Adicione à tela inicial para acesso rápido</div>
-  <button class="install-btn" onclick="doInstall()">Instalar</button>
-  <button class="install-close" onclick="hideBanner()">×</button>
-</div>
-
-<!-- CONTENT -->
 <div class="content">
-
-  <!-- ORÇAMENTO -->
   <div id="screen-orcamento" class="screen active">
-    <div class="screen-header">
-      <div class="screen-icon">📋</div>
-      <div>
-        <div class="screen-title">Novo Orçamento</div>
-        <div class="screen-sub">Preencha os dados do cliente e serviço</div>
+    <div class="shdr"><div class="shdr-icon">📋</div><div><div class="shdr-title">Novo Orçamento</div><div class="shdr-sub">Preencha os dados do cliente e serviço</div></div></div>
+    <div class="card">
+      <div class="card-head"><div class="card-icon">👤</div><div class="card-lbl">Cliente</div></div>
+      <div class="field"><label class="flabel">Nome / Razão Social</label><input class="inp" type="text" id="cli-nome" placeholder="Empresa ABC Ltda" autocomplete="off"></div>
+      <div class="g2">
+        <div class="field"><label class="flabel">CNPJ</label><input class="inp inp-mono" type="text" id="cli-cnpj" placeholder="00.000.000/0000-00" maxlength="18" inputmode="numeric" oninput="maskCNPJ(this)"></div>
+        <div class="field"><label class="flabel">Contato</label><input class="inp" type="text" id="cli-contato" placeholder="Nome"></div>
       </div>
     </div>
-
     <div class="card">
-      <div class="card-head"><div class="card-icon">👤</div><div class="card-label">Cliente</div></div>
-      <div class="field">
-        <label class="field-label">Nome / Razão Social</label>
-        <input class="inp" type="text" id="cli-nome" placeholder="Empresa ABC Ltda" autocomplete="off" autocorrect="off">
-      </div>
+      <div class="card-head"><div class="card-icon">🚛</div><div class="card-lbl">Transporte</div></div>
       <div class="g2">
-        <div class="field">
-          <label class="field-label">CNPJ</label>
-          <input class="inp inp-mono" type="text" id="cli-cnpj" placeholder="00.000.000/0000-00" maxlength="18" inputmode="numeric" oninput="maskCNPJ(this)">
-        </div>
-        <div class="field">
-          <label class="field-label">Contato</label>
-          <input class="inp" type="text" id="cli-contato" placeholder="Nome" autocorrect="off">
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><div class="card-icon">🚛</div><div class="card-label">Transporte</div></div>
-      <div class="g2">
-        <div class="field">
-          <label class="field-label">Trajeto (km)</label>
-          <input class="inp inp-mono" type="number" id="trajeto" placeholder="0" value="" inputmode="numeric" oninput="calcular()">
-        </div>
-        <div class="field">
-          <label class="field-label">Veículo</label>
-          <select class="inp inp-select" id="veiculo" onchange="calcular()">
-            <option value="FIORINO">Fiorino</option>
-            <option value="FURGAO">Furgão</option>
-            <option value="BAU" selected>Baú</option>
-            <option value="MAIOR">Maior</option>
+        <div class="field"><label class="flabel">Trajeto (km)</label><input class="inp inp-mono" type="number" id="trajeto" placeholder="0" inputmode="numeric" oninput="calcular()"></div>
+        <div class="field"><label class="flabel">Veículo</label>
+          <select class="inp sel" id="veiculo" onchange="calcular()">
+            <option value="FIORINO">Fiorino</option><option value="FURGAO">Furgão</option>
+            <option value="BAU" selected>Baú</option><option value="MAIOR">Maior</option>
           </select>
         </div>
       </div>
-      <div class="field">
-        <label class="field-label">Acréscimos de Cabeça (R$)</label>
-        <input class="inp inp-mono" type="number" id="acresc-cabeca" placeholder="0,00" value="" inputmode="decimal" oninput="calcular()">
-      </div>
+      <div class="field"><label class="flabel">Acréscimos de Cabeça (R$)</label><input class="inp inp-mono" type="number" id="acresc" placeholder="0,00" inputmode="decimal" oninput="calcular()"></div>
     </div>
-
     <div class="card">
-      <div class="card-head"><div class="card-icon">♻️</div><div class="card-label">Resíduos</div></div>
-      <div id="residuos-list"></div>
-      <button class="btn btn-ghost" onclick="addResiduo()" style="margin-top:6px">
-        <span style="font-size:18px">+</span> Adicionar Resíduo
-      </button>
+      <div class="card-head"><div class="card-icon">♻️</div><div class="card-lbl">Resíduos</div></div>
+      <div id="res-list"></div>
+      <button class="btn btn-ghost" onclick="addRes()" style="margin-top:6px"><span style="font-size:18px">+</span> Adicionar Resíduo</button>
     </div>
-
     <div class="card">
-      <div class="card-head"><div class="card-icon">📝</div><div class="card-label">Observações</div></div>
-      <div class="field">
-        <textarea class="inp" id="obs" placeholder="Condições especiais, detalhes do serviço..." rows="3"></textarea>
-      </div>
+      <div class="card-head"><div class="card-icon">📝</div><div class="card-lbl">Observações</div></div>
+      <div class="field"><textarea class="inp" id="obs" placeholder="Condições especiais..." rows="3"></textarea></div>
     </div>
-
-    <button class="btn btn-primary" onclick="goToResultado()">
-      <span>Calcular Orçamento</span><span style="font-size:18px">→</span>
-    </button>
-    <div style="height:4px"></div>
+    <button class="btn btn-primary" onclick="goResultado()"><span>Calcular Orçamento</span><span style="font-size:18px">→</span></button>
   </div>
 
-  <!-- RESULTADO -->
   <div id="screen-resultado" class="screen">
-    <div class="screen-header">
-      <div class="screen-icon">📊</div>
-      <div>
-        <div class="screen-title">Resultado</div>
-        <div class="screen-sub">Análise financeira do orçamento</div>
-      </div>
-    </div>
-    <div id="resultado-content">
-      <div class="empty">
-        <span class="empty-ico">📊</span>
-        <div class="empty-t">Nenhum cálculo ainda</div>
-        <div class="empty-s">Preencha o orçamento e toque em "Calcular"</div>
-      </div>
-    </div>
+    <div class="shdr"><div class="shdr-icon">📊</div><div><div class="shdr-title">Resultado</div><div class="shdr-sub">Análise financeira</div></div></div>
+    <div id="resultado-content"><div class="empty"><span class="empty-ico">📊</span><div class="empty-t">Nenhum cálculo ainda</div><div class="empty-s">Preencha o orçamento e toque em Calcular</div></div></div>
   </div>
 
-  <!-- PROPOSTA -->
   <div id="screen-proposta" class="screen">
-    <div class="screen-header">
-      <div class="screen-icon">📄</div>
-      <div>
-        <div class="screen-title">Proposta</div>
-        <div class="screen-sub">Documento pronto para enviar</div>
-      </div>
-    </div>
-    <div id="proposta-content">
-      <div class="empty">
-        <span class="empty-ico">📄</span>
-        <div class="empty-t">Nenhuma proposta</div>
-        <div class="empty-s">Calcule o resultado e toque em "Gerar Proposta"</div>
-      </div>
-    </div>
+    <div class="shdr"><div class="shdr-icon">📄</div><div><div class="shdr-title">Proposta</div><div class="shdr-sub">Documento pronto para enviar</div></div></div>
+    <div id="proposta-content"><div class="empty"><span class="empty-ico">📄</span><div class="empty-t">Nenhuma proposta</div><div class="empty-s">Calcule o resultado primeiro</div></div></div>
   </div>
 
-  <!-- HISTÓRICO -->
   <div id="screen-historico" class="screen">
-    <div class="screen-header" style="margin-bottom:14px">
-      <div class="screen-icon">🗂️</div>
-      <div style="flex:1">
-        <div class="screen-title">Histórico</div>
-        <div class="screen-sub">Orçamentos salvos</div>
-      </div>
-      <button class="btn btn-outline btn-sm" onclick="limparHistorico()">Limpar</button>
+    <div class="shdr" style="margin-bottom:14px">
+      <div class="shdr-icon">🗂️</div>
+      <div style="flex:1"><div class="shdr-title">Histórico</div><div class="shdr-sub">Orçamentos salvos</div></div>
+      <button class="btn btn-outline btn-sm" onclick="limparHist()">Limpar</button>
     </div>
-    <div id="historico-list"></div>
+    <div id="hist-list"></div>
   </div>
+</div>
 
-</div><!-- /content -->
-
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <div class="nav-item active" onclick="navTo('orcamento',this)" id="nav-orcamento">
-    <div class="nav-dot"></div>
-    <div class="nav-icon">📋</div>
-    <div class="nav-label">Orçamento</div>
-  </div>
-  <div class="nav-item" onclick="navTo('resultado',this)" id="nav-resultado">
-    <div class="nav-dot"></div>
-    <div class="nav-icon">📊</div>
-    <div class="nav-label">Resultado</div>
-  </div>
-  <div class="nav-item" onclick="navTo('proposta',this)" id="nav-proposta">
-    <div class="nav-dot"></div>
-    <div class="nav-icon">📄</div>
-    <div class="nav-label">Proposta</div>
-  </div>
-  <div class="nav-item" onclick="navTo('historico',this)" id="nav-historico">
-    <div class="nav-dot"></div>
-    <div class="nav-icon">🗂️</div>
-    <div class="nav-label">Histórico</div>
-  </div>
+<nav class="nav">
+  <div class="nav-item active" id="nav-orcamento" onclick="navTo('orcamento',this)"><div class="nav-icon">📋</div><div class="nav-label">Orçamento</div></div>
+  <div class="nav-item" id="nav-resultado" onclick="navTo('resultado',this)"><div class="nav-icon">📊</div><div class="nav-label">Resultado</div></div>
+  <div class="nav-item" id="nav-proposta" onclick="navTo('proposta',this)"><div class="nav-icon">📄</div><div class="nav-label">Proposta</div></div>
+  <div class="nav-item" id="nav-historico" onclick="navTo('historico',this)"><div class="nav-icon">🗂️</div><div class="nav-label">Histórico</div></div>
 </nav>
 
+<!-- MODAL IBAMA -->
+<div class="ibama-overlay hidden" id="ibama-overlay">
+  <div class="ibama-box">
+    <div class="ibama-search-wrap">
+      <input class="ibama-sinp" id="ibama-sinp" type="text" placeholder="Digite código ou nome do resíduo..." autocomplete="off" autocorrect="off">
+    </div>
+    <div class="ibama-list" id="ibama-list"></div>
+  </div>
+  <button class="ibama-close-btn" onclick="ibamaFechar()">Fechar</button>
+</div>
+
 <!-- MODAL CONFIG -->
-<div class="overlay" id="modal-config" onclick="overlayClick(event,'modal-config')">
+<div class="overlay" id="cfg-modal" onclick="if(event.target===this)fecharCfg()">
   <div class="modal">
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
-    <div class="modal-head">
-      <div class="modal-title">⚙️ Configurações</div>
-      <button class="modal-close" onclick="closeModal('modal-config')">×</button>
-    </div>
+    <div class="modal-head"><div class="modal-title">⚙️ Configurações</div><button class="modal-close-btn" onclick="fecharCfg()">×</button></div>
     <div class="modal-body">
-
       <span class="slabel">Empresa</span>
       <div class="card" style="margin-bottom:16px">
         <div class="cfg-r"><div><div class="cfg-l">Nome</div></div><input class="cfg-i cfg-i-wide" id="cfg-empresa" placeholder="Cerrado Ambiental"></div>
-        <div class="cfg-r"><div><div class="cfg-l">CNPJ</div></div><input class="cfg-i cfg-i-wide" id="cfg-cnpj" placeholder="00.000.000/0001-00"></div>
-        <div class="cfg-r"><div><div class="cfg-l">Telefone</div></div><input class="cfg-i cfg-i-wide" id="cfg-tel" placeholder="(62) 99999-9999"></div>
-        <div class="cfg-r"><div><div class="cfg-l">Validade</div><div class="cfg-s">dias para expirar</div></div><input class="cfg-i" id="cfg-validade" type="number" value="15"></div>
+        <div class="cfg-r"><div><div class="cfg-l">CNPJ</div></div><input class="cfg-i cfg-i-wide" id="cfg-cnpj"></div>
+        <div class="cfg-r"><div><div class="cfg-l">Telefone</div></div><input class="cfg-i cfg-i-wide" id="cfg-tel"></div>
+        <div class="cfg-r"><div><div class="cfg-l">Validade</div><div class="cfg-s">dias</div></div><input class="cfg-i" id="cfg-validade" type="number" value="15"></div>
       </div>
-
       <span class="slabel">Custo Fornecedor — Transporte (R$/km)</span>
       <div class="card" style="margin-bottom:16px">
         <div class="cfg-r"><div class="cfg-l">Fiorino</div><input class="cfg-i" id="cfg-tf" type="number" step="0.01" value="1.75"></div>
@@ -587,7 +245,6 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
         <div class="cfg-r"><div class="cfg-l">Maior</div><input class="cfg-i" id="cfg-tm" type="number" step="0.01" value="10.00"></div>
         <div class="cfg-r"><div class="cfg-l">Diária</div><input class="cfg-i" id="cfg-td" type="number" step="0.01" value="0.00"></div>
       </div>
-
       <span class="slabel">Preço ao Cliente — Transporte (R$/km)</span>
       <div class="card" style="margin-bottom:16px">
         <div class="cfg-r"><div class="cfg-l">Fiorino</div><input class="cfg-i" id="cfg-cf" type="number" step="0.01" value="4.20"></div>
@@ -596,484 +253,225 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
         <div class="cfg-r"><div class="cfg-l">Maior</div><input class="cfg-i" id="cfg-cm" type="number" step="0.01" value="14.00"></div>
         <div class="cfg-r"><div class="cfg-l">Diária</div><input class="cfg-i" id="cfg-cd" type="number" step="0.01" value="0.00"></div>
       </div>
-
       <span class="slabel">Custo Fornecedor — Destinação (R$/kg)</span>
       <div class="card" style="margin-bottom:16px" id="cfg-dest-forn"></div>
-
       <span class="slabel">Preço ao Cliente — Destinação (R$/kg)</span>
       <div class="card" style="margin-bottom:16px" id="cfg-dest-cli"></div>
-
       <span class="slabel">Financeiro</span>
       <div class="card" style="margin-bottom:16px">
         <div class="cfg-r"><div><div class="cfg-l">Imposto (%)</div><div class="cfg-s">sobre total da nota</div></div><input class="cfg-i" id="cfg-imposto" type="number" step="0.01" value="15.45"></div>
-        <div class="cfg-r"><div><div class="cfg-l">Margem mínima</div><div class="cfg-s">alerta abaixo disso</div></div><input class="cfg-i" id="cfg-margem-min" type="number" step="1" value="30"></div>
+        <div class="cfg-r"><div><div class="cfg-l">Margem mínima (%)</div></div><input class="cfg-i" id="cfg-margem-min" type="number" step="1" value="30"></div>
       </div>
-
-      <button class="btn btn-primary" onclick="salvarConfig()">✓ Salvar Configurações</button>
+      <button class="btn btn-primary" onclick="salvarCfg()">✓ Salvar</button>
       <div style="height:10px"></div>
-      <button class="btn btn-outline" onclick="closeModal('modal-config')">Fechar</button>
+      <button class="btn btn-outline" onclick="fecharCfg()">Fechar</button>
     </div>
   </div>
-</div>
-
-
-<!-- MODAL BUSCA IBAMA -->
-<div class="ibama-modal hidden" id="ibama-modal">
-  <div class="ibama-box">
-    <div class="ibama-search-wrap">
-      <input class="ibama-search-inp" id="ibama-search-inp" type="text"
-        placeholder="Digite código ou descrição..." autocomplete="off" autocorrect="off">
-    </div>
-    <div class="ibama-results" id="ibama-results"></div>
-  </div>
-  <button class="ibama-close" onclick="ibamaClose()">Fechar</button>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ── DADOS ──────────────────────────────────────────────
-const DEST_KEYS=['ATERRO CLASSE I','BLEND CLASSE I','INCIN CLASSE I','EFLUENTE CLASSE I',
-  'ATERRO CLASSE II','BLEND CLASSE II','INCIN CLASSE II','EFLUENTE CLASSE II','COMPOST CLASSE II'];
+var DEST_KEYS=['ATERRO CLASSE I','BLEND CLASSE I','INCIN CLASSE I','EFLUENTE CLASSE I','ATERRO CLASSE II','BLEND CLASSE II','INCIN CLASSE II','EFLUENTE CLASSE II','COMPOST CLASSE II'];
+var DEF={empresa:'Cerrado Transportes e Soluções Ambientais',cnpj:'',tel:'',validade:15,imposto:15.45,margemMin:30,
+  transp:{forn:{FIORINO:1.75,FURGAO:3.35,BAU:7.00,MAIOR:10.00,DIARIA:0},cli:{FIORINO:4.20,FURGAO:5.00,BAU:8.50,MAIOR:14.00,DIARIA:0}},
+  dest:{forn:{'ATERRO CLASSE I':0.60,'BLEND CLASSE I':0.50,'INCIN CLASSE I':3.20,'EFLUENTE CLASSE I':0.50,'ATERRO CLASSE II':0.135,'BLEND CLASSE II':0.50,'INCIN CLASSE II':0.50,'EFLUENTE CLASSE II':0.30,'COMPOST CLASSE II':0.04},
+        cli:{'ATERRO CLASSE I':1.50,'BLEND CLASSE I':2.00,'INCIN CLASSE I':5.00,'EFLUENTE CLASSE I':1.80,'ATERRO CLASSE II':0.55,'BLEND CLASSE II':1.00,'INCIN CLASSE II':5.50,'EFLUENTE CLASSE II':1.00,'COMPOST CLASSE II':0.35}}};
 
-const DEF={
-  empresa:'Cerrado Transportes e Soluções Ambientais',cnpj:'',tel:'',validade:15,
-  imposto:15.45,margemMin:30,
-  transp:{
-    forn:{FIORINO:1.75,FURGAO:3.35,BAU:7.00,MAIOR:10.00,DIARIA:0},
-    cli: {FIORINO:4.20,FURGAO:5.00,BAU:8.50,MAIOR:14.00,DIARIA:0}
-  },
-  dest:{
-    forn:{'ATERRO CLASSE I':0.60,'BLEND CLASSE I':0.50,'INCIN CLASSE I':3.20,'EFLUENTE CLASSE I':0.50,
-          'ATERRO CLASSE II':0.135,'BLEND CLASSE II':0.50,'INCIN CLASSE II':0.50,'EFLUENTE CLASSE II':0.30,'COMPOST CLASSE II':0.04},
-    cli: {'ATERRO CLASSE I':1.50,'BLEND CLASSE I':2.00,'INCIN CLASSE I':5.00,'EFLUENTE CLASSE I':1.80,
-          'ATERRO CLASSE II':0.55,'BLEND CLASSE II':1.00,'INCIN CLASSE II':5.50,'EFLUENTE CLASSE II':1.00,'COMPOST CLASSE II':0.35}
-  }
-};
+var cfg=lCfg(),residuos=[{id:1,desc:'',codigo:'',perigoso:false,peso:0,dest:'ATERRO CLASSE II'}],nextId=2,ultimoCalculo=null,ibamaResId=null;
 
-let cfg=loadCfg(),residuos=[{id:1,peso:0,dest:'ATERRO CLASSE II',desc:''}],nextId=2,ultimoCalculo=null;
-let deferredPrompt=null;
-
-// ── PWA INSTALL ──────────────────────────────────────
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();deferredPrompt=e;
-  document.getElementById('install-banner').classList.remove('hidden');
-});
-window.addEventListener('appinstalled',()=>{
-  hideBanner();toast('✅ App instalado com sucesso!');
-});
-function doInstall(){
-  if(!deferredPrompt)return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(r=>{
-    if(r.outcome==='accepted')hideBanner();
-    deferredPrompt=null;
-  });
-}
-function hideBanner(){document.getElementById('install-banner').classList.add('hidden');}
-
-// ── CONFIG ─────────────────────────────────────────────
-function loadCfg(){
-  try{const s=localStorage.getItem('rpro_cfg');return s?JSON.parse(s):JSON.parse(JSON.stringify(DEF));}
-  catch(e){return JSON.parse(JSON.stringify(DEF));}
-}
-function saveCfg(c){localStorage.setItem('rpro_cfg',JSON.stringify(c));}
-
-function openConfig(){
-  g('cfg-empresa').value=cfg.empresa||'';g('cfg-cnpj').value=cfg.cnpj||'';g('cfg-tel').value=cfg.tel||'';
-  g('cfg-validade').value=cfg.validade||15;
-  g('cfg-tf').value=cfg.transp.forn.FIORINO;g('cfg-tfu').value=cfg.transp.forn.FURGAO;
-  g('cfg-tb').value=cfg.transp.forn.BAU;g('cfg-tm').value=cfg.transp.forn.MAIOR;g('cfg-td').value=cfg.transp.forn.DIARIA;
-  g('cfg-cf').value=cfg.transp.cli.FIORINO;g('cfg-cfu').value=cfg.transp.cli.FURGAO;
-  g('cfg-cb').value=cfg.transp.cli.BAU;g('cfg-cm').value=cfg.transp.cli.MAIOR;g('cfg-cd').value=cfg.transp.cli.DIARIA;
-  g('cfg-imposto').value=cfg.imposto;g('cfg-margem-min').value=cfg.margemMin||30;
-  const fE=g('cfg-dest-forn'),cE=g('cfg-dest-cli');fE.innerHTML='';cE.innerHTML='';
-  DEST_KEYS.forEach(k=>{
-    fE.innerHTML+=`<div class="cfg-r"><div class="cfg-l">${k}</div><input class="cfg-i" id="cdf-${esc(k)}" type="number" step="0.001" value="${cfg.dest.forn[k]}"></div>`;
-    cE.innerHTML+=`<div class="cfg-r"><div class="cfg-l">${k}</div><input class="cfg-i" id="cdc-${esc(k)}" type="number" step="0.01" value="${cfg.dest.cli[k]}"></div>`;
-  });
-}
-
-function salvarConfig(){
-  cfg.empresa=g('cfg-empresa').value||'Cerrado Ambiental';
-  cfg.cnpj=g('cfg-cnpj').value;cfg.tel=g('cfg-tel').value;
-  cfg.validade=parseInt(g('cfg-validade').value)||15;
-  cfg.transp.forn.FIORINO=pf('cfg-tf');cfg.transp.forn.FURGAO=pf('cfg-tfu');
-  cfg.transp.forn.BAU=pf('cfg-tb');cfg.transp.forn.MAIOR=pf('cfg-tm');cfg.transp.forn.DIARIA=pf('cfg-td');
-  cfg.transp.cli.FIORINO=pf('cfg-cf');cfg.transp.cli.FURGAO=pf('cfg-cfu');
-  cfg.transp.cli.BAU=pf('cfg-cb');cfg.transp.cli.MAIOR=pf('cfg-cm');cfg.transp.cli.DIARIA=pf('cfg-cd');
-  cfg.imposto=pf('cfg-imposto');cfg.margemMin=pf('cfg-margem-min');
-  DEST_KEYS.forEach(k=>{cfg.dest.forn[k]=pf('cdf-'+esc(k));cfg.dest.cli[k]=pf('cdc-'+esc(k));});
-  saveCfg(cfg);closeModal('modal-config');toast('✅ Configurações salvas!');
-}
-
-// ── RESÍDUOS ───────────────────────────────────────────
-function renderResiduos(){
-  var el = g('residuos-list');
-  el.innerHTML = '';
-  residuos.forEach(function(r, i) {
-    var destOpts = DEST_KEYS.map(function(k){
-      return '<option value="'+k+'"'+(r.dest===k?' selected':'')+'>'+k+'</option>';
-    }).join('');
-
-    var div = document.createElement('div');
-    div.className = 'res-row';
-
-    var btnLabel = r.desc
-      ? '<span>'+(r.codigo ? r.codigo+' — '+r.desc : r.desc)+'</span>'
-      : '<span class="ibama-btn-placeholder">Toque para buscar na lista IBAMA...</span>';
-
-    div.innerHTML =
-      '<div class="res-head">' +
-        '<div class="res-num">'+(i+1)+'</div>' +
-        '<div class="res-title">Resíduo '+(i+1)+'</div>' +
-        (residuos.length>1 ? '<button class="res-del" type="button">×</button>' : '') +
-      '</div>' +
-      '<div class="field">' +
-        '<label class="field-label">Resíduo — Lista IBAMA</label>' +
-        '<button type="button" class="ibama-btn">'+btnLabel+'<span class="ibama-btn-arrow">▼</span></button>' +
-        '<div class="res-badge" id="badge-'+r.id+'">'+makeBadge(r)+'</div>' +
-      '</div>' +
-      '<div class="g2">' +
-        '<div class="field"><label class="field-label">Peso (kg)</label>' +
-          '<input class="inp inp-mono" type="number" placeholder="0" inputmode="decimal" value="'+(r.peso||'')+'">' +
-        '</div>' +
-        '<div class="field"><label class="field-label">Destinação</label>' +
-          '<select class="inp inp-select">'+destOpts+'</select>' +
-        '</div>' +
-      '</div>';
-
-    // Botão abre modal de busca
-    var btn = div.querySelector('.ibama-btn');
-    btn.onclick = function(){ ibamaOpen(r.id, btn); };
-
-    // Deletar
-    var del = div.querySelector('.res-del');
-    if (del) del.onclick = function(){ delRes(r.id); };
-
-    // Peso
-    div.querySelector('input.inp-mono').addEventListener('input', function(){
-      updRes(r.id, 'peso', +this.value); calcular();
-    });
-
-    // Destinação
-    div.querySelector('select').addEventListener('change', function(){
-      updRes(r.id, 'dest', this.value); calcular();
-    });
-
-    el.appendChild(div);
-  });
-}
-
-function makeBadge(r){
-  if (!r || !r.codigo) return '';
-  return '<span class="code-tag">'+r.codigo+'</span>' +
-    '<span class="per-tag '+(r.perigoso?'danger':'safe')+'">' +
-    (r.perigoso?'⚠️ Perigoso':'✓ Não Perigoso')+'</span>';
-}
-
-// ── MODAL IBAMA ────────────────────────────────────────
-var _ibamaCurrentId  = null;
-var _ibamaCurrentBtn = null;
-
-function ibamaOpen(residuoId, btn) {
-  _ibamaCurrentId  = residuoId;
-  _ibamaCurrentBtn = btn;
-  var modal = g('ibama-modal');
-  var inp   = g('ibama-search-inp');
-  modal.classList.remove('hidden');
-  inp.value = '';
-  ibamaRender('');
-  setTimeout(function(){ inp.focus(); }, 50);
-}
-
-function ibamaClose() {
-  g('ibama-modal').classList.add('hidden');
-  _ibamaCurrentId  = null;
-  _ibamaCurrentBtn = null;
-}
-
-function ibamaRender(query) {
-  var q = query.toLowerCase().trim();
-  var src = (typeof IBAMA !== 'undefined') ? IBAMA : [];
-  var results = q.length < 2 ? src.slice(0, 80) : src.filter(function(r){
-    var lbl = r.label || (r.codigo + ' ' + r.desc);
-    return lbl.toLowerCase().indexOf(q) >= 0;
-  }).slice(0, 80);
-
-  var el = g('ibama-results');
-  if (!results.length) {
-    el.innerHTML = '<div class="ibama-empty">Nenhum resultado para "'+query+'"</div>';
-    return;
-  }
-
-  el.innerHTML = '';
-  results.forEach(function(r) {
-    var item = document.createElement('div');
-    item.className = 'ibama-item';
-    var label = r.label || (r.codigo + ' — ' + r.desc);
-    item.innerHTML =
-      '<div class="ibama-item-desc">'+label+'</div>' +
-      '<div class="ibama-item-per '+(r.perigoso?'per':'nper')+'">'+(r.perigoso?'⚠️ Per.':'✓')+'</div>';
-    item.onclick = function(){
-      ibamaSelect(r);
-    };
-    el.appendChild(item);
-  });
-}
-
-function ibamaSelect(r) {
-  if (_ibamaCurrentId === null) return;
-  var id = _ibamaCurrentId;
-
-  updRes(id, 'desc',    r.desc);
-  updRes(id, 'codigo',  r.codigo);
-  updRes(id, 'perigoso', !!r.perigoso);
-
-  // Atualizar botão
-  var lbl = r.label || (r.codigo + ' — ' + r.desc);
-  if (_ibamaCurrentBtn) {
-    _ibamaCurrentBtn.innerHTML =
-      '<span>'+lbl+'</span><span class="ibama-btn-arrow">▼</span>';
-  }
-
-  // Atualizar badge
-  var b = g('badge-'+id);
-  if (b) b.innerHTML = makeBadge(r);
-
-  ibamaClose();
-}
-
-// Busca no input do modal
-document.addEventListener('DOMContentLoaded', function(){
-  var inp = g('ibama-search-inp');
-  if (inp) {
-    inp.addEventListener('input', function(){
-      ibamaRender(this.value);
-    });
-  }
-  var modal = g('ibama-modal');
-  if (modal) {
-    modal.addEventListener('click', function(e){
-      if (e.target === this) ibamaClose();
-    });
-  }
-});
-
-function addResiduo(){residuos.push({id:nextId++,peso:0,dest:'ATERRO CLASSE II',desc:''});renderResiduos();}
-function delRes(id){residuos=residuos.filter(r=>r.id!==id);renderResiduos();calcular();}
-function updRes(id,f,val){const r=residuos.find(x=>x.id===id);if(r)r[f]=val;}
-
-// ── CÁLCULO ────────────────────────────────────────────
-function calcular(){
-  const km=+g('trajeto').value||0,veic=g('veiculo').value,ac=+g('acresc-cabeca').value||0;
-  const ctf=km*(cfg.transp.forn[veic]||0);
-  let ptc=km*(cfg.transp.cli[veic]||0);
-  if(km>=900)ptc+=cfg.transp.cli.DIARIA*(residuos.reduce((s,r)=>s+(+r.peso||0),0)/1000||0);
-  let cdf=0,pdc=0;
-  const itens=residuos.map(r=>{
-    const kg=+r.peso||0,cf=(cfg.dest.forn[r.dest]||0)*kg,cc=(cfg.dest.cli[r.dest]||0)*kg;
-    cdf+=cf;pdc+=cc;return{...r,custForn:cf,precCli:cc};
-  });
-  const tot=ptc+pdc+ac,imp=tot*(cfg.imposto/100),ct=ctf+cdf+imp,sob=tot-ct,mar=tot>0?sob/tot:0;
-  ultimoCalculo={km,veic,ac,ctf,ptc,cdf,pdc,itens,tot,imp,ct,sob,mar,
-    cli:{nome:g('cli-nome').value,cnpj:g('cli-cnpj').value,contato:g('cli-contato').value},
-    obs:g('obs').value,data:new Date().toLocaleDateString('pt-BR')};
-  return ultimoCalculo;
-}
-
-function goToResultado(){
-  const r=calcular();
-  if(!r.tot){toast('⚠️ Preencha pelo menos o trajeto ou um resíduo');return;}
-  renderResultado(r);navTo('resultado',g('nav-resultado'));
-}
-
-// ── RESULTADO ──────────────────────────────────────────
-function renderResultado(r){
-  if(!r)return;
-  const mm=cfg.margemMin||30,pct=r.mar*100,ok=pct>=mm,warn=pct>=(mm*0.75)&&pct<mm;
-  const bc=ok?'b-ok':warn?'b-warn':'b-bad',fc=ok?'#2a7a40':warn?'#c87020':'#b03020';
-  const bw=Math.min(100,Math.max(0,pct)).toFixed(1);
-  let ih='';
-  r.itens.forEach((it,i)=>{
-    if((it.peso||0)>0){
-      ih+=`<div class="rr">
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--text)">${it.desc||'Resíduo '+(i+1)}</div>
-          <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px">${it.codigo?it.codigo+' · ':''}${it.dest} · ${fmt(it.peso)} kg</div>
-        </div>
-        <div style="text-align:right">
-          <div class="rv acc" style="font-weight:600">${brl(it.precCli)}</div>
-          <div style="font-size:11px;color:var(--text4);margin-top:2px">custo ${brl(it.custForn)}</div>
-        </div>
-      </div>`;
-    }
-  });
-
-  g('resultado-content').innerHTML=`
-  <div class="rbox-dark">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;position:relative;z-index:1">
-      <div style="font-size:11px;color:rgba(248,240,221,0.45);font-weight:700;letter-spacing:1.2px;text-transform:uppercase">Margem de Lucro</div>
-      <div class="badge ${bc}">${pct.toFixed(1)}%</div>
-    </div>
-    <div style="font-size:32px;font-weight:800;color:#fff;font-family:'DM Mono',monospace;margin-bottom:14px;position:relative;z-index:1">${brl(r.sob)}</div>
-    <div class="mbar" style="position:relative;z-index:1"><div class="mfill" style="width:${bw}%;background:${fc}"></div></div>
-    <div class="mlabels"><span class="ml">0%</span><span class="ml">mín ${mm}%</span><span class="ml">100%</span></div>
-  </div>
-
-  <div class="rbox-light">
-    <div class="card-head" style="margin-bottom:12px"><div class="card-icon">🚛</div><div class="card-label">Transporte — ${r.veic}</div></div>
-    <div class="rr"><div class="rl">Custo fornecedor (${fmt(r.km)} km)</div><div class="rv">${brl(r.ctf)}</div></div>
-    <div class="rr"><div class="rl">Cobrado do cliente</div><div class="rv acc">${brl(r.ptc)}</div></div>
-    ${r.ac>0?`<div class="rr"><div class="rl">Acréscimo de cabeça</div><div class="rv acc">${brl(r.ac)}</div></div>`:''}
-  </div>
-
-  ${ih?`<div class="rbox-light">
-    <div class="card-head" style="margin-bottom:12px"><div class="card-icon">♻️</div><div class="card-label">Destinação</div></div>
-    ${ih}
-  </div>`:''}
-
-  <div class="rbox-light">
-    <div class="card-head" style="margin-bottom:12px"><div class="card-icon">💰</div><div class="card-label">Resumo</div></div>
-    <div class="rr">
-      <div class="rl" style="font-weight:700;color:var(--text)">Total da Nota</div>
-      <div class="rv" style="font-size:20px;color:var(--accent);font-weight:700">${brl(r.tot)}</div>
-    </div>
-    <div class="rr"><div class="rl">Imposto (${cfg.imposto}%)</div><div class="rv neg">− ${brl(r.imp)}</div></div>
-    <div class="rr"><div class="rl">Custo total</div><div class="rv neg">− ${brl(r.ct)}</div></div>
-  </div>
-
-  <div class="btn-row">
-    <button class="btn btn-primary" style="flex:2" onclick="gerarProposta()">📄 Gerar Proposta</button>
-    <button class="btn btn-outline" style="flex:1" onclick="salvarHistorico()">💾 Salvar</button>
-  </div>`;
-}
-
-// ── PROPOSTA ───────────────────────────────────────────
-function gerarProposta(){
-  const r=ultimoCalculo;
-  if(!r||!r.tot){toast('⚠️ Calcule o orçamento primeiro');return;}
-  const hj=new Date(),val=new Date(hj);val.setDate(val.getDate()+(cfg.validade||15));
-  const fd=d=>d.toLocaleDateString('pt-BR');
-  const np=`${hj.getFullYear()}${String(hj.getMonth()+1).padStart(2,'0')}${String(hj.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*900)+100)}`;
-  let lr='';
-  r.itens.forEach((it,i)=>{
-    if((it.peso||0)>0){lr+=`  • ${it.desc||'Resíduo '+(i+1)}${it.codigo?' ['+it.codigo+']':''}\n    Peso: ${fmt(it.peso)} kg | Dest.: ${it.dest}${it.perigoso?' ⚠️ PERIGOSO':''}\n    R$ ${(cfg.dest.cli[it.dest]||0).toFixed(2)}/kg | Subtotal: ${brl(it.precCli)}\n\n`;}
-  });
-  const txt=`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nPROPOSTA COMERCIAL Nº ${np}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nPRESTADOR\n${cfg.empresa||'Cerrado Ambiental'}${cfg.cnpj?'\nCNPJ: '+cfg.cnpj:''}${cfg.tel?'\nTel: '+cfg.tel:''}\n\nCLIENTE\n${r.cli.nome||'—'}${r.cli.cnpj?'\nCNPJ: '+r.cli.cnpj:''}${r.cli.contato?'\nContato: '+r.cli.contato:''}\n\nData: ${fd(hj)} | Validade: ${fd(val)}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSERVIÇOS\n\n▸ COLETA E TRANSPORTE\n  Veículo: ${r.veic} | Trajeto: ${fmt(r.km)} km\n  Valor: ${brl(r.ptc)}${r.ac>0?'\n  Acréscimos: '+brl(r.ac):''}\n\n▸ TRATAMENTO E DESTINAÇÃO\n${lr}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nVALOR TOTAL: ${brl(r.tot)}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${r.obs?'\nOBSERVAÇÕES\n'+r.obs+'\n\n':''}\nServiços em conformidade com a legislação\nambiental vigente. Documentação de\ndestinação fornecida após a execução.\n\n${cfg.empresa||'Cerrado Ambiental'}`;
-
-  g('proposta-content').innerHTML=`
-  <div class="card">
-    <div class="card-head" style="margin-bottom:12px"><div class="card-icon">📄</div><div class="card-label">Proposta Gerada</div></div>
-    <div class="proposta-txt" id="txt-proposta">${txt}</div>
-  </div>
-  <div class="btn-row">
-    <button class="btn btn-primary" onclick="copiarProposta()">📋 Copiar</button>
-    <button class="btn btn-dark" onclick="whatsappProposta()">💬 WhatsApp</button>
-  </div>`;
-  navTo('proposta',g('nav-proposta'));
-}
-
-function copiarProposta(){
-  const t=g('txt-proposta').innerText;
-  navigator.clipboard.writeText(t).then(()=>toast('✅ Copiado!')).catch(()=>{
-    const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);toast('✅ Copiado!');
-  });
-}
-function whatsappProposta(){window.open('https://wa.me/?text='+encodeURIComponent(g('txt-proposta').innerText),'_blank');}
-
-// ── HISTÓRICO ──────────────────────────────────────────
-function salvarHistorico(){
-  const r=ultimoCalculo;if(!r)return;
-  try{
-    let h=JSON.parse(localStorage.getItem('rpro_hist')||'[]');
-    h.unshift({...r,id:Date.now()});
-    if(h.length>50)h=h.slice(0,50);
-    localStorage.setItem('rpro_hist',JSON.stringify(h));
-    toast('💾 Salvo no histórico!');renderHistorico();
-  }catch(e){}
-}
-
-function renderHistorico(){
-  try{
-    const h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),el=g('historico-list');
-    if(!h.length){
-      el.innerHTML=`<div class="empty"><span class="empty-ico">🗂️</span><div class="empty-t">Nenhum orçamento salvo</div><div class="empty-s">Seus orçamentos aparecerão aqui após salvar</div></div>`;
-      return;
-    }
-    el.innerHTML=h.map(x=>`
-    <div class="hist-card" onclick="carregarHist(${x.id})">
-      <div class="hist-top">
-        <div class="hist-name">${x.cli?.nome||'Sem nome'}</div>
-        <div class="hist-date">${x.data||''}</div>
-      </div>
-      <div class="hist-bot">
-        <div class="hist-val">${brl(x.tot)}</div>
-        <div class="badge ${(x.mar*100)>=(cfg.margemMin||30)?'b-ok':'b-warn'}">${(x.mar*100).toFixed(1)}% margem</div>
-      </div>
-    </div>`).join('');
-  }catch(e){}
-}
-
-function carregarHist(id){
-  try{
-    const h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),x=h.find(i=>i.id===id);
-    if(!x)return;ultimoCalculo=x;renderResultado(x);navTo('resultado',g('nav-resultado'));toast('📋 Orçamento carregado');
-  }catch(e){}
-}
-
-function limparHistorico(){
-  if(confirm('Apagar todo o histórico?')){localStorage.removeItem('rpro_hist');renderHistorico();toast('🗑️ Histórico limpo');}
-}
-
-// ── NAV ────────────────────────────────────────────────
-function navTo(id,el){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  g('screen-'+id).classList.add('active');
-  el.classList.add('active');
-  if(id==='historico')renderHistorico();
-  if(id==='config')openConfig();
-}
-
-// ── MODAL ──────────────────────────────────────────────
-function openModal(id){
-  if(id==='modal-config')openConfig();
-  g(id).classList.add('open');
-}
-function closeModal(id){g(id).classList.remove('open');}
-function overlayClick(e,id){if(e.target===g(id))closeModal(id);}
-
-// ── UTILS ──────────────────────────────────────────────
 function g(id){return document.getElementById(id);}
 function pf(id){return parseFloat(g(id).value)||0;}
 function brl(n){return 'R$ '+Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmt(n){return Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:0});}
 function esc(s){return s.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'');}
-function maskCNPJ(el){
-  let v=el.value.replace(/\D/g,'');
-  v=v.replace(/^(\d{2})(\d)/,'$1.$2');
-  v=v.replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3');
-  v=v.replace(/\.(\d{3})(\d)/,'.$1/$2');
-  v=v.replace(/(\d{4})(\d)/,'$1-$2');
-  el.value=v;
+function maskCNPJ(el){var v=el.value.replace(/\D/g,'');v=v.replace(/^(\d{2})(\d)/,'$1.$2');v=v.replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3');v=v.replace(/\.(\d{3})(\d)/,'.$1/$2');v=v.replace(/(\d{4})(\d)/,'$1-$2');el.value=v;}
+function toast(msg,dur){var t=g('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},dur||2400);}
+
+function lCfg(){try{var s=localStorage.getItem('rpro_cfg');return s?JSON.parse(s):JSON.parse(JSON.stringify(DEF));}catch(e){return JSON.parse(JSON.stringify(DEF));}}
+function sCfg(c){localStorage.setItem('rpro_cfg',JSON.stringify(c));}
+
+function abrirCfg(){
+  g('cfg-empresa').value=cfg.empresa||'';g('cfg-cnpj').value=cfg.cnpj||'';g('cfg-tel').value=cfg.tel||'';g('cfg-validade').value=cfg.validade||15;
+  g('cfg-tf').value=cfg.transp.forn.FIORINO;g('cfg-tfu').value=cfg.transp.forn.FURGAO;g('cfg-tb').value=cfg.transp.forn.BAU;g('cfg-tm').value=cfg.transp.forn.MAIOR;g('cfg-td').value=cfg.transp.forn.DIARIA;
+  g('cfg-cf').value=cfg.transp.cli.FIORINO;g('cfg-cfu').value=cfg.transp.cli.FURGAO;g('cfg-cb').value=cfg.transp.cli.BAU;g('cfg-cm').value=cfg.transp.cli.MAIOR;g('cfg-cd').value=cfg.transp.cli.DIARIA;
+  g('cfg-imposto').value=cfg.imposto;g('cfg-margem-min').value=cfg.margemMin||30;
+  var fE=g('cfg-dest-forn'),cE=g('cfg-dest-cli');fE.innerHTML='';cE.innerHTML='';
+  DEST_KEYS.forEach(function(k){
+    fE.innerHTML+='<div class="cfg-r"><div class="cfg-l">'+k+'</div><input class="cfg-i" id="cdf-'+esc(k)+'" type="number" step="0.001" value="'+cfg.dest.forn[k]+'"></div>';
+    cE.innerHTML+='<div class="cfg-r"><div class="cfg-l">'+k+'</div><input class="cfg-i" id="cdc-'+esc(k)+'" type="number" step="0.01" value="'+cfg.dest.cli[k]+'"></div>';
+  });
+  g('cfg-modal').classList.add('open');
 }
-function toast(msg,dur=2400){
-  const t=g('toast');t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),dur);
+function fecharCfg(){g('cfg-modal').classList.remove('open');}
+function salvarCfg(){
+  cfg.empresa=g('cfg-empresa').value||'Cerrado Ambiental';cfg.cnpj=g('cfg-cnpj').value;cfg.tel=g('cfg-tel').value;cfg.validade=parseInt(g('cfg-validade').value)||15;
+  cfg.transp.forn.FIORINO=pf('cfg-tf');cfg.transp.forn.FURGAO=pf('cfg-tfu');cfg.transp.forn.BAU=pf('cfg-tb');cfg.transp.forn.MAIOR=pf('cfg-tm');cfg.transp.forn.DIARIA=pf('cfg-td');
+  cfg.transp.cli.FIORINO=pf('cfg-cf');cfg.transp.cli.FURGAO=pf('cfg-cfu');cfg.transp.cli.BAU=pf('cfg-cb');cfg.transp.cli.MAIOR=pf('cfg-cm');cfg.transp.cli.DIARIA=pf('cfg-cd');
+  cfg.imposto=pf('cfg-imposto');cfg.margemMin=pf('cfg-margem-min');
+  DEST_KEYS.forEach(function(k){cfg.dest.forn[k]=pf('cdf-'+esc(k));cfg.dest.cli[k]=pf('cdc-'+esc(k));});
+  sCfg(cfg);fecharCfg();toast('✅ Configurações salvas!');
 }
 
+function renderRes(){
+  var el=g('res-list');el.innerHTML='';
+  residuos.forEach(function(r,i){
+    var dOpts=DEST_KEYS.map(function(k){return '<option value="'+k+'"'+(r.dest===k?' selected':'')+'>'+k+'</option>';}).join('');
+    var div=document.createElement('div');
+    div.className='res-row';
+    div.innerHTML=
+      '<div class="res-head">'+
+        '<div class="res-num">'+(i+1)+'</div>'+
+        '<div class="res-title">Resíduo '+(i+1)+'</div>'+
+        (residuos.length>1?'<button class="res-del" type="button">×</button>':'')+
+      '</div>'+
+      '<div class="field">'+
+        '<label class="flabel">Resíduo IBAMA</label>'+
+        '<button type="button" class="ibama-btn" id="ibama-btn-'+r.id+'">'+
+          (r.desc?'<span class="ibama-value">'+r.desc+'</span>':'<span class="ibama-placeholder">Toque para buscar na lista IBAMA...</span>')+
+          '<span style="color:var(--text3);font-size:12px;flex-shrink:0">▼</span>'+
+        '</button>'+
+        '<div class="res-badge" id="badge-'+r.id+'">'+mkBadge(r)+'</div>'+
+      '</div>'+
+      '<div class="g2">'+
+        '<div class="field"><label class="flabel">Peso (kg)</label><input class="inp inp-mono" type="number" placeholder="0" inputmode="decimal" value="'+(r.peso||'')+'"></div>'+
+        '<div class="field"><label class="flabel">Destinação</label><select class="inp sel">'+dOpts+'</select></div>'+
+      '</div>';
 
+    var del=div.querySelector('.res-del');
+    if(del) del.onclick=function(){delRes(r.id);};
 
-// ── INIT ───────────────────────────────────────────────
-renderResiduos();
-renderHistorico();
+    // BOTÃO IBAMA — onclick simples e direto
+    var btn=div.querySelector('.ibama-btn');
+    btn.onclick=function(){ibamaAbrir(r.id);};
 
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js')
-    .then(()=>console.log('SW registrado'))
-    .catch(e=>console.log('SW erro:',e));
+    var pi=div.querySelector('input.inp-mono');
+    pi.oninput=function(){updRes(r.id,'peso',+this.value);calcular();};
+
+    var sl=div.querySelector('select');
+    sl.onchange=function(){updRes(r.id,'dest',this.value);calcular();};
+
+    el.appendChild(div);
+  });
 }
+
+function mkBadge(r){
+  if(!r||!r.codigo)return '';
+  return '<span class="code-tag">'+r.codigo+'</span><span class="per-tag '+(r.perigoso?'danger':'safe')+'">'+(r.perigoso?'⚠️ Perigoso':'✓ Não Perigoso')+'</span>';
+}
+
+function addRes(){residuos.push({id:nextId++,desc:'',codigo:'',perigoso:false,peso:0,dest:'ATERRO CLASSE II'});renderRes();}
+function delRes(id){residuos=residuos.filter(function(r){return r.id!==id;});renderRes();calcular();}
+function updRes(id,f,v){var r=residuos.find(function(x){return x.id===id;});if(r)r[f]=v;}
+
+// ── MODAL IBAMA ─────────────────────────────────────────
+function ibamaAbrir(resId){
+  ibamaResId=resId;
+  g('ibama-overlay').classList.remove('hidden');
+  var si=g('ibama-sinp');
+  si.value='';
+  ibamaRender('');
+  setTimeout(function(){si.focus();},100);
+}
+
+function ibamaFechar(){
+  g('ibama-overlay').classList.add('hidden');
+  ibamaResId=null;
+}
+
+function ibamaRender(q){
+  q=q.toLowerCase().trim();
+  var src=(typeof IBAMA!=='undefined')?IBAMA:[];
+  var res=q.length<2?src.slice(0,60):src.filter(function(r){return r.d.toLowerCase().indexOf(q)>=0;}).slice(0,60);
+  var el=g('ibama-list');
+  el.innerHTML='';
+  if(!res.length){el.innerHTML='<div class="ibama-empty">Nenhum resultado</div>';return;}
+  res.forEach(function(r){
+    var item=document.createElement('div');
+    item.className='ibama-item';
+    item.innerHTML='<div class="ibama-item-txt">'+r.d+'</div><div class="ibama-item-per '+(r.p?'p':'n')+'">'+(r.p?'⚠️':'✓')+'</div>';
+    item.onclick=function(){ibamaSelecionar(r);};
+    el.appendChild(item);
+  });
+}
+
+function ibamaSelecionar(r){
+  var id=ibamaResId;
+  if(id===null)return;
+
+  updRes(id,'desc',r.d);
+  updRes(id,'codigo',r.c);
+  updRes(id,'perigoso',!!r.p);
+
+  var btn=g('ibama-btn-'+id);
+  if(btn){btn.innerHTML='<span class="ibama-value">'+r.d+'</span><span style="color:var(--text3);font-size:12px;flex-shrink:0">▼</span>';}
+
+  var badge=g('badge-'+id);
+  if(badge){badge.innerHTML='<span class="code-tag">'+r.c+'</span><span class="per-tag '+(r.p?'danger':'safe')+'">'+(r.p?'⚠️ Perigoso':'✓ Não Perigoso')+'</span>';}
+
+  ibamaFechar();
+}
+
+g('ibama-sinp').oninput=function(){ibamaRender(this.value);};
+g('ibama-overlay').onclick=function(e){if(e.target===this)ibamaFechar();};
+
+// ── CÁLCULO ─────────────────────────────────────────────
+function calcular(){
+  var km=+g('trajeto').value||0,veic=g('veiculo').value,ac=+g('acresc').value||0;
+  var ctf=km*(cfg.transp.forn[veic]||0),ptc=km*(cfg.transp.cli[veic]||0);
+  if(km>=900)ptc+=cfg.transp.cli.DIARIA*(residuos.reduce(function(s,r){return s+(+r.peso||0);},0)/1000||0);
+  var cdf=0,pdc=0;
+  var itens=residuos.map(function(r){var kg=+r.peso||0,cf=(cfg.dest.forn[r.dest]||0)*kg,cc=(cfg.dest.cli[r.dest]||0)*kg;cdf+=cf;pdc+=cc;return{desc:r.desc,codigo:r.codigo,perigoso:r.perigoso,dest:r.dest,peso:kg,custForn:cf,precCli:cc};});
+  var tot=ptc+pdc+ac,imp=tot*(cfg.imposto/100),ct=ctf+cdf+imp,sob=tot-ct,mar=tot>0?sob/tot:0;
+  ultimoCalculo={km:km,veic:veic,ac:ac,ctf:ctf,ptc:ptc,cdf:cdf,pdc:pdc,itens:itens,tot:tot,imp:imp,ct:ct,sob:sob,mar:mar,
+    cli:{nome:g('cli-nome').value,cnpj:g('cli-cnpj').value,contato:g('cli-contato').value},
+    obs:g('obs').value,data:new Date().toLocaleDateString('pt-BR')};
+  return ultimoCalculo;
+}
+
+function goResultado(){var r=calcular();if(!r.tot){toast('⚠️ Preencha o trajeto ou adicione um resíduo');return;}renderResultado(r);navTo('resultado',g('nav-resultado'));}
+
+function renderResultado(r){
+  var mm=cfg.margemMin||30,pct=r.mar*100,ok=pct>=mm,warn=pct>=(mm*0.75)&&pct<mm;
+  var bc=ok?'b-ok':warn?'b-warn':'b-bad',fc=ok?'#2a7a40':warn?'#c87020':'#b03020';
+  var bw=Math.min(100,Math.max(0,pct)).toFixed(1);
+  var ih='';
+  r.itens.forEach(function(it,i){if((it.peso||0)>0){ih+='<div class="rrow"><div><div style="font-size:13px;font-weight:600;color:var(--text)">'+(it.desc||'Resíduo '+(i+1))+'</div><div style="font-size:11px;color:var(--text3);font-family:\'DM Mono\',monospace;margin-top:2px">'+it.dest+' · '+fmt(it.peso)+' kg</div></div><div style="text-align:right"><div class="rv acc" style="font-weight:600">'+brl(it.precCli)+'</div><div style="font-size:11px;color:var(--text4);margin-top:2px">custo '+brl(it.custForn)+'</div></div></div>';}});
+  g('resultado-content').innerHTML=
+    '<div class="rbox-dark"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:11px;color:rgba(248,240,221,0.45);font-weight:700;letter-spacing:1px;text-transform:uppercase">Margem de Lucro</div><div class="badge '+bc+'">'+pct.toFixed(1)+'%</div></div><div style="font-size:30px;font-weight:800;color:#fff;font-family:\'DM Mono\',monospace;margin-bottom:14px">'+brl(r.sob)+'</div><div class="mbar"><div class="mfill" style="width:'+bw+'%;background:'+fc+'"></div></div><div class="mlabels"><span class="ml">0%</span><span class="ml">mín '+mm+'%</span><span class="ml">100%</span></div></div>'+
+    '<div class="rbox-light"><div class="card-head" style="margin-bottom:12px"><div class="card-icon">🚛</div><div class="card-lbl">Transporte — '+r.veic+'</div></div><div class="rrow"><div class="rl">Custo fornecedor ('+fmt(r.km)+' km)</div><div class="rv">'+brl(r.ctf)+'</div></div><div class="rrow"><div class="rl">Cobrado do cliente</div><div class="rv acc">'+brl(r.ptc)+'</div></div>'+(r.ac>0?'<div class="rrow"><div class="rl">Acréscimo de cabeça</div><div class="rv acc">'+brl(r.ac)+'</div></div>':'')+'</div>'+
+    (ih?'<div class="rbox-light"><div class="card-head" style="margin-bottom:12px"><div class="card-icon">♻️</div><div class="card-lbl">Destinação</div></div>'+ih+'</div>':'')+
+    '<div class="rbox-light"><div class="card-head" style="margin-bottom:12px"><div class="card-icon">💰</div><div class="card-lbl">Resumo</div></div><div class="rrow"><div class="rl" style="font-weight:700;color:var(--text)">Total da Nota</div><div class="rv" style="font-size:20px;color:var(--accent);font-weight:700">'+brl(r.tot)+'</div></div><div class="rrow"><div class="rl">Imposto ('+cfg.imposto+'%)</div><div class="rv neg">− '+brl(r.imp)+'</div></div><div class="rrow"><div class="rl">Custo total</div><div class="rv neg">− '+brl(r.ct)+'</div></div></div>'+
+    '<div class="btn-row"><button class="btn btn-primary" style="flex:2" onclick="gerarProposta()">📄 Gerar Proposta</button><button class="btn btn-outline" style="flex:1" onclick="salvarHist()">💾 Salvar</button></div>';
+}
+
+function gerarProposta(){
+  var r=ultimoCalculo;if(!r||!r.tot){toast('⚠️ Calcule o orçamento primeiro');return;}
+  var hj=new Date(),val=new Date(hj);val.setDate(val.getDate()+(cfg.validade||15));
+  var fd=function(d){return d.toLocaleDateString('pt-BR');};
+  var np=hj.getFullYear()+String(hj.getMonth()+1).padStart(2,'0')+String(hj.getDate()).padStart(2,'0')+'-'+String(Math.floor(Math.random()*900)+100);
+  var lr='';
+  r.itens.forEach(function(it,i){if((it.peso||0)>0){lr+='  • '+(it.desc||'Resíduo '+(i+1))+'\n    Peso: '+fmt(it.peso)+' kg | Dest.: '+it.dest+(it.perigoso?' ⚠️ PERIGOSO':'')+'\n    R$ '+(cfg.dest.cli[it.dest]||0).toFixed(2)+'/kg | Subtotal: '+brl(it.precCli)+'\n\n';}});
+  var txt='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nPROPOSTA COMERCIAL Nº '+np+'\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nPRESTADOR\n'+(cfg.empresa||'Cerrado Ambiental')+(cfg.cnpj?'\nCNPJ: '+cfg.cnpj:'')+(cfg.tel?'\nTel: '+cfg.tel:'')+'\n\nCLIENTE\n'+(r.cli.nome||'—')+(r.cli.cnpj?'\nCNPJ: '+r.cli.cnpj:'')+(r.cli.contato?'\nContato: '+r.cli.contato:'')+'\n\nData: '+fd(hj)+' | Validade: '+fd(val)+'\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSERVIÇOS\n\n▸ COLETA E TRANSPORTE\n  Veículo: '+r.veic+' | Trajeto: '+fmt(r.km)+' km\n  Valor: '+brl(r.ptc)+(r.ac>0?'\n  Acréscimos: '+brl(r.ac):'')+'\n\n▸ TRATAMENTO E DESTINAÇÃO\n'+lr+'━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nVALOR TOTAL: '+brl(r.tot)+'\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+(r.obs?'\nOBSERVAÇÕES\n'+r.obs+'\n\n':'')+'\nServiços em conformidade com a legislação ambiental vigente.\nDocumentação de destinação fornecida após execução.\n\n'+(cfg.empresa||'Cerrado Ambiental');
+  g('proposta-content').innerHTML='<div class="card"><div class="card-head"><div class="card-icon">📄</div><div class="card-lbl">Proposta Gerada</div></div><div class="proposta-txt" id="txt-proposta">'+txt+'</div></div><div class="btn-row"><button class="btn btn-primary" onclick="copiarProposta()">📋 Copiar</button><button class="btn btn-dark" onclick="whatsappProposta()">💬 WhatsApp</button></div>';
+  navTo('proposta',g('nav-proposta'));
+}
+
+function copiarProposta(){var t=g('txt-proposta').innerText;navigator.clipboard.writeText(t).then(function(){toast('✅ Copiado!');}).catch(function(){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);toast('✅ Copiado!');});}
+function whatsappProposta(){window.open('https://wa.me/?text='+encodeURIComponent(g('txt-proposta').innerText),'_blank');}
+
+function salvarHist(){var r=ultimoCalculo;if(!r)return;try{var h=JSON.parse(localStorage.getItem('rpro_hist')||'[]');h.unshift(Object.assign({},r,{id:Date.now()}));if(h.length>50)h=h.slice(0,50);localStorage.setItem('rpro_hist',JSON.stringify(h));toast('💾 Salvo!');renderHist();}catch(e){}}
+
+function renderHist(){try{var h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),el=g('hist-list');if(!h.length){el.innerHTML='<div class="empty"><span class="empty-ico">🗂️</span><div class="empty-t">Nenhum orçamento salvo</div></div>';return;}el.innerHTML=h.map(function(x){var ok=(x.mar*100)>=(cfg.margemMin||30);return '<div class="hist-card" onclick="carregarHist('+x.id+')"><div class="hist-top"><div class="hist-name">'+(x.cli&&x.cli.nome?x.cli.nome:'Sem nome')+'</div><div class="hist-date">'+(x.data||'')+'</div></div><div class="hist-bot"><div class="hist-val">'+brl(x.tot)+'</div><div class="badge '+(ok?'b-ok':'b-warn')+'">'+(x.mar*100).toFixed(1)+'% margem</div></div></div>';}).join('');}catch(e){}}
+
+function carregarHist(id){try{var h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),x=h.find(function(i){return i.id===id;});if(!x)return;ultimoCalculo=x;renderResultado(x);navTo('resultado',g('nav-resultado'));toast('📋 Carregado');}catch(e){}}
+function limparHist(){if(confirm('Apagar todo o histórico?')){localStorage.removeItem('rpro_hist');renderHist();toast('🗑️ Limpo');}}
+
+function navTo(id,el){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});g('screen-'+id).classList.add('active');el.classList.add('active');if(id==='historico')renderHist();}
+
+renderRes();
+renderHist();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 </script>
 </body>
 </html>
