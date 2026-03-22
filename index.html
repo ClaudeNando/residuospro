@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ResíduosPRO">
 <title>ResíduosPRO</title>
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json" crossorigin="use-credentials">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -138,6 +138,73 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
 .cfg-i:focus{border-color:var(--accent)}.cfg-i-wide{width:168px;text-align:left}
 .toast{position:fixed;bottom:calc(var(--nav-h) + var(--sb) + 12px);left:50%;transform:translateX(-50%) translateY(10px);background:var(--dark);border:1px solid rgba(247,153,89,0.25);border-radius:12px;padding:12px 22px;font-size:13px;font-weight:600;color:#f8f0dd;opacity:0;transition:all .28s;z-index:200;white-space:nowrap;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── OTIMIZAÇÕES ANDROID ───────────────────────────────── */
+
+/* Scroll suave nativo Android */
+* { -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
+
+/* Remover delay de 300ms no toque — Android Chrome */
+* { touch-action: manipulation; }
+
+/* Área de toque mínima 48x48px para todos os botões */
+.btn, .nav-item, .ibama-item, .ibama-btn, .ibama-close-btn,
+.res-del, .hdr-btn, .hist-card {
+  min-height: 48px;
+}
+.nav-item { min-height: 56px; }
+
+/* Inputs maiores no mobile — mais fácil de tocar */
+.inp { padding: 15px 15px; min-height: 52px; }
+.sel { min-height: 52px; }
+
+/* Feedback visual de toque mais rápido */
+.btn:active { transform: scale(0.96); transition: transform 0.08s; }
+.ibama-item:active { background: var(--accent-dim); transition: background 0.08s; }
+.hist-card:active { border-color: var(--accent); transition: border-color 0.08s; }
+.nav-item:active { opacity: 0.7; transition: opacity 0.08s; }
+
+/* Modal IBAMA ocupa tela inteira no Android */
+.ibama-overlay { padding: 0; }
+.ibama-box { border-radius: 0; flex: 1; }
+.ibama-close-btn { border-radius: 0; padding: 18px; font-size: 16px; }
+
+/* Campo de busca IBAMA maior */
+.ibama-sinp { padding: 16px 14px; font-size: 18px; min-height: 56px; }
+
+/* Itens da lista IBAMA mais espaçados */
+.ibama-item { padding: 14px 16px; min-height: 56px; }
+.ibama-item-txt { font-size: 14px; }
+
+/* Botão IBAMA maior */
+.ibama-btn { min-height: 52px; padding: 14px 15px; }
+
+/* Teclado numérico nos campos de número */
+/* já está com inputmode mas garante no Android */
+input[type=number] { -moz-appearance: textfield; }
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+/* Proposta e resultado — scroll mais fluido */
+.screen { scroll-snap-type: none; overscroll-behavior: contain; }
+
+/* Evitar seleção de texto acidental ao tocar */
+.nav, .hdr, .btn, .nav-item, .ibama-item {
+  -webkit-user-select: none; user-select: none;
+}
+
+/* Fonte maior no resultado para leitura fácil */
+.rbox-dark { padding: 20px; }
+.rv.neg, .rv.acc { font-size: 15px; }
+
+/* Toast mais visível no Android */
+.toast { 
+  font-size: 14px; 
+  padding: 14px 24px;
+  border-radius: 14px;
+  bottom: calc(var(--nav-h) + var(--sb) + 16px);
+}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
