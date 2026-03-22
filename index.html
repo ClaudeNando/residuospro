@@ -383,8 +383,6 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
 /* DIVIDER */
 .div{height:1px;background:var(--border2);margin:14px 0}
 
-/* AUTOCOMPLETE — usa datalist nativo */
-.datalist-inp{ position:relative }
 .res-badge{ margin-top:8px; margin-bottom:10px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; min-height:28px; }
 .code-tag{ font-size:11px;font-family:monospace;background:#e8d8b4;color:#5c3822;padding:3px 10px;border-radius:8px;border:1px solid #c8a882; }
 .per-tag{ font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px; }
@@ -705,18 +703,13 @@ function renderResiduos(){
       return '<option value="'+k+'"'+(r.dest===k?' selected':'')+'>'+k+'</option>';
     }).join('');
 
-    // Opções IBAMA para o select
-    var ibamaOpts = '<option value="">— Selecione ou busque —</option>';
-    if (typeof IBAMA !== 'undefined') {
-      for (var n = 0; n < IBAMA.length; n++) {
-        var item = IBAMA[n];
-        var sel = (r.codigo && r.codigo === item.codigo) ? ' selected' : '';
-        ibamaOpts += '<option value="'+item.codigo+'"'+sel+'>'+item.codigo+' | '+item.desc+'</option>';
-      }
-    }
-
     var div = document.createElement('div');
     div.className = 'res-row';
+
+    var btnLabel = r.desc
+      ? '<span>'+r.desc+'</span>'
+      : '<span class="ibama-btn-placeholder">Toque para buscar na lista IBAMA...</span>';
+
     div.innerHTML =
       '<div class="res-head">' +
         '<div class="res-num">'+(i+1)+'</div>' +
@@ -724,86 +717,34 @@ function renderResiduos(){
         (residuos.length>1 ? '<button class="res-del" type="button">×</button>' : '') +
       '</div>' +
       '<div class="field">' +
-        '<label class="field-label">Busca rápida — filtre na lista IBAMA</label>' +
-        '<input class="inp ibama-search" type="text" placeholder="Digite para filtrar..." autocomplete="off">' +
-      '</div>' +
-      '<div class="field">' +
-        '<label class="field-label">Resíduo IBAMA</label>' +
-        '<select class="inp ibama-sel" size="1">'+ibamaOpts+'</select>' +
+        '<label class="field-label">Resíduo — Lista IBAMA</label>' +
+        '<button type="button" class="ibama-btn">'+btnLabel+'<span class="ibama-btn-arrow">▼</span></button>' +
         '<div class="res-badge" id="badge-'+r.id+'">'+makeBadge(r)+'</div>' +
       '</div>' +
       '<div class="g2">' +
         '<div class="field"><label class="field-label">Peso (kg)</label>' +
-          '<input class="inp inp-mono peso-inp" type="number" placeholder="0" inputmode="decimal">' +
+          '<input class="inp inp-mono" type="number" placeholder="0" inputmode="decimal" value="'+(r.peso||'')+'">' +
         '</div>' +
         '<div class="field"><label class="field-label">Destinação</label>' +
-          '<select class="inp inp-select dest-sel">'+destOpts+'</select>' +
+          '<select class="inp inp-select">'+destOpts+'</select>' +
         '</div>' +
       '</div>';
 
-    var pesoInp = div.querySelector('.peso-inp');
-    if (r.peso) pesoInp.value = r.peso;
+    // Botão abre modal de busca
+    var btn = div.querySelector('.ibama-btn');
+    btn.onclick = function(){ ibamaOpen(r.id, btn); };
 
-    var delBtn = div.querySelector('.res-del');
-    if (delBtn) delBtn.onclick = function(){ delRes(r.id); };
+    // Deletar
+    var del = div.querySelector('.res-del');
+    if (del) del.onclick = function(){ delRes(r.id); };
 
-    // Campo de busca — filtra o select
-    var searchInp = div.querySelector('.ibama-search');
-    var ibamaSelect = div.querySelector('.ibama-sel');
-
-    // Preencher busca com valor atual
-    if (r.desc) searchInp.value = r.desc;
-
-    searchInp.addEventListener('input', function(){
-      var q = this.value.toLowerCase();
-      var opts = ibamaSelect.options;
-      for (var k = 0; k < opts.length; k++) {
-        if (k === 0) continue; // skip placeholder
-        var txt = opts[k].text.toLowerCase();
-        opts[k].style.display = (q.length < 2 || txt.indexOf(q) >= 0) ? '' : 'none';
-      }
-      // Auto-selecionar se só restar um
-      var visible = [];
-      for (var k = 1; k < opts.length; k++) {
-        if (opts[k].style.display !== 'none') visible.push(k);
-      }
-      if (visible.length === 1) {
-        ibamaSelect.selectedIndex = visible[0];
-        ibamaSelect.dispatchEvent(new Event('change'));
-      }
-    });
-
-    // Seleção no select IBAMA
-    ibamaSelect.addEventListener('change', function(){
-      var cod = this.value;
-      console.log('SELECT CHANGE cod=', JSON.stringify(cod));
-      if (!cod) return;
-      var found = null;
-      for (var k = 0; k < IBAMA.length; k++) {
-        if (IBAMA[k].codigo === cod) { found = IBAMA[k]; break; }
-      }
-      console.log('FOUND=', JSON.stringify(found));
-      if (found) {
-        searchInp.value = found.desc;
-        updRes(r.id, 'desc',    found.desc);
-        updRes(r.id, 'codigo',  found.codigo);
-        updRes(r.id, 'perigoso', !!found.perigoso);
-        var b = g('badge-'+r.id);
-        console.log('BADGE EL=', b ? 'found' : 'NULL', 'id=badge-'+r.id);
-        if (b) {
-          var html = makeBadge(found);
-          console.log('BADGE HTML=', html);
-          b.innerHTML = html;
-        }
-      }
-    });
-
-    pesoInp.addEventListener('input', function(){
+    // Peso
+    div.querySelector('input.inp-mono').addEventListener('input', function(){
       updRes(r.id, 'peso', +this.value); calcular();
     });
 
-    var destSel = div.querySelector('.dest-sel');
-    destSel.addEventListener('change', function(){
+    // Destinação
+    div.querySelector('select').addEventListener('change', function(){
       updRes(r.id, 'dest', this.value); calcular();
     });
 
@@ -815,8 +756,92 @@ function makeBadge(r){
   if (!r || !r.codigo) return '';
   return '<span class="code-tag">'+r.codigo+'</span>' +
     '<span class="per-tag '+(r.perigoso?'danger':'safe')+'">' +
-    (r.perigoso ? '⚠️ Perigoso' : '✓ Não Perigoso')+'</span>';
+    (r.perigoso?'⚠️ Perigoso':'✓ Não Perigoso')+'</span>';
 }
+
+// ── MODAL IBAMA ────────────────────────────────────────
+var _ibamaCurrentId  = null;
+var _ibamaCurrentBtn = null;
+
+function ibamaOpen(residuoId, btn) {
+  _ibamaCurrentId  = residuoId;
+  _ibamaCurrentBtn = btn;
+  var modal = g('ibama-modal');
+  var inp   = g('ibama-search-inp');
+  modal.classList.remove('hidden');
+  inp.value = '';
+  ibamaRender('');
+  setTimeout(function(){ inp.focus(); }, 50);
+}
+
+function ibamaClose() {
+  g('ibama-modal').classList.add('hidden');
+  _ibamaCurrentId  = null;
+  _ibamaCurrentBtn = null;
+}
+
+function ibamaRender(query) {
+  var q = query.toLowerCase().trim();
+  var src = (typeof IBAMA !== 'undefined') ? IBAMA : [];
+  var results = q.length < 2 ? src.slice(0, 80) : src.filter(function(r){
+    return r.desc.toLowerCase().indexOf(q) >= 0 || r.codigo.indexOf(q) >= 0;
+  }).slice(0, 80);
+
+  var el = g('ibama-results');
+  if (!results.length) {
+    el.innerHTML = '<div class="ibama-empty">Nenhum resultado para "'+query+'"</div>';
+    return;
+  }
+
+  el.innerHTML = '';
+  results.forEach(function(r) {
+    var item = document.createElement('div');
+    item.className = 'ibama-item';
+    item.innerHTML =
+      '<div class="ibama-item-code">'+r.codigo+'</div>' +
+      '<div class="ibama-item-desc">'+r.desc+'</div>' +
+      '<div class="ibama-item-per '+(r.perigoso?'per':'nper')+'">'+(r.perigoso?'⚠️':'✓')+'</div>';
+    item.onclick = function(){
+      ibamaSelect(r);
+    };
+    el.appendChild(item);
+  });
+}
+
+function ibamaSelect(r) {
+  if (_ibamaCurrentId === null) return;
+  var id = _ibamaCurrentId;
+
+  updRes(id, 'desc',    r.desc);
+  updRes(id, 'codigo',  r.codigo);
+  updRes(id, 'perigoso', !!r.perigoso);
+
+  // Atualizar botão
+  if (_ibamaCurrentBtn) {
+    _ibamaCurrentBtn.innerHTML =
+      '<span>'+r.desc+'</span><span class="ibama-btn-arrow">▼</span>';
+  }
+
+  // Atualizar badge
+  var b = g('badge-'+id);
+  if (b) b.innerHTML = makeBadge(r);
+
+  ibamaClose();
+}
+
+// Busca no input do modal
+document.addEventListener('DOMContentLoaded', function(){
+  var inp = g('ibama-search-inp');
+  if (inp) {
+    inp.addEventListener('input', function(){
+      ibamaRender(this.value);
+    });
+  }
+  // Fechar clicando fora
+  g('ibama-modal').addEventListener('click', function(e){
+    if (e.target === this) ibamaClose();
+  });
+});
 
 function addResiduo(){residuos.push({id:nextId++,peso:0,dest:'ATERRO CLASSE II',desc:''});renderResiduos();}
 function delRes(id){residuos=residuos.filter(r=>r.id!==id);renderResiduos();calcular();}
