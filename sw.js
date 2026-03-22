@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rpro-v5';
+const CACHE_NAME = 'rpro-v6';
 const ASSETS = [
   './index.html',
   './manifest.json',
