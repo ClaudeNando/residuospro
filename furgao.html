@@ -250,7 +250,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
       </div>
       <div class="g2">
         <div class="field"><label class="flabel">Parcela mensal</label><input class="inp inp-mono" id="cfg-parcela" type="number" step="0.01"></div>
-        <div class="field"><label class="flabel">Média km/mês</label><input class="inp inp-mono" id="cfg-kmmес" type="number" step="1"></div>
+        <div class="field"><label class="flabel">Km/mês (fallback)</label><input class="inp inp-mono" id="cfg-kmmес" type="number" step="1" placeholder="Calculado auto"></div>
       </div>
       <div class="card-lbl" style="margin:12px 0 10px">Custos anuais</div>
       <div class="g2">
@@ -313,25 +313,25 @@ var DEF_CLIENTES=[
 ];
 
 var DEF_VIAGENS=[
-  {id:1,clienteId:1,nome:'Terral',data:'2024-01-15',km:70,fat:5800,custo:4800,obs:''},
-  {id:2,clienteId:2,nome:'Lindt',data:'2024-02-10',km:1850,fat:12200,custo:null,obs:''},
-  {id:3,clienteId:3,nome:'Livio',data:'2024-02-20',km:90,fat:3000,custo:null,obs:''},
-  {id:4,clienteId:4,nome:'Bauminas',data:'2024-03-05',km:400,fat:5550,custo:700,obs:''},
-  {id:5,clienteId:5,nome:'Do Norte',data:'2024-03-12',km:54,fat:800,custo:null,obs:''},
-  {id:6,clienteId:6,nome:'Viterra',data:'2024-04-08',km:511,fat:4300,custo:760,obs:''},
-  {id:7,clienteId:7,nome:'Isa Lucia',data:'2024-04-15',km:21,fat:800,custo:null,obs:''},
-  {id:8,clienteId:8,nome:'Simelo',data:'2024-05-01',km:120,fat:875,custo:1435,obs:''},
-  {id:9,clienteId:9,nome:'Biotrop',data:'2024-05-20',km:1935,fat:10450,custo:2749,obs:'São José Xingu'},
-  {id:10,clienteId:3,nome:'Livio',data:'2024-06-10',km:800,fat:4000,custo:1042,obs:''},
-  {id:11,clienteId:10,nome:'UEG',data:'2024-06-25',km:615,fat:3800,custo:840,obs:''},
-  {id:12,clienteId:11,nome:'Spengi',data:'2024-07-08',km:363,fat:3800,custo:null,obs:''},
-  {id:13,clienteId:12,nome:'Cesam',data:'2024-07-22',km:518,fat:4600,custo:null,obs:''},
-  {id:14,clienteId:13,nome:'Só Ofertas',data:'2024-08-05',km:35,fat:2000,custo:548,obs:''},
-  {id:15,clienteId:4,nome:'Bauminas',data:'2024-08-18',km:400,fat:5700,custo:1476,obs:''},
-  {id:16,clienteId:14,nome:'Lat Teixeira',data:'2024-09-10',km:330,fat:3500,custo:null,obs:''},
-  {id:17,clienteId:15,nome:'Biotrop',data:'2024-09-25',km:546,fat:3000,custo:null,obs:'Cristalina'},
-  {id:18,clienteId:16,nome:'Argo',data:'2024-10-15',km:1100,fat:7400,custo:3828,obs:''},
-  {id:19,clienteId:17,nome:'Grupo Zelo',data:'2024-11-05',km:1650,fat:7500,custo:null,obs:''},
+  {id:1,clienteId:1,nome:'Terral',data:'2025-10-05',km:70,fat:5800,custo:4800,obs:''},
+  {id:2,clienteId:2,nome:'Lindt',data:'2025-10-12',km:1850,fat:12200,custo:null,obs:''},
+  {id:3,clienteId:3,nome:'Livio',data:'2025-10-18',km:90,fat:3000,custo:null,obs:''},
+  {id:4,clienteId:4,nome:'Bauminas',data:'2025-10-25',km:400,fat:5550,custo:700,obs:''},
+  {id:5,clienteId:5,nome:'Do Norte',data:'2025-11-02',km:54,fat:800,custo:null,obs:''},
+  {id:6,clienteId:6,nome:'Viterra',data:'2025-11-08',km:511,fat:4300,custo:760,obs:''},
+  {id:7,clienteId:7,nome:'Isa Lucia',data:'2025-11-15',km:21,fat:800,custo:null,obs:''},
+  {id:8,clienteId:8,nome:'Simelo',data:'2025-11-22',km:120,fat:875,custo:1435,obs:''},
+  {id:9,clienteId:9,nome:'Biotrop',data:'2025-11-28',km:1935,fat:10450,custo:2749,obs:'São José Xingu'},
+  {id:10,clienteId:3,nome:'Livio',data:'2025-12-05',km:800,fat:4000,custo:1042,obs:''},
+  {id:11,clienteId:10,nome:'UEG',data:'2025-12-12',km:615,fat:3800,custo:840,obs:''},
+  {id:12,clienteId:11,nome:'Spengi',data:'2025-12-18',km:363,fat:3800,custo:null,obs:''},
+  {id:13,clienteId:12,nome:'Cesam',data:'2026-01-08',km:518,fat:4600,custo:null,obs:''},
+  {id:14,clienteId:13,nome:'Só Ofertas',data:'2026-01-15',km:35,fat:2000,custo:548,obs:''},
+  {id:15,clienteId:4,nome:'Bauminas',data:'2026-01-22',km:400,fat:5700,custo:1476,obs:''},
+  {id:16,clienteId:14,nome:'Lat Teixeira',data:'2026-02-05',km:330,fat:3500,custo:null,obs:''},
+  {id:17,clienteId:15,nome:'Biotrop',data:'2026-02-15',km:546,fat:3000,custo:null,obs:'Cristalina'},
+  {id:18,clienteId:16,nome:'Argo',data:'2026-02-22',km:1100,fat:7400,custo:3828,obs:''},
+  {id:19,clienteId:17,nome:'Grupo Zelo',data:'2026-03-05',km:1650,fat:7500,custo:null,obs:''},
 ];
 
 var cfg=lCfg(), clientes=lClientes(), viagens=lViagens();
@@ -353,8 +353,22 @@ function lViagens(){try{var s=localStorage.getItem('fp2_viagens');return s?JSON.
 function sViagens(){localStorage.setItem('fp2_viagens',JSON.stringify(viagens));}
 
 // ── CUSTO POR KM ─────────────────────────────────────────
+function calcKmMedioReal(){
+  if(!viagens.length) return cfg.kmMes||10392;
+  // Pega data mais antiga
+  var datas=viagens.filter(function(v){return v.data;}).map(function(v){return new Date(v.data);});
+  if(!datas.length) return cfg.kmMes||10392;
+  var minData=new Date(Math.min.apply(null,datas));
+  var hoje=new Date();
+  // Meses entre primeira viagem e hoje (mínimo 1)
+  var meses=(hoje.getFullYear()-minData.getFullYear())*12+(hoje.getMonth()-minData.getMonth())+1;
+  if(meses<1) meses=1;
+  var totalKm=viagens.reduce(function(s,v){return s+(v.km||0);},0);
+  return totalKm/meses;
+}
+
 function calcCustoEstimado(){
-  var km=cfg.kmMes||1, kma=km*12;
+  var km=calcKmMedioReal(), kma=km*12;
   var itens=[
     {label:'Combustível',val:cfg.diesel/cfg.consumo},
     {label:'Parcela',val:cfg.parcela/km},
@@ -394,7 +408,8 @@ function renderDash(){
   var margem=totFat>0?sobra/totFat:0;
   var mc=margem>=cfg.margem/100?'ok':margem>=(cfg.margem/100)*0.7?'warn':'bad';
 
-  g('dash-sub').textContent=viagens.length+' viagens registradas';
+  var kmMedio=calcKmMedioReal();
+  g('dash-sub').textContent=viagens.length+' viagens · '+fmt(kmMedio)+' km/mês (média real)';
 
   g('kpi-area').innerHTML=
     kpi('Faturamento total',brl(totFat),'todas as viagens','')+
@@ -403,7 +418,9 @@ function renderDash(){
     kpi('Custo/km real',real?'R$ '+real.custoKm.toFixed(2).replace('.',','):'Estimado','',real?'':'');
 
   // Custo km detalhe
+  var kmMedioCalc=calcKmMedioReal();
   var tag=real?'<span class="tag-real">✓ baseado em '+real.nViagens+' viagens reais</span>':'<span class="tag-est">estimado por configuração</span>';
+  tag+=' <span class="tag-est">'+fmt(kmMedioCalc)+' km/mês (média calculada)</span>';
   var custoUsado=real?real.custoKm:est.total;
   var linhas=est.itens.map(function(i){
     return '<div class="ctrow"><span class="ct-label">'+i.label+'</span><span class="ct-val">'+i.val.toFixed(4).replace('.',',')+'</span></div>';
