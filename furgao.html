@@ -44,7 +44,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .kpi{background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:14px}
 .kpi-label{font-size:11px;color:var(--text3);margin-bottom:4px}
-.kpi-value{font-size:22px;font-weight:800;color:var(--text);font-family:'DM Mono',monospace;line-height:1.1}
+.kpi-value{font-size:22px;font-weight:800;color:var(--text);font-family:monospace;line-height:1.1}
 .kpi-value.ok{color:var(--success)}.kpi-value.warn{color:var(--warning)}.kpi-value.bad{color:var(--danger)}
 .kpi-sub{font-size:11px;color:var(--text4);margin-top:3px}
 .field{margin-bottom:12px}.field:last-child{margin-bottom:0}
@@ -52,7 +52,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .inp{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text);font-family:'Syne',sans-serif;font-size:16px;outline:none;-webkit-appearance:none}
 .inp:focus{border-color:var(--accent);background:#fff}
 .inp::placeholder{color:var(--text4)}
-.inp-mono{font-family:'DM Mono',monospace}
+.inp-mono{font-family:monospace}
 .sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%231a6bb5' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;cursor:pointer}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:13px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border:none;transition:transform .12s}
@@ -72,7 +72,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .ccard-nums{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .cnum{background:var(--bg);border-radius:10px;padding:8px 10px}
 .cnum-lbl{font-size:10px;color:var(--text4);margin-bottom:2px}
-.cnum-val{font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text)}
+.cnum-val{font-size:13px;font-weight:700;font-family:monospace;color:var(--text)}
 .cnum-val.ok{color:var(--success)}.cnum-val.warn{color:var(--warning)}.cnum-val.bad{color:var(--danger)}
 .mbar{height:5px;border-radius:3px;background:var(--bg);overflow:hidden;margin-top:8px}
 .mfill{height:100%;border-radius:3px}
@@ -81,11 +81,11 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .rcard:active{border-color:var(--accent)}
 .rcard-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .rcard-title{font-size:14px;font-weight:700;color:var(--text)}
-.rcard-date{font-size:11px;color:var(--text4);font-family:'DM Mono',monospace}
+.rcard-date{font-size:11px;color:var(--text4);font-family:monospace}
 .rcard-nums{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
 .rnum{background:var(--bg);border-radius:8px;padding:7px 9px}
 .rnum-lbl{font-size:9px;color:var(--text4);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.5px}
-.rnum-val{font-size:12px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text)}
+.rnum-val{font-size:12px;font-weight:700;font-family:monospace;color:var(--text)}
 .rnum-val.ok{color:var(--success)}.rnum-val.bad{color:var(--danger)}
 /* INFO BOX */
 .info-box{background:var(--accent-dim);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:13px;color:var(--text2);line-height:1.5}
@@ -94,7 +94,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .ctrow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border2)}
 .ctrow:last-child{border-bottom:none}
 .ct-label{font-size:13px;color:var(--text2)}
-.ct-val{font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:var(--text)}
+.ct-val{font-size:13px;font-weight:700;font-family:monospace;color:var(--text)}
 .ct-val.green{color:var(--success)}.ct-val.big{font-size:15px}
 /* BADGE */
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
@@ -133,13 +133,13 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
     <div class="hdr-mark">F</div>
     <div><div class="hdr-title">FurgãoPRO</div><div class="hdr-sub">Cerrado Ambiental</div></div>
   </div>
-  <button class="hdr-btn" onclick="openModal('cfg-modal')">⚙️</button>
+  <div style="display:flex;gap:8px"><button class="hdr-btn" onclick="window.location.href='index.html'" title="ResíduosPRO" style="font-size:14px">♻️</button><button class="hdr-btn" onclick="openModal('cfg-modal')">⚙️</button></div>
 </div>
 <div class="content">
 
   <!-- DASHBOARD -->
   <div id="screen-dash" class="screen active">
-    <div class="shdr"><div class="shdr-title">Dashboard</div><div id="dash-sub" style="font-size:11px;color:var(--text4);font-family:'DM Mono',monospace"></div></div>
+    <div class="shdr"><div class="shdr-title">Dashboard</div><div id="dash-sub" style="font-size:11px;color:var(--text4);font-family:monospace"></div></div>
     <div class="kpi-grid" id="kpi-area"></div>
     <div class="card" id="custo-card">
       <div class="card-head"><div class="card-icon">📐</div><div class="card-lbl">Custo por km</div></div>
@@ -252,7 +252,6 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
         <div class="field"><label class="flabel">Parcela mensal</label><input class="inp inp-mono" id="cfg-parcela" type="number" step="0.01"></div>
         <div class="field"><label class="flabel">Km/mês (fallback)</label><input class="inp inp-mono" id="cfg-kmmес" type="number" step="1" placeholder="Calculado auto"></div>
       </div>
-      <div class="field"><label class="flabel">Faturamento de referência (R$/mês)</label><input class="inp inp-mono" id="cfg-fat-ref" type="number" step="100" placeholder="Deixe vazio para usar histórico das viagens"></div>
       <div class="card-lbl" style="margin:12px 0 10px">Custos anuais</div>
       <div class="g2">
         <div class="field"><label class="flabel">IPVA (R$)</label><input class="inp inp-mono" id="cfg-ipva" type="number" step="1"></div>
@@ -291,7 +290,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 <div class="toast" id="toast"></div>
 
 <script>
-var DEF_CFG={consumo:10,diesel:7.20,parcela:4202.39,kmMes:10392,fatRef:0,ipva:4570,seguro:7265,licen:308,motorista:5000,oleoCusto:1000,oleoKm:10000,pneuCusto:3000,pneuKm:50000,manutCusto:3000,manutKm:50000,imposto:15.45,margem:30};
+var DEF_CFG={consumo:10,diesel:7.20,parcela:4202.39,kmMes:10392,ipva:4570,seguro:7265,licen:308,motorista:5000,oleoCusto:1000,oleoKm:10000,pneuCusto:3000,pneuKm:50000,manutCusto:3000,manutKm:50000,imposto:15.45,margem:30};
 
 var DEF_CLIENTES=[
   {id:1,nome:'Terral',local:'Cidade de Goiás',uf:'GO',km:70,fatEsperado:5800},
@@ -379,22 +378,12 @@ function calcCustoEstimado(){
   var kmMedio=totKm/meses;
 
   var fixoKm, metodo;
-  // Faturamento base: usa cfg.fatRef se definido (prioridade), senão usa média real das viagens
-  var fatBase=(cfg.fatRef>0)?cfg.fatRef/meses:fatMedio;
-  var fatLabel=(cfg.fatRef>0)?'ref. manual '+brl(cfg.fatRef)+'/mês':brl(fatMedio)+'/mês (histórico)';
-
-  if((totKm>0)&&(totFat>0||cfg.fatRef>0)){
-    var receitaKm=totFat>0?totFat/totKm:(cfg.fatRef/Math.max(cfg.kmMes,1));
-    var pctFixo=fixoMensal/fatBase;
-    fixoKm=receitaKm*pctFixo;
-    metodo='diluído pelo faturamento ('+meses+' meses · '+fmt(kmMedio)+' km/mês · '+fatLabel+')';
-  } else if(cfg.fatRef>0){
-    // Sem viagens mas com faturamento de referência
-    var km0=Math.max(cfg.kmMes,1);
-    var receitaKm0=cfg.fatRef/km0;
-    var pctFixo0=fixoMensal/(cfg.fatRef/12);
-    fixoKm=receitaKm0*(fixoMensal/(cfg.fatRef/12));
-    metodo='faturamento de referência '+brl(cfg.fatRef)+'/mês (sem viagens)';
+  if(totFat>0&&totKm>0){
+    // Método diluído: % fixo sobre faturamento → converte para R$/km
+    var receitaKm=totFat/totKm; // receita média por km
+    var pctFixo=fixoMensal/fatMedio; // % do faturamento que é custo fixo
+    fixoKm=receitaKm*pctFixo; // custo fixo por km
+    metodo='diluído pelo faturamento ('+meses+' meses · '+fmt(kmMedio)+' km/mês · '+brl(fatMedio)+'/mês)';
   } else {
     // Fallback: divide pelo km configurado
     var km=cfg.kmMes||1;
@@ -506,7 +495,7 @@ function renderDash(){
     return '<div style="margin-bottom:10px">'+
       '<div style="display:flex;justify-content:space-between;margin-bottom:4px">'+
         '<span style="font-size:12px;color:var(--text2);font-weight:700">'+c.nome+' <span style="color:var(--text4);font-weight:400">('+c.n+'×)</span></span>'+
-        '<span style="font-size:11px;font-family:\\\'DM Mono\\\',monospace;color:'+(ok?'var(--success)':'var(--danger)')+'">'+brl(c.fat)+'</span>'+
+        '<span style="font-size:11px;font-family:monospace;color:'+(ok?'var(--success)':'var(--danger)')+'">'+brl(c.fat)+'</span>'+
       '</div>'+
       '<div style="background:var(--bg);border-radius:4px;height:6px;overflow:hidden">'+
         '<div style="width:'+w+'%;height:100%;background:'+(ok?'var(--success)':'var(--danger)')+';border-radius:4px"></div>'+
@@ -798,7 +787,6 @@ function excluirCliente(){
 function openCfg(){
   g('cfg-consumo').value=cfg.consumo;g('cfg-diesel').value=cfg.diesel;
   g('cfg-parcela').value=cfg.parcela;g('cfg-kmmес').value=cfg.kmMes;
-  g('cfg-fat-ref').value=cfg.fatRef||'';
   g('cfg-ipva').value=cfg.ipva;g('cfg-seguro').value=cfg.seguro;
   g('cfg-licen').value=cfg.licen;g('cfg-motorista').value=cfg.motorista;
   g('cfg-oleo-c').value=cfg.oleoCusto;g('cfg-oleo-k').value=cfg.oleoKm;
@@ -810,7 +798,6 @@ function openCfg(){
 function salvarCfg(){
   cfg.consumo=+g('cfg-consumo').value||10;cfg.diesel=+g('cfg-diesel').value||7.20;
   cfg.parcela=+g('cfg-parcela').value||4202.39;cfg.kmMes=+g('cfg-kmmес').value||10392;
-  cfg.fatRef=+g('cfg-fat-ref').value||0;
   cfg.ipva=+g('cfg-ipva').value||4570;cfg.seguro=+g('cfg-seguro').value||7265;
   cfg.licen=+g('cfg-licen').value||308;cfg.motorista=+g('cfg-motorista').value||5000;
   cfg.oleoCusto=+g('cfg-oleo-c').value||1000;cfg.oleoKm=+g('cfg-oleo-k').value||10000;
