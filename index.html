@@ -244,7 +244,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
     <div class="card">
       <div class="card-head"><div class="card-icon">🚛</div><div class="card-lbl">Transporte</div></div>
       <div class="g2">
-        <div class="field"><label class="flabel">Trajeto (km)</label><input class="inp inp-mono" type="text" id="trajeto" placeholder="0 ou ex: 200+50" inputmode="text" oninput="calcular()"></div>
+        <div class="field"><label class="flabel">Trajeto (km)</label><input class="inp inp-mono" type="number" id="trajeto" placeholder="0" inputmode="numeric" oninput="calcular()"></div>
         <div class="field"><label class="flabel">Veículo</label>
           <select class="inp sel" id="veiculo" onchange="calcular()">
             <option value="FIORINO">Fiorino</option><option value="FURGAO">Furgão</option>
@@ -252,7 +252,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
           </select>
         </div>
       </div>
-      <div class="field"><label class="flabel">Acréscimos de Cabeça (R$)</label><input class="inp inp-mono" type="text" id="acresc" placeholder="0 ou ex: 500+200" inputmode="text" oninput="calcular()"></div>
+      <div class="field"><label class="flabel">Acréscimos de Cabeça (R$)</label><input class="inp inp-mono" type="number" id="acresc" placeholder="0,00" inputmode="numeric" oninput="calcular()"></div>
     </div>
     <div class="card">
       <div class="card-head"><div class="card-icon">♻️</div><div class="card-lbl">Resíduos</div></div>
@@ -263,7 +263,20 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
       <div class="card-head"><div class="card-icon">📝</div><div class="card-lbl">Observações</div></div>
       <div class="field"><textarea class="inp" id="obs" placeholder="Condições especiais..." rows="3"></textarea></div>
     </div>
-    <button class="btn btn-primary" onclick="goResultado()"><span>Calcular Orçamento</span><span style="font-size:18px">→</span></button>
+    <div class="card" id="calc-imposto-card">
+  <div class="card-head"><div class="card-icon">🧮</div><div class="card-lbl">Calculadora de Imposto</div></div>
+  <div class="field">
+    <label class="flabel">Valor NF (R$) — use + para somar</label>
+    <input class="inp inp-mono" type="text" id="calc-nf" placeholder="ex: 1000+500 ou 7400" inputmode="text" oninput="calcImposto()">
+  </div>
+  <div class="field">
+    <label class="flabel">Fornecedor (R$) — use + para somar</label>
+    <input class="inp inp-mono" type="text" id="calc-forn" placeholder="ex: 1008+2775 ou 3000" inputmode="text" oninput="calcImposto()">
+  </div>
+  <div style="background:var(--bg);border-radius:12px;padding:14px;margin-top:4px" id="calc-resultado" style="display:none"></div>
+</div>
+
+<button class="btn btn-primary" onclick="goResultado()"><span>Calcular Orçamento</span><span style="font-size:18px">→</span></button>
   </div>
 
   <div id="screen-resultado" class="screen">
@@ -446,7 +459,7 @@ function renderRes(){
     btn.onclick=function(){ibamaAbrir(r.id);};
 
     var pi=div.querySelector('input.inp-mono');
-    pi.oninput=function(){updRes(r.id,'peso',safeEval(this.value));calcular();};
+    pi.oninput=function(){updRes(r.id,'peso',+this.value);calcular();};
 
     var sl=div.querySelector('select');
     sl.onchange=function(){updRes(r.id,'dest',this.value);calcular();};
@@ -519,7 +532,7 @@ g('ibama-overlay').onclick=function(e){if(e.target===this)ibamaFechar();};
 
 // ── CÁLCULO ─────────────────────────────────────────────
 function calcular(){
-  var km=safeEval(g('trajeto').value),veic=g('veiculo').value,ac=safeEval(g('acresc').value);
+  var km=+g('trajeto').value||0,veic=g('veiculo').value,ac=+g('acresc').value||0;
   var ctf=km*(cfg.transp.forn[veic]||0),ptc=km*(cfg.transp.cli[veic]||0);
   if(km>=900)ptc+=cfg.transp.cli.DIARIA*(residuos.reduce(function(s,r){return s+(+r.peso||0);},0)/1000||0);
   var cdf=0,pdc=0;
@@ -848,6 +861,39 @@ function gerarPDF(){
 }
 
 
+function calcImposto(){
+  var nf=safeEval(g('calc-nf').value);
+  var forn=safeEval(g('calc-forn').value);
+  var res=g('calc-resultado');
+  if(!nf){res.innerHTML='';return;}
+  var imp=nf*(cfg.imposto/100);
+  var sobra=nf-forn-imp;
+  var margem=nf>0?sobra/nf:0;
+  var mc=margem>=cfg.margem/100?'var(--success)':margem>=(cfg.margem/100)*0.7?'var(--warning)':'var(--danger)';
+  var mono='font-family:monospace;font-size:16px;font-weight:700';
+  res.innerHTML=
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
+      '<div><div style="font-size:11px;color:var(--text3);margin-bottom:3px">Valor NF</div>'+
+        '<div style="'+mono+'">'+brl(nf)+'</div></div>'+
+      '<div><div style="font-size:11px;color:var(--text3);margin-bottom:3px">Imposto ('+cfg.imposto+'%)</div>'+
+        '<div style="'+mono+';color:var(--danger)">− '+brl(imp)+'</div></div>'+
+      (forn>0?
+        '<div><div style="font-size:11px;color:var(--text3);margin-bottom:3px">Fornecedor</div>'+
+          '<div style="'+mono+';color:var(--danger)">− '+brl(forn)+'</div></div>'+
+        '<div><div style="font-size:11px;color:var(--text3);margin-bottom:3px">Sobra</div>'+
+          '<div style="'+mono+';color:'+mc+'">'+brl(sobra)+'</div></div>'
+        :'')+
+    '</div>'+
+    (forn>0?
+      '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center">'+
+        '<span style="font-size:13px;color:var(--text2)">Margem</span>'+
+        '<span style="font-size:20px;font-weight:800;color:'+mc+';font-family:monospace">'+
+          (margem*100).toFixed(1).replace('.',',')+' %'+
+        '</span>'+
+      '</div>'
+    :'');
+}
+
 renderRes();
 renderHist();
 // ── BUSCA CNPJ ──────────────────────────────────────────
@@ -1010,6 +1056,7 @@ function ibamaRenderLista(items,q){
 
 g('ibama-sinp').oninput=function(){ibamaRender(this.value);};
 g('ibama-overlay').onclick=function(e){if(e.target===this)ibamaFechar();};
+
 
 renderRes();
 renderHist();
