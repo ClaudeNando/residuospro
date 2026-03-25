@@ -30,14 +30,14 @@
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;overflow:hidden}
 body{display:flex;flex-direction:column;padding-top:var(--st)}
-.hdr{background:var(--dark);padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hdr{background:var(--dark);padding:10px 14px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .hdr-left{display:flex;align-items:center;gap:10px}
-.hdr-mark{width:36px;height:36px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;flex-shrink:0}
-.hdr-title{font-size:17px;font-weight:800;color:#f8f0dd;letter-spacing:-0.3px;line-height:1}
+.hdr-mark{width:32px;height:32px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;flex-shrink:0}
+.hdr-title{font-size:15px;font-weight:800;color:#f8f0dd;letter-spacing:-0.3px;line-height:1}
 .hdr-sub{font-size:10px;color:rgba(248,240,221,0.42);letter-spacing:0.8px;text-transform:uppercase;margin-top:2px}
 .hdr-btn{width:38px;height:38px;border-radius:11px;background:rgba(248,240,221,0.09);border:1px solid rgba(248,240,221,0.12);color:rgba(248,240,221,0.75);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px}
 .content{flex:1;overflow:hidden;position:relative;display:flex;flex-direction:column}
-.screen{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px calc(var(--nav-h) + var(--sb) + 16px)}
+.screen{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 12px calc(var(--nav-h) + var(--sb) + 12px)}
 .screen.active{display:block}
 .nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + var(--sb));background:var(--dark);border-top:1px solid rgba(247,153,89,0.15);display:flex;align-items:flex-start;padding-top:8px;padding-bottom:var(--sb);z-index:50}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;cursor:pointer}
@@ -47,27 +47,27 @@ body{display:flex;flex-direction:column;padding-top:var(--st)}
 .nav-item.active .nav-icon{transform:scale(1.12)}
 .shdr{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border2)}
 .shdr-icon{width:40px;height:40px;border-radius:12px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.shdr-title{font-size:20px;font-weight:800;letter-spacing:-0.3px}
+.shdr-title{font-size:17px;font-weight:800;letter-spacing:-0.3px}
 .shdr-sub{font-size:12px;color:var(--text3);margin-top:1px}
-.card{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 1px 8px rgba(69,40,24,0.07)}
+.card{background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:13px;margin-bottom:10px;box-shadow:0 1px 8px rgba(69,40,24,0.07)}
 .card-head{display:flex;align-items:center;gap:8px;margin-bottom:14px}
 .card-icon{width:28px;height:28px;border-radius:8px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .card-lbl{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3)}
-.field{margin-bottom:14px}.field:last-child{margin-bottom:0}
-.flabel{font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;display:block}
-.inp{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:14px 15px;color:var(--text);font-family:'Syne',sans-serif;font-size:16px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.field{margin-bottom:10px}.field:last-child{margin-bottom:0}
+.flabel{font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;display:block}
+.inp{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:15px;color:var(--text);font-family:'Syne',sans-serif;font-size:17px;outline:none;transition:border-color .2s;-webkit-appearance:none;min-height:54px}
 .inp:focus{border-color:var(--accent);background:#fff}
 .inp::placeholder{color:var(--text4)}
 .inp-mono{font-family:'DM Mono',monospace}
 .sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23db6a1d' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;cursor:pointer}
 textarea.inp{resize:none;min-height:80px;line-height:1.6}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.res-row{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.res-row{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:11px;margin-bottom:8px}
 .res-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
 .res-num{width:24px;height:24px;border-radius:50%;background:var(--accent);font-size:12px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .res-title{font-size:13px;font-weight:700;color:var(--text2);flex:1}
 .res-del{width:28px;height:28px;border-radius:8px;background:rgba(176,48,32,0.08);border:none;color:var(--danger);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:sans-serif;line-height:1;flex-shrink:0}
-.ibama-btn{width:100%;padding:13px 15px;border-radius:12px;background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:15px;text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:border-color .2s}
+.ibama-btn{width:100%;padding:10px 13px;border-radius:12px;background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:15px;text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:border-color .2s}
 .ibama-btn:hover{border-color:var(--accent)}
 .ibama-placeholder{color:var(--text4)}
 .ibama-value{color:var(--text);flex:1;text-align:left;line-height:1.3;font-size:14px}
@@ -87,7 +87,7 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
 .ibama-header-title{font-size:13px;font-weight:700;color:var(--text2);flex:1}
 .ibama-header-count{font-size:11px;color:var(--text4)}
 .ibama-grupos{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px}
-.ibama-grupo-btn{width:100%;display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:12px;background:var(--bg);border:1.5px solid var(--border2);cursor:pointer;margin-bottom:8px;text-align:left}
+.ibama-grupo-btn{width:100%;display:flex;align-items:center;gap:12px;padding:16px 14px;border-radius:12px;background:var(--bg);border:1.5px solid var(--border2);cursor:pointer;margin-bottom:8px;text-align:left;min-height:64px}
 .ibama-grupo-btn:active{background:var(--accent-dim);border-color:var(--accent)}
 .ibama-grupo-emoji{font-size:22px;flex-shrink:0}
 .ibama-grupo-info{flex:1}
@@ -95,18 +95,18 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
 .ibama-grupo-sub{font-size:11px;color:var(--text3);margin-top:2px}
 .ibama-grupo-count{font-size:11px;font-family:'DM Mono',monospace;color:var(--text4);flex-shrink:0}
 .ibama-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.ibama-item{padding:12px 16px;border-bottom:1px solid var(--border2);cursor:pointer;display:flex;align-items:center;gap:10px}
+.ibama-item{padding:15px 16px;border-bottom:1px solid var(--border2);cursor:pointer;display:flex;align-items:center;gap:10px;min-height:52px}
 .ibama-item:hover,.ibama-item:active{background:var(--accent-dim)}
 .ibama-item-txt{flex:1;font-size:13px;color:var(--text);line-height:1.4}
 .ibama-item-per{font-size:11px;font-weight:700;flex-shrink:0}
 .ibama-item-per.p{color:var(--danger)}.ibama-item-per.n{color:var(--success)}
 .ibama-empty{padding:40px;text-align:center;color:var(--text3);font-size:14px}
 .ibama-close-btn{width:100%;padding:14px;margin-top:8px;border-radius:12px;background:var(--dark);color:#f8f0dd;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;border:none;cursor:pointer;flex-shrink:0}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border-radius:14px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border:none;transition:transform .12s}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:12px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:transform .12s}
 .btn:active{transform:scale(0.97)}
 .btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 16px rgba(219,106,29,0.30)}
 .btn-dark{background:var(--dark);color:#f8f0dd}
-.btn-ghost{background:var(--accent-dim);color:var(--accent);border:1.5px solid var(--border)}
+.btn-ghost{background:var(--accent-dim);color:var(--accent);border:1.5px solid var(--border);min-height:52px}
 .btn-outline{background:transparent;color:var(--text2);border:1.5px solid var(--border)}
 .btn-sm{padding:11px 16px;font-size:13px;border-radius:11px;width:auto}
 .btn-row{display:flex;gap:8px}.btn-row .btn{flex:1}
@@ -146,33 +146,11 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
 .slabel{font-size:11px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;display:block}
 .cfg-r{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border2)}.cfg-r:last-child{border-bottom:none}
 .cfg-l{font-size:14px;font-weight:600}.cfg-s{font-size:11px;color:var(--text3);margin-top:2px}
-.cfg-i{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;width:108px;text-align:right;outline:none;-webkit-appearance:none}
+.cfg-i{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:12px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:16px;width:115px;text-align:right;outline:none;-webkit-appearance:none;min-height:48px}
 .cfg-i:focus{border-color:var(--accent)}.cfg-i-wide{width:168px;text-align:left}
 .toast{position:fixed;bottom:calc(var(--nav-h) + var(--sb) + 12px);left:50%;transform:translateX(-50%) translateY(10px);background:var(--dark);border:1px solid rgba(247,153,89,0.25);border-radius:12px;padding:12px 22px;font-size:13px;font-weight:600;color:#f8f0dd;opacity:0;transition:all .28s;z-index:200;white-space:nowrap;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ── CALCULADORA IMPOSTO ─────────────────────────────────── */
-.calc-overlay{position:fixed;inset:0;background:rgba(58,32,20,0.60);display:flex;align-items:flex-end;z-index:150;opacity:0;pointer-events:none;transition:opacity .25s}
-.calc-overlay.open{opacity:1;pointer-events:all}
-.calc-modal{background:var(--bg);border-radius:22px 22px 0 0;border-top:1.5px solid var(--border);width:100%;max-height:92vh;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
-.calc-overlay.open .calc-modal{transform:translateY(0)}
-.calc-table{width:100%;border-collapse:collapse;font-family:'Syne',sans-serif}
-.calc-table th{background:var(--dark);color:#f8f0dd;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:11px 14px;text-align:center}
-.calc-table td{padding:10px 14px;border-bottom:1px solid var(--border2);font-size:14px;color:var(--text)}
-.calc-table tr:last-child td{border-bottom:none}
-.calc-table .td-lbl{font-weight:700;color:var(--text2);width:45%}
-.calc-table .td-val{font-family:'DM Mono',monospace;text-align:right;font-weight:500}
-.calc-table .td-inp{padding:6px 14px}
-.calc-inp{width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:15px;outline:none;text-align:right;-webkit-appearance:none}
-.calc-inp:focus{border-color:var(--accent);background:#fff}
-.row-sobra td{background:rgba(42,122,64,0.10)}
-.row-sobra .td-lbl{color:#1a6030;font-size:15px}
-.row-sobra .td-val{color:#1a6030;font-size:16px;font-weight:700}
-.row-sobra-pct td{background:var(--dark)}
-.row-sobra-pct .td-lbl{color:#f8f0dd;font-size:15px}
-.row-sobra-pct .td-val{color:var(--accent-light);font-size:18px;font-weight:800}
-.row-bad td{background:rgba(176,48,32,0.08)}
-.row-bad .td-val{color:var(--danger)}
 /* ── OTIMIZAÇÕES ANDROID ───────────────────────────────── */
 
 /* Scroll suave nativo Android */
@@ -249,7 +227,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
     <div class="hdr-mark">C</div>
     <div><div class="hdr-title">ResíduosPRO</div><div class="hdr-sub">Cerrado Ambiental</div></div>
   </div>
-  <div style="display:flex;gap:8px"><button class="hdr-btn" onclick="window.open('furgao.html','_blank')" title="FurgãoPRO" style="font-size:14px">🚛</button><button class="hdr-btn" onclick="abrirCalc()" title="Calculadora de Imposto">🧮</button><button class="hdr-btn" onclick="abrirCfg()">⚙️</button></div>
+  <div style="display:flex;gap:8px"><button class="hdr-btn" onclick="window.open('furgao.html','_blank')" title="FurgãoPRO" style="font-size:14px">🚛</button><button class="hdr-btn" onclick="abrirCfg()">⚙️</button></div>
 </div>
 
 <div class="content">
@@ -266,7 +244,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
     <div class="card">
       <div class="card-head"><div class="card-icon">🚛</div><div class="card-lbl">Transporte</div></div>
       <div class="g2">
-        <div class="field"><label class="flabel">Trajeto (km)</label><input class="inp inp-mono" type="number" id="trajeto" placeholder="0" inputmode="numeric" oninput="calcular()"></div>
+        <div class="field"><label class="flabel">Trajeto (km)</label><input class="inp inp-mono" type="text" id="trajeto" placeholder="0 ou ex: 200+50" inputmode="text" oninput="calcular()"></div>
         <div class="field"><label class="flabel">Veículo</label>
           <select class="inp sel" id="veiculo" onchange="calcular()">
             <option value="FIORINO">Fiorino</option><option value="FURGAO">Furgão</option>
@@ -274,7 +252,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
           </select>
         </div>
       </div>
-      <div class="field"><label class="flabel">Acréscimos de Cabeça (R$)</label><input class="inp inp-mono" type="number" id="acresc" placeholder="0,00" inputmode="decimal" oninput="calcular()"></div>
+      <div class="field"><label class="flabel">Acréscimos de Cabeça (R$)</label><input class="inp inp-mono" type="text" id="acresc" placeholder="0 ou ex: 500+200" inputmode="text" oninput="calcular()"></div>
     </div>
     <div class="card">
       <div class="card-head"><div class="card-icon">♻️</div><div class="card-lbl">Resíduos</div></div>
@@ -314,55 +292,6 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
   <div class="nav-item" id="nav-proposta" onclick="navTo('proposta',this)"><div class="nav-icon">📄</div><div class="nav-label">Proposta</div></div>
   <div class="nav-item" id="nav-historico" onclick="navTo('historico',this)"><div class="nav-icon">🗂️</div><div class="nav-label">Histórico</div></div>
 </nav>
-
-<!-- MODAL CALCULADORA IMPOSTO -->
-<div class="calc-overlay" id="calc-modal" onclick="if(event.target===this)fecharCalc()">
-  <div class="calc-modal">
-    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
-    <div class="modal-head"><div class="modal-title">🧮 Calculadora de Imposto</div><button class="modal-close-btn" onclick="fecharCalc()">×</button></div>
-    <div class="modal-body" style="padding:14px 14px calc(var(--sb) + 20px)">
-      <table class="calc-table">
-        <thead><tr><th colspan="2">CALCULADORA IMPOSTO</th></tr></thead>
-        <tbody>
-          <tr>
-            <td class="td-lbl">VALOR NF</td>
-            <td class="td-inp"><input class="calc-inp" id="calc-nf" type="text" inputmode="decimal" placeholder="ex: 1000+500" oninput="calcImposto()"></td>
-          </tr>
-          <tr>
-            <td class="td-lbl">FORNECEDOR</td>
-            <td class="td-inp"><input class="calc-inp" id="calc-forn" type="text" inputmode="decimal" placeholder="ex: 1008+2775+2400" oninput="calcImposto()"></td>
-          </tr>
-          <tr>
-            <td class="td-lbl">IMPOSTO (%)</td>
-            <td class="td-inp"><input class="calc-inp" id="calc-imp-pct" type="number" inputmode="decimal" placeholder="15.45" oninput="calcImposto()"></td>
-          </tr>
-          <tr>
-            <td class="td-lbl">COMISSÃO (%)</td>
-            <td class="td-inp"><input class="calc-inp" id="calc-com-pct" type="number" inputmode="decimal" placeholder="0,00" oninput="calcImposto()"></td>
-          </tr>
-          <tr>
-            <td class="td-lbl">IMPOSTO (R$)</td>
-            <td class="td-val" id="calc-imp-val">R$ 0,00</td>
-          </tr>
-          <tr>
-            <td class="td-lbl">COMISSÃO (R$)</td>
-            <td class="td-val" id="calc-com-val">R$ —</td>
-          </tr>
-          <tr class="row-sobra">
-            <td class="td-lbl">SOBRA</td>
-            <td class="td-val" id="calc-sobra-val">R$ 0,00</td>
-          </tr>
-          <tr class="row-sobra-pct" id="calc-sobra-row">
-            <td class="td-lbl">SOBRA %</td>
-            <td class="td-val" id="calc-sobra-pct">—</td>
-          </tr>
-        </tbody>
-      </table>
-      <div style="height:12px"></div>
-      <button class="btn btn-outline" onclick="limparCalc()">🗑️ Limpar</button>
-    </div>
-  </div>
-</div>
 
 <!-- MODAL IBAMA -->
 <div class="ibama-overlay hidden" id="ibama-overlay">
@@ -440,6 +369,15 @@ var DEF={empresa:'Cerrado Transportes e Soluções Ambientais',cnpj:'',tel:'',va
 var cfg=lCfg(),residuos=[{id:1,desc:'',codigo:'',perigoso:false,peso:0,dest:'ATERRO CLASSE II'}],nextId=2,ultimoCalculo=null,ibamaResId=null;
 
 function g(id){return document.getElementById(id);}
+function safeEval(val){
+  if(val===null||val===undefined||val==='') return 0;
+  var s=String(val).replace(/,/g,'.').replace(/[^0-9+\-*/.() ]/g,'');
+  if(!s) return 0;
+  try{
+    var result=Function('"use strict";return ('+s+')')();
+    return isNaN(result)||!isFinite(result)?0:result;
+  }catch(e){return parseFloat(s)||0;}
+}
 function pf(id){return parseFloat(g(id).value)||0;}
 function brl(n){return 'R$ '+Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmt(n){return Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:0});}
@@ -496,7 +434,7 @@ function renderRes(){
         '<div class="res-badge" id="badge-'+r.id+'">'+mkBadge(r)+'</div>'+
       '</div>'+
       '<div class="g2">'+
-        '<div class="field"><label class="flabel">Peso (kg)</label><input class="inp inp-mono" type="number" placeholder="0" inputmode="decimal" value="'+(r.peso||'')+'"></div>'+
+        '<div class="field"><label class="flabel">Peso (kg)</label><input class="inp inp-mono" type="number" placeholder="0" inputmode="text" value="'+(r.peso||'')+'"></div>'+
         '<div class="field"><label class="flabel">Destinação</label><select class="inp sel">'+dOpts+'</select></div>'+
       '</div>';
 
@@ -508,7 +446,7 @@ function renderRes(){
     btn.onclick=function(){ibamaAbrir(r.id);};
 
     var pi=div.querySelector('input.inp-mono');
-    pi.oninput=function(){updRes(r.id,'peso',+this.value);calcular();};
+    pi.oninput=function(){updRes(r.id,'peso',safeEval(this.value));calcular();};
 
     var sl=div.querySelector('select');
     sl.onchange=function(){updRes(r.id,'dest',this.value);calcular();};
@@ -581,7 +519,7 @@ g('ibama-overlay').onclick=function(e){if(e.target===this)ibamaFechar();};
 
 // ── CÁLCULO ─────────────────────────────────────────────
 function calcular(){
-  var km=+g('trajeto').value||0,veic=g('veiculo').value,ac=+g('acresc').value||0;
+  var km=safeEval(g('trajeto').value),veic=g('veiculo').value,ac=safeEval(g('acresc').value);
   var ctf=km*(cfg.transp.forn[veic]||0),ptc=km*(cfg.transp.cli[veic]||0);
   if(km>=900)ptc+=cfg.transp.cli.DIARIA*(residuos.reduce(function(s,r){return s+(+r.peso||0);},0)/1000||0);
   var cdf=0,pdc=0;
@@ -630,46 +568,6 @@ function renderHist(){try{var h=JSON.parse(localStorage.getItem('rpro_hist')||'[
 
 function carregarHist(id){try{var h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),x=h.find(function(i){return i.id===id;});if(!x)return;ultimoCalculo=x;renderResultado(x);navTo('resultado',g('nav-resultado'));toast('📋 Carregado');}catch(e){}}
 function limparHist(){if(confirm('Apagar todo o histórico?')){localStorage.removeItem('rpro_hist');renderHist();toast('🗑️ Limpo');}}
-
-// ── CALCULADORA IMPOSTO ─────────────────────────────────
-function abrirCalc(){
-  g('calc-imp-pct').value=cfg.imposto||15.45;
-  calcImposto();
-  g('calc-modal').classList.add('open');
-  setTimeout(function(){g('calc-nf').focus();},180);
-}
-function fecharCalc(){g('calc-modal').classList.remove('open');}
-function limparCalc(){
-  ['calc-nf','calc-forn','calc-com-pct'].forEach(function(id){g(id).value='';});
-  g('calc-imp-pct').value=cfg.imposto||15.45;
-  calcImposto();
-}
-function calcExpr(s){
-  // Avalia expressões simples: apenas dígitos, ponto, vírgula e operadores + - * /
-  var str=String(s).replace(/,/g,'.').replace(/[^0-9+\-*/.]/g,'');
-  if(!str)return 0;
-  try{var v=Function('"use strict";return ('+str+')')();return isFinite(v)?+v:0;}catch(e){return 0;}
-}
-function calcImposto(){
-  var nf=calcExpr(g('calc-nf').value);
-  var forn=calcExpr(g('calc-forn').value);
-  var impPct=parseFloat(g('calc-imp-pct').value)||0;
-  var comPct=parseFloat(g('calc-com-pct').value)||0;
-  var impVal=nf*(impPct/100);
-  var comVal=nf*(comPct/100);
-  var sobra=nf-forn-impVal-comVal;
-  var sobraPct=nf>0?(sobra/nf)*100:0;
-  g('calc-imp-val').textContent=brl(impVal);
-  g('calc-com-val').textContent=comPct>0?brl(comVal):'R$ —';
-  var sRow=g('calc-sobra-row');
-  g('calc-sobra-val').textContent=brl(sobra);
-  g('calc-sobra-pct').textContent=nf>0?sobraPct.toFixed(2)+'%':'—';
-  var ok=sobraPct>=(cfg.margemMin||30);
-  var warn=sobraPct>=((cfg.margemMin||30)*0.75)&&!ok;
-  sRow.className=ok?'row-sobra-pct':(warn?'row-sobra-pct row-bad':'row-sobra-pct row-bad');
-  var sv=g('calc-sobra-val').parentElement.parentElement;
-  sv.className=sobra>=0?'row-sobra':'row-bad';
-}
 
 function navTo(id,el){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});g('screen-'+id).classList.add('active');el.classList.add('active');if(id==='historico')renderHist();}
 
