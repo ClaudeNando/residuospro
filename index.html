@@ -909,23 +909,26 @@ function ibamaFechar(){
 function ibamaShowGrupos(){
   _ibamaGrupoAtual=null;
   var src=(typeof IBAMA!=='undefined')?IBAMA:[];
-  g('ibama-grupos').style.display='block';
+  var el=g('ibama-grupos');
+  el.style.display='block';
   g('ibama-list').style.display='none';
   g('ibama-header').style.display='none';
-  var html='';
+  el.innerHTML='';
   GRUPOS.forEach(function(gr){
     var count=src.filter(function(r){return r.c.indexOf(gr.pre+'.')===0;}).length;
     if(!count) return;
-    html+='<button class="ibama-grupo-btn" onclick="ibamaAbrirGrupo(\"'+gr.pre+'\")">'+
+    var btn=document.createElement('button');
+    btn.className='ibama-grupo-btn';
+    btn.innerHTML=
       '<span class="ibama-grupo-emoji">'+gr.emoji+'</span>'+
       '<div class="ibama-grupo-info">'+
         '<div class="ibama-grupo-nome">'+gr.nome+'</div>'+
         '<div class="ibama-grupo-sub">'+gr.sub+'</div>'+
       '</div>'+
-      '<span class="ibama-grupo-count">'+count+'</span>'+
-    '</button>';
+      '<span class="ibama-grupo-count">'+count+'</span>';
+    btn.onclick=(function(pre){return function(){ibamaAbrirGrupo(pre);};})(gr.pre);
+    el.appendChild(btn);
   });
-  g('ibama-grupos').innerHTML=html;
 }
 
 function ibamaAbrirGrupo(pre){
@@ -1069,23 +1072,26 @@ function ibamaFechar(){
 function ibamaShowGrupos(){
   _ibamaGrupoAtual=null;
   var src=(typeof IBAMA!=='undefined')?IBAMA:[];
-  g('ibama-grupos').style.display='block';
+  var el=g('ibama-grupos');
+  el.style.display='block';
   g('ibama-list').style.display='none';
   g('ibama-header').style.display='none';
-  var html='';
+  el.innerHTML='';
   GRUPOS.forEach(function(gr){
     var count=src.filter(function(r){return r.c.indexOf(gr.pre+'.')===0;}).length;
     if(!count) return;
-    html+='<button class="ibama-grupo-btn" onclick="ibamaAbrirGrupo(\"'+gr.pre+'\")">'+
+    var btn=document.createElement('button');
+    btn.className='ibama-grupo-btn';
+    btn.innerHTML=
       '<span class="ibama-grupo-emoji">'+gr.emoji+'</span>'+
       '<div class="ibama-grupo-info">'+
         '<div class="ibama-grupo-nome">'+gr.nome+'</div>'+
         '<div class="ibama-grupo-sub">'+gr.sub+'</div>'+
       '</div>'+
-      '<span class="ibama-grupo-count">'+count+'</span>'+
-    '</button>';
+      '<span class="ibama-grupo-count">'+count+'</span>';
+    btn.onclick=(function(pre){return function(){ibamaAbrirGrupo(pre);};})(gr.pre);
+    el.appendChild(btn);
   });
-  g('ibama-grupos').innerHTML=html;
 }
 
 function ibamaAbrirGrupo(pre){
