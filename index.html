@@ -326,11 +326,11 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
         <tbody>
           <tr>
             <td class="td-lbl">VALOR NF</td>
-            <td class="td-inp"><input class="calc-inp" id="calc-nf" type="number" inputmode="decimal" placeholder="0,00" oninput="calcImposto()"></td>
+            <td class="td-inp"><input class="calc-inp" id="calc-nf" type="text" inputmode="decimal" placeholder="ex: 1000+500" oninput="calcImposto()"></td>
           </tr>
           <tr>
             <td class="td-lbl">FORNECEDOR</td>
-            <td class="td-inp"><input class="calc-inp" id="calc-forn" type="number" inputmode="decimal" placeholder="0,00" oninput="calcImposto()"></td>
+            <td class="td-inp"><input class="calc-inp" id="calc-forn" type="text" inputmode="decimal" placeholder="ex: 1008+2775+2400" oninput="calcImposto()"></td>
           </tr>
           <tr>
             <td class="td-lbl">IMPOSTO (%)</td>
@@ -644,9 +644,15 @@ function limparCalc(){
   g('calc-imp-pct').value=cfg.imposto||15.45;
   calcImposto();
 }
+function calcExpr(s){
+  // Avalia expressões simples: apenas dígitos, ponto, vírgula e operadores + - * /
+  var str=String(s).replace(/,/g,'.').replace(/[^0-9+\-*/.]/g,'');
+  if(!str)return 0;
+  try{var v=Function('"use strict";return ('+str+')')();return isFinite(v)?+v:0;}catch(e){return 0;}
+}
 function calcImposto(){
-  var nf=parseFloat(g('calc-nf').value)||0;
-  var forn=parseFloat(g('calc-forn').value)||0;
+  var nf=calcExpr(g('calc-nf').value);
+  var forn=calcExpr(g('calc-forn').value);
   var impPct=parseFloat(g('calc-imp-pct').value)||0;
   var comPct=parseFloat(g('calc-com-pct').value)||0;
   var impVal=nf*(impPct/100);
