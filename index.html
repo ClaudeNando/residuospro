@@ -79,12 +79,24 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
 .ibama-overlay{position:fixed;inset:0;background:rgba(58,32,20,0.7);z-index:500;display:flex;flex-direction:column;padding:50px 12px 12px}
 .ibama-overlay.hidden{display:none}
 .ibama-box{background:var(--card);border-radius:18px;display:flex;flex-direction:column;max-height:100%;overflow:hidden;box-shadow:0 8px 40px rgba(58,32,20,0.35)}
-.ibama-search-wrap{padding:14px;border-bottom:1px solid var(--border2);flex-shrink:0}
+.ibama-search-wrap{padding:12px 14px;border-bottom:1px solid var(--border2);flex-shrink:0}
 .ibama-sinp{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-family:'Syne',sans-serif;font-size:16px;outline:none}
 .ibama-sinp:focus{border-color:var(--accent)}
+.ibama-header{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border2);flex-shrink:0;min-height:44px}
+.ibama-back{background:var(--accent-dim);border:none;color:var(--accent);border-radius:8px;padding:6px 12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.ibama-header-title{font-size:13px;font-weight:700;color:var(--text2);flex:1}
+.ibama-header-count{font-size:11px;color:var(--text4)}
+.ibama-grupos{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px}
+.ibama-grupo-btn{width:100%;display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:12px;background:var(--bg);border:1.5px solid var(--border2);cursor:pointer;margin-bottom:8px;text-align:left}
+.ibama-grupo-btn:active{background:var(--accent-dim);border-color:var(--accent)}
+.ibama-grupo-emoji{font-size:22px;flex-shrink:0}
+.ibama-grupo-info{flex:1}
+.ibama-grupo-nome{font-size:14px;font-weight:700;color:var(--text);font-family:'Syne',sans-serif}
+.ibama-grupo-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.ibama-grupo-count{font-size:11px;font-family:'DM Mono',monospace;color:var(--text4);flex-shrink:0}
 .ibama-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .ibama-item{padding:12px 16px;border-bottom:1px solid var(--border2);cursor:pointer;display:flex;align-items:center;gap:10px}
-.ibama-item:hover{background:var(--accent-dim)}
+.ibama-item:hover,.ibama-item:active{background:var(--accent-dim)}
 .ibama-item-txt{flex:1;font-size:13px;color:var(--text);line-height:1.4}
 .ibama-item-per{font-size:11px;font-weight:700;flex-shrink:0}
 .ibama-item-per.p{color:var(--danger)}.ibama-item-per.n{color:var(--success)}
@@ -285,9 +297,601 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
 <div class="ibama-overlay hidden" id="ibama-overlay">
   <div class="ibama-box">
     <div class="ibama-search-wrap">
-      <input class="ibama-sinp" id="ibama-sinp" type="text" placeholder="Digite código ou nome do resíduo..." autocomplete="off" autocorrect="off">
+      <input class="ibama-sinp" id="ibama-sinp" type="text" placeholder="Buscar por código ou nome..." autocomplete="off" autocorrect="off">
     </div>
-    <div class="ibama-list" id="ibama-list"></div>
+    <div class="ibama-header" id="ibama-header" style="display:none">
+      <button class="ibama-back" onclick="ibamaVoltarGrupos()">← Grupos</button>
+      <span class="ibama-header-title" id="ibama-header-title"></span>
+      <span class="ibama-header-count" id="ibama-header-count"></span>
+    </div>
+    <div class="ibama-grupos" id="ibama-grupos"></div>
+    <div class="ibama-list" id="ibama-list" style="display:none"></div>
+  </div>
+  <button class="ibama-close-btn" onclick="ibamaFechar()">Fechar</button>
+</div>
+
+<!-- MODAL CONFIG -->
+<div class="overlay" id="cfg-modal" onclick="if(event.target===this)fecharCfg()">
+  <div class="modal">
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+    <div class="modal-head"><div class="modal-title">⚙️ Configurações</div><button class="modal-close-btn" onclick="fecharCfg()">×</button></div>
+    <div class="modal-body">
+      <span class="slabel">Empresa</span>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cfg-r"><div><div class="cfg-l">Nome</div></div><input class="cfg-i cfg-i-wide" id="cfg-empresa" placeholder="Cerrado Ambiental"></div>
+        <div class="cfg-r"><div><div class="cfg-l">CNPJ</div></div><input class="cfg-i cfg-i-wide" id="cfg-cnpj"></div>
+        <div class="cfg-r"><div><div class="cfg-l">Telefone</div></div><input class="cfg-i cfg-i-wide" id="cfg-tel"></div>
+        <div class="cfg-r"><div><div class="cfg-l">Validade</div><div class="cfg-s">dias</div></div><input class="cfg-i" id="cfg-validade" type="number" value="15"></div>
+      </div>
+      <span class="slabel">Custo Fornecedor — Transporte (R$/km)</span>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cfg-r"><div class="cfg-l">Fiorino</div><input class="cfg-i" id="cfg-tf" type="number" step="0.01" value="1.75"></div>
+        <div class="cfg-r"><div class="cfg-l">Furgão</div><input class="cfg-i" id="cfg-tfu" type="number" step="0.01" value="3.35"></div>
+        <div class="cfg-r"><div class="cfg-l">Baú</div><input class="cfg-i" id="cfg-tb" type="number" step="0.01" value="7.00"></div>
+        <div class="cfg-r"><div class="cfg-l">Maior</div><input class="cfg-i" id="cfg-tm" type="number" step="0.01" value="10.00"></div>
+        <div class="cfg-r"><div class="cfg-l">Diária</div><input class="cfg-i" id="cfg-td" type="number" step="0.01" value="0.00"></div>
+      </div>
+      <span class="slabel">Preço ao Cliente — Transporte (R$/km)</span>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cfg-r"><div class="cfg-l">Fiorino</div><input class="cfg-i" id="cfg-cf" type="number" step="0.01" value="4.20"></div>
+        <div class="cfg-r"><div class="cfg-l">Furgão</div><input class="cfg-i" id="cfg-cfu" type="number" step="0.01" value="5.00"></div>
+        <div class="cfg-r"><div class="cfg-l">Baú</div><input class="cfg-i" id="cfg-cb" type="number" step="0.01" value="8.50"></div>
+        <div class="cfg-r"><div class="cfg-l">Maior</div><input class="cfg-i" id="cfg-cm" type="number" step="0.01" value="14.00"></div>
+        <div class="cfg-r"><div class="cfg-l">Diária</div><input class="cfg-i" id="cfg-cd" type="number" step="0.01" value="0.00"></div>
+      </div>
+      <span class="slabel">Custo Fornecedor — Destinação (R$/kg)</span>
+      <div class="card" style="margin-bottom:16px" id="cfg-dest-forn"></div>
+      <span class="slabel">Preço ao Cliente — Destinação (R$/kg)</span>
+      <div class="card" style="margin-bottom:16px" id="cfg-dest-cli"></div>
+      <span class="slabel">Financeiro</span>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cfg-r"><div><div class="cfg-l">Imposto (%)</div><div class="cfg-s">sobre total da nota</div></div><input class="cfg-i" id="cfg-imposto" type="number" step="0.01" value="15.45"></div>
+        <div class="cfg-r"><div><div class="cfg-l">Margem mínima (%)</div></div><input class="cfg-i" id="cfg-margem-min" type="number" step="1" value="30"></div>
+      </div>
+      <button class="btn btn-primary" onclick="salvarCfg()">✓ Salvar</button>
+      <div style="height:10px"></div>
+      <button class="btn btn-outline" onclick="fecharCfg()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var DEST_KEYS_I  =['ATERRO CLASSE I','BLEND CLASSE I','INCIN CLASSE I','EFLUENTE CLASSE I'];
+var DEST_KEYS_II =['ATERRO CLASSE II','BLEND CLASSE II','INCIN CLASSE II','EFLUENTE CLASSE II','COMPOST CLASSE II'];
+var DEST_KEYS    = DEST_KEYS_I.concat(DEST_KEYS_II);
+var DEF={empresa:'Cerrado Transportes e Soluções Ambientais',cnpj:'',tel:'',validade:15,imposto:15.45,margemMin:30,
+  transp:{forn:{FIORINO:1.75,FURGAO:3.35,BAU:7.00,MAIOR:10.00,DIARIA:0},cli:{FIORINO:4.20,FURGAO:5.00,BAU:8.50,MAIOR:14.00,DIARIA:0}},
+  dest:{forn:{'ATERRO CLASSE I':0.60,'BLEND CLASSE I':0.50,'INCIN CLASSE I':3.20,'EFLUENTE CLASSE I':0.50,'ATERRO CLASSE II':0.135,'BLEND CLASSE II':0.50,'INCIN CLASSE II':0.50,'EFLUENTE CLASSE II':0.30,'COMPOST CLASSE II':0.04},
+        cli:{'ATERRO CLASSE I':1.50,'BLEND CLASSE I':2.00,'INCIN CLASSE I':5.00,'EFLUENTE CLASSE I':1.80,'ATERRO CLASSE II':0.55,'BLEND CLASSE II':1.00,'INCIN CLASSE II':5.50,'EFLUENTE CLASSE II':1.00,'COMPOST CLASSE II':0.35}}};
+
+var cfg=lCfg(),residuos=[{id:1,desc:'',codigo:'',perigoso:false,peso:0,dest:'ATERRO CLASSE II'}],nextId=2,ultimoCalculo=null,ibamaResId=null;
+
+function g(id){return document.getElementById(id);}
+function pf(id){return parseFloat(g(id).value)||0;}
+function brl(n){return 'R$ '+Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmt(n){return Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:0});}
+function esc(s){return s.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9\-]/g,'');}
+function maskCNPJ(el){var v=el.value.replace(/\D/g,'');v=v.replace(/^(\d{2})(\d)/,'$1.$2');v=v.replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3');v=v.replace(/\.(\d{3})(\d)/,'.$1/$2');v=v.replace(/(\d{4})(\d)/,'$1-$2');el.value=v;}
+function toast(msg,dur){var t=g('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},dur||2400);}
+
+function lCfg(){try{var s=localStorage.getItem('rpro_cfg');return s?JSON.parse(s):JSON.parse(JSON.stringify(DEF));}catch(e){return JSON.parse(JSON.stringify(DEF));}}
+function sCfg(c){localStorage.setItem('rpro_cfg',JSON.stringify(c));}
+
+function abrirCfg(){
+  g('cfg-empresa').value=cfg.empresa||'';g('cfg-cnpj').value=cfg.cnpj||'';g('cfg-tel').value=cfg.tel||'';g('cfg-validade').value=cfg.validade||15;
+  g('cfg-tf').value=cfg.transp.forn.FIORINO;g('cfg-tfu').value=cfg.transp.forn.FURGAO;g('cfg-tb').value=cfg.transp.forn.BAU;g('cfg-tm').value=cfg.transp.forn.MAIOR;g('cfg-td').value=cfg.transp.forn.DIARIA;
+  g('cfg-cf').value=cfg.transp.cli.FIORINO;g('cfg-cfu').value=cfg.transp.cli.FURGAO;g('cfg-cb').value=cfg.transp.cli.BAU;g('cfg-cm').value=cfg.transp.cli.MAIOR;g('cfg-cd').value=cfg.transp.cli.DIARIA;
+  g('cfg-imposto').value=cfg.imposto;g('cfg-margem-min').value=cfg.margemMin||30;
+  var fE=g('cfg-dest-forn'),cE=g('cfg-dest-cli');fE.innerHTML='';cE.innerHTML='';
+  DEST_KEYS.forEach(function(k){
+    fE.innerHTML+='<div class="cfg-r"><div class="cfg-l">'+k+'</div><input class="cfg-i" id="cdf-'+esc(k)+'" type="number" step="0.001" value="'+cfg.dest.forn[k]+'"></div>';
+    cE.innerHTML+='<div class="cfg-r"><div class="cfg-l">'+k+'</div><input class="cfg-i" id="cdc-'+esc(k)+'" type="number" step="0.01" value="'+cfg.dest.cli[k]+'"></div>';
+  });
+  g('cfg-modal').classList.add('open');
+}
+function fecharCfg(){g('cfg-modal').classList.remove('open');}
+function salvarCfg(){
+  cfg.empresa=g('cfg-empresa').value||'Cerrado Ambiental';cfg.cnpj=g('cfg-cnpj').value;cfg.tel=g('cfg-tel').value;cfg.validade=parseInt(g('cfg-validade').value)||15;
+  cfg.transp.forn.FIORINO=pf('cfg-tf');cfg.transp.forn.FURGAO=pf('cfg-tfu');cfg.transp.forn.BAU=pf('cfg-tb');cfg.transp.forn.MAIOR=pf('cfg-tm');cfg.transp.forn.DIARIA=pf('cfg-td');
+  cfg.transp.cli.FIORINO=pf('cfg-cf');cfg.transp.cli.FURGAO=pf('cfg-cfu');cfg.transp.cli.BAU=pf('cfg-cb');cfg.transp.cli.MAIOR=pf('cfg-cm');cfg.transp.cli.DIARIA=pf('cfg-cd');
+  cfg.imposto=pf('cfg-imposto');cfg.margemMin=pf('cfg-margem-min');
+  DEST_KEYS.forEach(function(k){cfg.dest.forn[k]=pf('cdf-'+esc(k));cfg.dest.cli[k]=pf('cdc-'+esc(k));});
+  sCfg(cfg);fecharCfg();toast('✅ Configurações salvas!');
+}
+
+function renderRes(){
+  var el=g('res-list');el.innerHTML='';
+  residuos.forEach(function(r,i){
+    var destKeys = r.perigoso ? DEST_KEYS_I : DEST_KEYS_II;
+    // Se destinação atual não for compatível, resetar
+    if(destKeys.indexOf(r.dest)<0){ r.dest=destKeys[0]; updRes(r.id,'dest',r.dest); }
+    var dOpts=destKeys.map(function(k){return '<option value="'+k+'"'+(r.dest===k?' selected':'')+'>'+k+'</option>';}).join('');
+    var div=document.createElement('div');
+    div.className='res-row';
+    div.innerHTML=
+      '<div class="res-head">'+
+        '<div class="res-num">'+(i+1)+'</div>'+
+        '<div class="res-title">Resíduo '+(i+1)+'</div>'+
+        (residuos.length>1?'<button class="res-del" type="button">×</button>':'')+
+      '</div>'+
+      '<div class="field">'+
+        '<label class="flabel">Resíduo IBAMA</label>'+
+        '<button type="button" class="ibama-btn" id="ibama-btn-'+r.id+'">'+
+          (r.desc?'<span class="ibama-value">'+r.desc+'</span>':'<span class="ibama-placeholder">Toque para buscar na lista IBAMA...</span>')+
+          '<span style="color:var(--text3);font-size:12px;flex-shrink:0">▼</span>'+
+        '</button>'+
+        '<div class="res-badge" id="badge-'+r.id+'">'+mkBadge(r)+'</div>'+
+      '</div>'+
+      '<div class="g2">'+
+        '<div class="field"><label class="flabel">Peso (kg)</label><input class="inp inp-mono" type="number" placeholder="0" inputmode="decimal" value="'+(r.peso||'')+'"></div>'+
+        '<div class="field"><label class="flabel">Destinação</label><select class="inp sel">'+dOpts+'</select></div>'+
+      '</div>';
+
+    var del=div.querySelector('.res-del');
+    if(del) del.onclick=function(){delRes(r.id);};
+
+    // BOTÃO IBAMA — onclick simples e direto
+    var btn=div.querySelector('.ibama-btn');
+    btn.onclick=function(){ibamaAbrir(r.id);};
+
+    var pi=div.querySelector('input.inp-mono');
+    pi.oninput=function(){updRes(r.id,'peso',+this.value);calcular();};
+
+    var sl=div.querySelector('select');
+    sl.onchange=function(){updRes(r.id,'dest',this.value);calcular();};
+
+    el.appendChild(div);
+  });
+}
+
+function mkBadge(r){
+  if(!r||!r.codigo)return '';
+  return '<span class="code-tag">'+r.codigo+'</span><span class="per-tag '+(r.perigoso?'danger':'safe')+'">'+(r.perigoso?'⚠️ Perigoso':'✓ Não Perigoso')+'</span>';
+}
+
+function addRes(){residuos.push({id:nextId++,desc:'',codigo:'',perigoso:false,peso:0,dest:'ATERRO CLASSE II'});renderRes();}
+function delRes(id){residuos=residuos.filter(function(r){return r.id!==id;});renderRes();calcular();}
+function updRes(id,f,v){var r=residuos.find(function(x){return x.id===id;});if(r)r[f]=v;}
+
+// ── MODAL IBAMA ─────────────────────────────────────────
+// ── GRUPOS IBAMA ────────────────────────────────────────
+var GRUPOS=[
+  {pre:'01',emoji:'⛏️',nome:'Mineração e extração',sub:'Resíduos da prospecção e extração de minérios'},
+  {pre:'02',emoji:'🌾',nome:'Agricultura e alimentação',sub:'Resíduos agrícolas, pecuária e alimentícios'},
+  {pre:'03',emoji:'🪵',nome:'Madeira, papel e celulose',sub:'Tratamento de madeira, fabricação de papel'},
+  {pre:'04',emoji:'👗',nome:'Couro, têxtil e calçados',sub:'Indústrias de couro, têxtil e vestuário'},
+  {pre:'05',emoji:'🛢️',nome:'Petróleo, gás e carvão',sub:'Resíduos de refino e processamento'},
+  {pre:'06',emoji:'⚗️',nome:'Química inorgânica',sub:'Fabricação de produtos químicos inorgânicos'},
+  {pre:'07',emoji:'🧪',nome:'Química orgânica',sub:'Fabricação de produtos químicos orgânicos'},
+  {pre:'08',emoji:'🎨',nome:'Tintas, vernizes e adesivos',sub:'Revestimentos, colas e produtos afins'},
+  {pre:'09',emoji:'📷',nome:'Fotografia',sub:'Resíduos da indústria fotográfica'},
+  {pre:'10',emoji:'🔥',nome:'Incineração e tratamento térmico',sub:'Resíduos de processos térmicos industriais'},
+  {pre:'11',emoji:'🔩',nome:'Tratamento de metais',sub:'Galvanoplastia, anodização e similares'},
+  {pre:'12',emoji:'⚙️',nome:'Plástico, borracha e madeira',sub:'Moldagem e tratamento de superfície'},
+  {pre:'13',emoji:'🫙',nome:'Óleos e graxas',sub:'Óleos lubrificantes, hidráulicos e de corte'},
+  {pre:'14',emoji:'🧴',nome:'Solventes orgânicos',sub:'Solventes usados em limpeza e desengorduramento'},
+  {pre:'15',emoji:'📦',nome:'Embalagens e absorventes',sub:'Embalagens contaminadas, panos e absorventes'},
+  {pre:'16',emoji:'♻️',nome:'Resíduos não especificados',sub:'Veículos, equipamentos, baterias e outros'},
+  {pre:'17',emoji:'🏗️',nome:'Construção civil',sub:'Demolição, pavimentação e escavação'},
+  {pre:'18',emoji:'🏥',nome:'Saúde humana e animal',sub:'Resíduos de unidades de saúde e veterinária'},
+  {pre:'19',emoji:'🏭',nome:'Tratamento de resíduos',sub:'ETEs, aterros e incineradores'},
+  {pre:'20',emoji:'🏘️',nome:'Resíduos urbanos',sub:'Domésticos, comerciais e de serviços'},
+];
+
+var _ibamaGrupoAtual=null;
+
+function ibamaAbrir(resId){
+  ibamaResId=resId;
+  g('ibama-overlay').classList.remove('hidden');
+  var si=g('ibama-sinp');
+  si.value='';
+  _ibamaGrupoAtual=null;
+  ibamaShowGrupos();
+  setTimeout(function(){si.focus();},100);
+}
+
+function ibamaFechar(){
+  g('ibama-overlay').classList.add('hidden');
+  ibamaResId=null;
+  _ibamaGrupoAtual=null;
+}
+
+function ibamaShowGrupos(){
+  _ibamaGrupoAtual=null;
+  var src=(typeof IBAMA!=='undefined')?IBAMA:[];
+  g('ibama-grupos').style.display='block';
+  g('ibama-list').style.display='none';
+  g('ibama-header').style.display='none';
+
+  var html='';
+  GRUPOS.forEach(function(gr){
+    var count=src.filter(function(r){return r.c.startsWith(gr.pre+'.');}).length;
+    if(!count) return;
+    html+='<button class="ibama-grupo-btn" onclick="ibamaAbrirGrupo(''+gr.pre+'')">'+
+      '<span class="ibama-grupo-emoji">'+gr.emoji+'</span>'+
+      '<div class="ibama-grupo-info">'+
+        '<div class="ibama-grupo-nome">'+gr.nome+'</div>'+
+        '<div class="ibama-grupo-sub">'+gr.sub+'</div>'+
+      '</div>'+
+      '<span class="ibama-grupo-count">'+count+'</span>'+
+    '</button>';
+  });
+  g('ibama-grupos').innerHTML=html;
+}
+
+function ibamaAbrirGrupo(pre){
+  _ibamaGrupoAtual=pre;
+  var gr=GRUPOS.find(function(g){return g.pre===pre;});
+  g('ibama-grupos').style.display='none';
+  g('ibama-list').style.display='block';
+  g('ibama-header').style.display='flex';
+  g('ibama-header-title').textContent=gr?gr.emoji+' '+gr.nome:'';
+  var src=(typeof IBAMA!=='undefined')?IBAMA:[];
+  var filtrados=src.filter(function(r){return r.c.startsWith(pre+'.');});
+  g('ibama-header-count').textContent=filtrados.length+' itens';
+  ibamaRenderLista(filtrados, '');
+}
+
+function ibamaVoltarGrupos(){
+  g('ibama-sinp').value='';
+  ibamaShowGrupos();
+}
+
+function ibamaRender(q){
+  q=q.toLowerCase().trim();
+  var src=(typeof IBAMA!=='undefined')?IBAMA:[];
+  if(q.length>=2){
+    // Busca global — mostra lista direto
+    g('ibama-grupos').style.display='none';
+    g('ibama-list').style.display='block';
+    g('ibama-header').style.display='flex';
+    g('ibama-header-title').textContent='🔍 Resultados da busca';
+    var res=src.filter(function(r){return r.d.toLowerCase().indexOf(q)>=0;}).slice(0,80);
+    g('ibama-header-count').textContent=res.length+' itens';
+    ibamaRenderLista(res, q);
+  } else if(_ibamaGrupoAtual){
+    // Dentro de um grupo, busca local
+    var filtrados=src.filter(function(r){return r.c.startsWith(_ibamaGrupoAtual+'.');});
+    ibamaRenderLista(filtrados, '');
+  } else {
+    ibamaShowGrupos();
+  }
+}
+
+function ibamaRenderLista(items, q){
+  var el=g('ibama-list');
+  el.innerHTML='';
+  if(!items.length){
+    el.innerHTML='<div class="ibama-empty">Nenhum resultado</div>';
+    return;
+  }
+  items.forEach(function(r){
+    var item=document.createElement('div');
+    item.className='ibama-item';
+    var txt=r.d;
+    if(q&&q.length>=2){
+      var idx=txt.toLowerCase().indexOf(q);
+      if(idx>=0){
+        txt=txt.substring(0,idx)+'<b style="color:var(--accent)">'+txt.substring(idx,idx+q.length)+'</b>'+txt.substring(idx+q.length);
+      }
+    }
+    item.innerHTML='<div class="ibama-item-txt">'+txt+'</div><div class="ibama-item-per '+(r.p?'p':'n')+'">'+(r.p?'⚠️':'✓')+'</div>';
+    item.onclick=function(){ibamaSelecionar(r);};
+    el.appendChild(item);
+  });
+}
+
+g('ibama-sinp').oninput=function(){ibamaRender(this.value);};
+g('ibama-overlay').onclick=function(e){if(e.target===this)ibamaFechar();};DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#452818">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ResíduosPRO">
+<title>ResíduosPRO</title>
+<link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<script src="ibama.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#f8f0dd;--bg2:#f0e4c8;--bg3:#e8d8b4;--card:#fffdf6;
+  --accent:#db6a1d;--accent2:#c55e18;--accent-light:#f79959;
+  --accent-dim:rgba(219,106,29,0.11);
+  --dark:#452818;--dark2:#5c3822;
+  --text:#452818;--text2:#7a4e30;--text3:#b07a55;--text4:#c8a882;
+  --border:rgba(219,106,29,0.18);--border2:rgba(219,106,29,0.09);
+  --danger:#b03020;--success:#2a7a40;
+  --nav-h:68px;
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;overflow:hidden}
+body{display:flex;flex-direction:column;padding-top:var(--st)}
+.hdr{background:var(--dark);padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-mark{width:36px;height:36px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;flex-shrink:0}
+.hdr-title{font-size:17px;font-weight:800;color:#f8f0dd;letter-spacing:-0.3px;line-height:1}
+.hdr-sub{font-size:10px;color:rgba(248,240,221,0.42);letter-spacing:0.8px;text-transform:uppercase;margin-top:2px}
+.hdr-btn{width:38px;height:38px;border-radius:11px;background:rgba(248,240,221,0.09);border:1px solid rgba(248,240,221,0.12);color:rgba(248,240,221,0.75);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px}
+.content{flex:1;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.screen{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px calc(var(--nav-h) + var(--sb) + 16px)}
+.screen.active{display:block}
+.nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + var(--sb));background:var(--dark);border-top:1px solid rgba(247,153,89,0.15);display:flex;align-items:flex-start;padding-top:8px;padding-bottom:var(--sb);z-index:50}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;cursor:pointer}
+.nav-icon{font-size:22px;line-height:1;transition:transform .18s}
+.nav-label{font-size:10px;font-weight:700;letter-spacing:0.3px;color:rgba(248,240,221,0.35);text-transform:uppercase}
+.nav-item.active .nav-label{color:var(--accent-light)}
+.nav-item.active .nav-icon{transform:scale(1.12)}
+.shdr{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border2)}
+.shdr-icon{width:40px;height:40px;border-radius:12px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.shdr-title{font-size:20px;font-weight:800;letter-spacing:-0.3px}
+.shdr-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.card{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 1px 8px rgba(69,40,24,0.07)}
+.card-head{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.card-icon{width:28px;height:28px;border-radius:8px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.card-lbl{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3)}
+.field{margin-bottom:14px}.field:last-child{margin-bottom:0}
+.flabel{font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;display:block}
+.inp{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:14px 15px;color:var(--text);font-family:'Syne',sans-serif;font-size:16px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.inp:focus{border-color:var(--accent);background:#fff}
+.inp::placeholder{color:var(--text4)}
+.inp-mono{font-family:'DM Mono',monospace}
+.sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23db6a1d' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;cursor:pointer}
+textarea.inp{resize:none;min-height:80px;line-height:1.6}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.res-row{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.res-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.res-num{width:24px;height:24px;border-radius:50%;background:var(--accent);font-size:12px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.res-title{font-size:13px;font-weight:700;color:var(--text2);flex:1}
+.res-del{width:28px;height:28px;border-radius:8px;background:rgba(176,48,32,0.08);border:none;color:var(--danger);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:sans-serif;line-height:1;flex-shrink:0}
+.ibama-btn{width:100%;padding:13px 15px;border-radius:12px;background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:15px;text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:border-color .2s}
+.ibama-btn:hover{border-color:var(--accent)}
+.ibama-placeholder{color:var(--text4)}
+.ibama-value{color:var(--text);flex:1;text-align:left;line-height:1.3;font-size:14px}
+.res-badge{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px;min-height:4px}
+.code-tag{font-size:11px;font-family:'DM Mono',monospace;background:#e8d8b4;color:#5c3822;padding:3px 10px;border-radius:8px;border:1px solid #c8a882}
+.per-tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.per-tag.danger{background:rgba(176,48,32,0.12);color:#b03020;border:1px solid rgba(176,48,32,0.25)}
+.per-tag.safe{background:rgba(42,122,64,0.12);color:#1a6030;border:1px solid rgba(42,122,64,0.25)}
+.ibama-overlay{position:fixed;inset:0;background:rgba(58,32,20,0.7);z-index:500;display:flex;flex-direction:column;padding:50px 12px 12px}
+.ibama-overlay.hidden{display:none}
+.ibama-box{background:var(--card);border-radius:18px;display:flex;flex-direction:column;max-height:100%;overflow:hidden;box-shadow:0 8px 40px rgba(58,32,20,0.35)}
+.ibama-search-wrap{padding:12px 14px;border-bottom:1px solid var(--border2);flex-shrink:0}
+.ibama-sinp{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-family:'Syne',sans-serif;font-size:16px;outline:none}
+.ibama-sinp:focus{border-color:var(--accent)}
+.ibama-header{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border2);flex-shrink:0;min-height:44px}
+.ibama-back{background:var(--accent-dim);border:none;color:var(--accent);border-radius:8px;padding:6px 12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.ibama-header-title{font-size:13px;font-weight:700;color:var(--text2);flex:1}
+.ibama-header-count{font-size:11px;color:var(--text4)}
+.ibama-grupos{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px}
+.ibama-grupo-btn{width:100%;display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:12px;background:var(--bg);border:1.5px solid var(--border2);cursor:pointer;margin-bottom:8px;text-align:left}
+.ibama-grupo-btn:active{background:var(--accent-dim);border-color:var(--accent)}
+.ibama-grupo-emoji{font-size:22px;flex-shrink:0}
+.ibama-grupo-info{flex:1}
+.ibama-grupo-nome{font-size:14px;font-weight:700;color:var(--text);font-family:'Syne',sans-serif}
+.ibama-grupo-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.ibama-grupo-count{font-size:11px;font-family:'DM Mono',monospace;color:var(--text4);flex-shrink:0}
+.ibama-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ibama-item{padding:12px 16px;border-bottom:1px solid var(--border2);cursor:pointer;display:flex;align-items:center;gap:10px}
+.ibama-item:hover,.ibama-item:active{background:var(--accent-dim)}
+.ibama-item-txt{flex:1;font-size:13px;color:var(--text);line-height:1.4}
+.ibama-item-per{font-size:11px;font-weight:700;flex-shrink:0}
+.ibama-item-per.p{color:var(--danger)}.ibama-item-per.n{color:var(--success)}
+.ibama-empty{padding:40px;text-align:center;color:var(--text3);font-size:14px}
+.ibama-close-btn{width:100%;padding:14px;margin-top:8px;border-radius:12px;background:var(--dark);color:#f8f0dd;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;border:none;cursor:pointer;flex-shrink:0}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border-radius:14px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border:none;transition:transform .12s}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 16px rgba(219,106,29,0.30)}
+.btn-dark{background:var(--dark);color:#f8f0dd}
+.btn-ghost{background:var(--accent-dim);color:var(--accent);border:1.5px solid var(--border)}
+.btn-outline{background:transparent;color:var(--text2);border:1.5px solid var(--border)}
+.btn-sm{padding:11px 16px;font-size:13px;border-radius:11px;width:auto}
+.btn-row{display:flex;gap:8px}.btn-row .btn{flex:1}
+.rbox-dark{background:var(--dark);border-radius:16px;padding:18px;margin-bottom:12px}
+.rbox-light{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:12px}
+.rrow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border2)}.rrow:last-child{border-bottom:none}
+.rl{font-size:13px;color:var(--text2)}.rv{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--text)}
+.rv.acc{color:var(--accent)}.rv.neg{color:var(--danger)}
+.mbar{background:rgba(255,255,255,0.12);border-radius:20px;height:6px;margin:10px 0 6px;overflow:hidden}
+.mfill{height:100%;border-radius:20px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.mlabels{display:flex;justify-content:space-between}
+.ml{font-size:10px;color:rgba(248,240,221,0.38)}
+.badge{display:inline-flex;align-items:center;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700}
+.b-ok{background:rgba(42,122,64,0.14);color:#1a6030;border:1px solid rgba(42,122,64,0.25)}
+.b-warn{background:rgba(200,112,32,0.14);color:#8a4800;border:1px solid rgba(200,112,32,0.25)}
+.b-bad{background:rgba(176,48,32,0.12);color:var(--danger);border:1px solid rgba(176,48,32,0.22)}
+.proposta-txt{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:16px;font-size:12px;line-height:1.8;color:var(--text2);font-family:'DM Mono',monospace;white-space:pre-wrap;max-height:340px;overflow-y:auto}
+.hist-card{background:var(--card);border:1.5px solid var(--border2);border-radius:14px;padding:15px;margin-bottom:10px;cursor:pointer}.hist-card:active{border-color:var(--accent)}
+.hist-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.hist-name{font-size:15px;font-weight:700}.hist-date{font-size:11px;color:var(--text4);font-family:'DM Mono',monospace}
+.hist-bot{display:flex;justify-content:space-between;align-items:center}
+.hist-val{font-family:'DM Mono',monospace;font-size:16px;color:var(--accent);font-weight:500}
+.empty{text-align:center;padding:60px 24px;color:var(--text3)}
+.empty-ico{font-size:44px;margin-bottom:14px;opacity:0.45;display:block}
+.empty-t{font-size:16px;font-weight:700;color:var(--text2);margin-bottom:8px}
+.empty-s{font-size:13px;line-height:1.6}
+.overlay{position:fixed;inset:0;background:rgba(58,32,20,0.60);display:flex;align-items:flex-end;z-index:100;opacity:0;pointer-events:none;transition:opacity .25s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg);border-radius:22px 22px 0 0;border-top:1.5px solid var(--border);width:100%;max-height:90vh;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.overlay.open .modal{transform:translateY(0)}
+.modal-handle-wrap{padding:14px 0 0;display:flex;justify-content:center;flex-shrink:0}
+.modal-handle{width:44px;height:5px;background:var(--border);border-radius:3px}
+.modal-head{padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border2);flex-shrink:0}
+.modal-title{font-size:18px;font-weight:800}
+.modal-close-btn{width:32px;height:32px;border-radius:9px;background:var(--accent-dim);border:none;color:var(--accent);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.modal-body{flex:1;overflow-y:auto;padding:16px 16px calc(var(--sb) + 20px)}
+.slabel{font-size:11px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;display:block}
+.cfg-r{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border2)}.cfg-r:last-child{border-bottom:none}
+.cfg-l{font-size:14px;font-weight:600}.cfg-s{font-size:11px;color:var(--text3);margin-top:2px}
+.cfg-i{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;width:108px;text-align:right;outline:none;-webkit-appearance:none}
+.cfg-i:focus{border-color:var(--accent)}.cfg-i-wide{width:168px;text-align:left}
+.toast{position:fixed;bottom:calc(var(--nav-h) + var(--sb) + 12px);left:50%;transform:translateX(-50%) translateY(10px);background:var(--dark);border:1px solid rgba(247,153,89,0.25);border-radius:12px;padding:12px 22px;font-size:13px;font-weight:600;color:#f8f0dd;opacity:0;transition:all .28s;z-index:200;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── OTIMIZAÇÕES ANDROID ───────────────────────────────── */
+
+/* Scroll suave nativo Android */
+* { -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
+
+/* Remover delay de 300ms no toque — Android Chrome */
+* { touch-action: manipulation; }
+
+/* Área de toque mínima 48x48px para todos os botões */
+.btn, .nav-item, .ibama-item, .ibama-btn, .ibama-close-btn,
+.res-del, .hdr-btn, .hist-card {
+  min-height: 48px;
+}
+.nav-item { min-height: 56px; }
+
+/* Inputs maiores no mobile — mais fácil de tocar */
+.inp { padding: 15px 15px; min-height: 52px; }
+.sel { min-height: 52px; }
+
+/* Feedback visual de toque mais rápido */
+.btn:active { transform: scale(0.96); transition: transform 0.08s; }
+.ibama-item:active { background: var(--accent-dim); transition: background 0.08s; }
+.hist-card:active { border-color: var(--accent); transition: border-color 0.08s; }
+.nav-item:active { opacity: 0.7; transition: opacity 0.08s; }
+
+/* Modal IBAMA ocupa tela inteira no Android */
+.ibama-overlay { padding: 0; }
+.ibama-box { border-radius: 0; flex: 1; }
+.ibama-close-btn { border-radius: 0; padding: 18px; font-size: 16px; }
+
+/* Campo de busca IBAMA maior */
+.ibama-sinp { padding: 16px 14px; font-size: 18px; min-height: 56px; }
+
+/* Itens da lista IBAMA mais espaçados */
+.ibama-item { padding: 14px 16px; min-height: 56px; }
+.ibama-item-txt { font-size: 14px; }
+
+/* Botão IBAMA maior */
+.ibama-btn { min-height: 52px; padding: 14px 15px; }
+
+/* Teclado numérico nos campos de número */
+/* já está com inputmode mas garante no Android */
+input[type=number] { -moz-appearance: textfield; }
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+/* Proposta e resultado — scroll mais fluido */
+.screen { scroll-snap-type: none; overscroll-behavior: contain; }
+
+/* Evitar seleção de texto acidental ao tocar */
+.nav, .hdr, .btn, .nav-item, .ibama-item {
+  -webkit-user-select: none; user-select: none;
+}
+
+/* Fonte maior no resultado para leitura fácil */
+.rbox-dark { padding: 20px; }
+.rv.neg, .rv.acc { font-size: 15px; }
+
+/* Toast mais visível no Android */
+.toast { 
+  font-size: 14px; 
+  padding: 14px 24px;
+  border-radius: 14px;
+  bottom: calc(var(--nav-h) + var(--sb) + 16px);
+}
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-mark">C</div>
+    <div><div class="hdr-title">ResíduosPRO</div><div class="hdr-sub">Cerrado Ambiental</div></div>
+  </div>
+  <div style="display:flex;gap:8px"><button class="hdr-btn" onclick="window.open('furgao.html','_blank')" title="FurgãoPRO" style="font-size:14px">🚛</button><button class="hdr-btn" onclick="abrirCfg()">⚙️</button></div>
+</div>
+
+<div class="content">
+  <div id="screen-orcamento" class="screen active">
+    <div class="shdr"><div class="shdr-icon">📋</div><div><div class="shdr-title">Novo Orçamento</div><div class="shdr-sub">Preencha os dados do cliente e serviço</div></div></div>
+    <div class="card">
+      <div class="card-head"><div class="card-icon">👤</div><div class="card-lbl">Cliente</div></div>
+      <div class="field"><label class="flabel">Nome / Razão Social</label><input class="inp" type="text" id="cli-nome" placeholder="Empresa ABC Ltda" autocomplete="off"></div>
+      <div class="g2">
+        <div class="field"><label class="flabel">CNPJ</label><input class="inp inp-mono" type="text" id="cli-cnpj" placeholder="00.000.000/0000-00" maxlength="18" inputmode="numeric" oninput="maskCNPJ(this);buscaCNPJ(this.value)"><div id="cnpj-status" style="font-size:11px;margin-top:4px;min-height:16px"></div></div>
+        <div class="field"><label class="flabel">Contato</label><input class="inp" type="text" id="cli-contato" placeholder="Nome"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-icon">🚛</div><div class="card-lbl">Transporte</div></div>
+      <div class="g2">
+        <div class="field"><label class="flabel">Trajeto (km)</label><input class="inp inp-mono" type="number" id="trajeto" placeholder="0" inputmode="numeric" oninput="calcular()"></div>
+        <div class="field"><label class="flabel">Veículo</label>
+          <select class="inp sel" id="veiculo" onchange="calcular()">
+            <option value="FIORINO">Fiorino</option><option value="FURGAO">Furgão</option>
+            <option value="BAU" selected>Baú</option><option value="MAIOR">Maior</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label class="flabel">Acréscimos de Cabeça (R$)</label><input class="inp inp-mono" type="number" id="acresc" placeholder="0,00" inputmode="decimal" oninput="calcular()"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-icon">♻️</div><div class="card-lbl">Resíduos</div></div>
+      <div id="res-list"></div>
+      <button class="btn btn-ghost" onclick="addRes()" style="margin-top:6px"><span style="font-size:18px">+</span> Adicionar Resíduo</button>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-icon">📝</div><div class="card-lbl">Observações</div></div>
+      <div class="field"><textarea class="inp" id="obs" placeholder="Condições especiais..." rows="3"></textarea></div>
+    </div>
+    <button class="btn btn-primary" onclick="goResultado()"><span>Calcular Orçamento</span><span style="font-size:18px">→</span></button>
+  </div>
+
+  <div id="screen-resultado" class="screen">
+    <div class="shdr"><div class="shdr-icon">📊</div><div><div class="shdr-title">Resultado</div><div class="shdr-sub">Análise financeira</div></div></div>
+    <div id="resultado-content"><div class="empty"><span class="empty-ico">📊</span><div class="empty-t">Nenhum cálculo ainda</div><div class="empty-s">Preencha o orçamento e toque em Calcular</div></div></div>
+  </div>
+
+  <div id="screen-proposta" class="screen">
+    <div class="shdr"><div class="shdr-icon">📄</div><div><div class="shdr-title">Proposta</div><div class="shdr-sub">Documento pronto para enviar</div></div></div>
+    <div id="proposta-content"><div class="empty"><span class="empty-ico">📄</span><div class="empty-t">Nenhuma proposta</div><div class="empty-s">Calcule o resultado primeiro</div></div></div>
+  </div>
+
+  <div id="screen-historico" class="screen">
+    <div class="shdr" style="margin-bottom:14px">
+      <div class="shdr-icon">🗂️</div>
+      <div style="flex:1"><div class="shdr-title">Histórico</div><div class="shdr-sub">Orçamentos salvos</div></div>
+      <button class="btn btn-outline btn-sm" onclick="limparHist()">Limpar</button>
+    </div>
+    <div id="hist-list"></div>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="nav-item active" id="nav-orcamento" onclick="navTo('orcamento',this)"><div class="nav-icon">📋</div><div class="nav-label">Orçamento</div></div>
+  <div class="nav-item" id="nav-resultado" onclick="navTo('resultado',this)"><div class="nav-icon">📊</div><div class="nav-label">Resultado</div></div>
+  <div class="nav-item" id="nav-proposta" onclick="navTo('proposta',this)"><div class="nav-icon">📄</div><div class="nav-label">Proposta</div></div>
+  <div class="nav-item" id="nav-historico" onclick="navTo('historico',this)"><div class="nav-icon">🗂️</div><div class="nav-label">Histórico</div></div>
+</nav>
+
+<!-- MODAL IBAMA -->
+<div class="ibama-overlay hidden" id="ibama-overlay">
+  <div class="ibama-box">
+    <div class="ibama-search-wrap">
+      <input class="ibama-sinp" id="ibama-sinp" type="text" placeholder="Buscar por código ou nome..." autocomplete="off" autocorrect="off">
+    </div>
+    <div class="ibama-header" id="ibama-header" style="display:none">
+      <button class="ibama-back" onclick="ibamaVoltarGrupos()">← Grupos</button>
+      <span class="ibama-header-title" id="ibama-header-title"></span>
+      <span class="ibama-header-count" id="ibama-header-count"></span>
+    </div>
+    <div class="ibama-grupos" id="ibama-grupos"></div>
+    <div class="ibama-list" id="ibama-list" style="display:none"></div>
   </div>
   <button class="ibama-close-btn" onclick="ibamaFechar()">Fechar</button>
 </div>
