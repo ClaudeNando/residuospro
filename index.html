@@ -229,6 +229,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
 .pac-container { z-index: 9999 !important; font-family: 'Syne', sans-serif; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid var(--border); }
 .pac-item { padding: 8px 12px; font-size: 13px; cursor: pointer; color: var(--text); }
 .pac-item:hover { background: var(--bg2); }
+.pac-target-input { background-repeat: no-repeat !important; background-position: right 14px center !important; padding-right:38px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -255,10 +256,11 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
     </div>
     <div class="card">
       <div class="card-head"><div class="card-icon">🚛</div><div class="card-lbl">Transporte</div></div>
-      <div class="field" style="display:flex; gap:8px;">
-        <div style="flex:1"><label class="flabel">Trajeto (km)</label><input class="inp inp-mono" type="number" id="trajeto" placeholder="0" inputmode="numeric" oninput="calcular()"></div>
-        <button class="btn btn-ghost" style="width:52px; align-self:flex-end;" onclick="abrirMaps()" title="Calcular Rota Automática">📍</button>
-      </div>
+      <div class="g2">
+        <div class="field" style="display:flex; gap:8px;">
+          <div style="flex:1"><label class="flabel">Trajeto (km)</label><input class="inp inp-mono" type="number" id="trajeto" placeholder="0" inputmode="numeric" oninput="calcular()"></div>
+          <button class="btn btn-ghost" style="width:52px; align-self:flex-end;" onclick="abrirMaps()" title="Calcular Rota Automática">📍</button>
+        </div>
         <div class="field"><label class="flabel">Veículo</label>
           <select class="inp sel" id="veiculo" onchange="calcular()">
             <option value="FIORINO">Fiorino</option><option value="FURGAO">Furgão</option>
@@ -513,35 +515,11 @@ function delRes(id){residuos=residuos.filter(function(r){return r.id!==id;});ren
 function updRes(id,f,v){var r=residuos.find(function(x){return x.id===id;});if(r)r[f]=v;}
 
 // ── MODAL IBAMA ─────────────────────────────────────────
-function ibamaAbrir(resId){
-  ibamaResId=resId;
-  g('ibama-overlay').classList.remove('hidden');
-  var si=g('ibama-sinp');
-  si.value='';
-  ibamaRender('');
-  setTimeout(function(){si.focus();},100);
-}
-
 function ibamaFechar(){
   g('ibama-overlay').classList.add('hidden');
   ibamaResId=null;
 }
 
-function ibamaRender(q){
-  q=q.toLowerCase().trim();
-  var src=(typeof IBAMA!=='undefined')?IBAMA:[];
-  var res=q.length<2?src.slice(0,60):src.filter(function(r){return r.d.toLowerCase().indexOf(q)>=0;}).slice(0,60);
-  var el=g('ibama-list');
-  el.innerHTML='';
-  if(!res.length){el.innerHTML='<div class="ibama-empty">Nenhum resultado</div>';return;}
-  res.forEach(function(r){
-    var item=document.createElement('div');
-    item.className='ibama-item';
-    item.innerHTML='<div class="ibama-item-txt">'+r.d+'</div><div class="ibama-item-per '+(r.p?'p':'n')+'">'+(r.p?'⚠️':'✓')+'</div>';
-    item.onclick=function(){ibamaSelecionar(r);};
-    el.appendChild(item);
-  });
-}
 
 function ibamaSelecionar(r){
   var id=ibamaResId;
