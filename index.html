@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <script src="ibama.js"></script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDizyPou7T-K7kADAexu2dJ71U87YOEMTs&libraries=places"></script>
+<script async async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDizyPou7T-K7kADAexu2dJ71U87YOEMTs&libraries=places&callback=initMapsCallback"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -1126,6 +1126,11 @@ var _mapsNextId = 1;
 var _mapsCalculatedKm = 0;
 var _directionsService = null;
 
+function initMapsCallback(){
+  // Chamado pelo Google Maps quando API carrega
+  _directionsService = new google.maps.DirectionsService();
+}
+
 function initMapsTools(){
   if(!_directionsService && typeof google !== 'undefined' && google.maps) {
     _directionsService = new google.maps.DirectionsService();
@@ -1197,11 +1202,21 @@ function renderMapsStops(){
     var acInps = document.querySelectorAll('.autocomplete-maps');
     acInps.forEach(function(el){
       if(!el.dataset.acBound){
-        var ac = new google.maps.places.Autocomplete(el, { componentRestrictions: { country: 'br' } });
+        var stopId = parseInt(el.id.replace('mstop-',''));
+        // Atualizar valor ao digitar manualmente
+        el.addEventListener('input', function(){
+          updMapsStop(stopId, this.value);
+        });
+        // Autocomplete do Google
+        var ac = new google.maps.places.Autocomplete(el, {
+          componentRestrictions: { country: 'br' },
+          fields: ['formatted_address']
+        });
         ac.addListener('place_changed', function() {
           var place = ac.getPlace();
           if(place && place.formatted_address) {
-            updMapsStop(parseInt(el.id.replace('mstop-','')), place.formatted_address);
+            updMapsStop(stopId, place.formatted_address);
+            el.value = place.formatted_address;
           }
         });
         el.dataset.acBound = '1';
