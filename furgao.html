@@ -362,119 +362,168 @@ function calcMeses(){
   return Math.max(1,m);
 }
 
-function calcCustoEstimado(){
-  // Custos variáveis por km (sempre por km)
-  var varKm=(cfg.diesel/cfg.consumo)+(cfg.oleoCusto/cfg.oleoKm)+(cfg.pneuCusto/cfg.pneuKm)+(cfg.manutCusto/cfg.manutKm);
-
-  // Custos fixos mensais totais
-  var fixoMensal=cfg.parcela+cfg.motorista+(cfg.ipva/12)+(cfg.seguro/12)+(cfg.licen/12);
-
-  // Se tiver histórico de viagens: dilui pelo faturamento real
-  var totFat=viagens.reduce(function(s,v){return s+(v.fat||0);},0);
-  var totKm=viagens.reduce(function(s,v){return s+(v.km||0);},0);
-
-  var meses=calcMeses();
-  var fatMedio=totFat/meses;
-  var kmMedio=totKm/meses;
-
-  var fixoKm, metodo;
-  if(totFat>0&&totKm>0){
-    // Método diluído: % fixo sobre faturamento → converte para R$/km
-    var receitaKm=totFat/totKm; // receita média por km
-    var pctFixo=fixoMensal/fatMedio; // % do faturamento que é custo fixo
-    fixoKm=receitaKm*pctFixo; // custo fixo por km
-    metodo='diluído pelo faturamento ('+meses+' meses · '+fmt(kmMedio)+' km/mês · '+brl(fatMedio)+'/mês)';
-  } else {
-    // Fallback: divide pelo km configurado
-    var km=cfg.kmMes||1;
-    fixoKm=fixoMensal/km;
-    metodo='estimado (sem histórico)';
-  }
-
-  var total=fixoKm+varKm;
-  var preco=total/(1-(cfg.margem/100)-(cfg.imposto/100));
-
-  var itens=[
-    {label:'Combustível (variável)',val:cfg.diesel/cfg.consumo},
-    {label:'Óleo (variável)',val:cfg.oleoCusto/cfg.oleoKm},
-    {label:'Pneus (variável)',val:cfg.pneuCusto/cfg.pneuKm},
-    {label:'Manutenção (variável)',val:cfg.manutCusto/cfg.manutKm},
-    {label:'Fixos diluídos (parcela+motorista+IPVA+seguro)',val:fixoKm},
-  ];
-
-  return {itens:itens,total:total,preco:preco,fixoKm:fixoKm,varKm:varKm,metodo:metodo,fatMedio:fatMedio,kmMedio:kmMedio};
-}
-
-function calcCustoEstimado_UNUSED(){
-  var km=cfg.kmMes||1, kma=km*12;
-  var itens=[
-    {label:'Combustível',val:cfg.diesel/cfg.consumo},
-    {label:'Parcela',val:cfg.parcela/km},
-    {label:'Motorista',val:cfg.motorista/km},
-    {label:'IPVA',val:cfg.ipva/kma},
-    {label:'Seguro + Rastreador',val:cfg.seguro/kma},
-    {label:'Licenciamento',val:cfg.licen/kma},
-    {label:'Óleo',val:cfg.oleoCusto/cfg.oleoKm},
-    {label:'Pneus',val:cfg.pneuCusto/cfg.pneuKm},
-    {label:'Manutenção',val:cfg.manutCusto/cfg.manutKm},
-  ];
-  var total=itens.reduce(function(s,i){return s+i.val;},0);
-  var preco=total/(1-(cfg.margem/100)-(cfg.imposto/100));
-  return {itens:itens,total:total,preco:preco};
-}
-
-// Custo direto médio (apenas desembolso informado nas viagens)
-function calcCustoReal(){
+// Custo OPERACIONAL por km (apenas desembolso direto das viagens)
+function calcCustoOperacional(){
   var comCusto=viagens.filter(function(v){return v.km>0&&v.custo!=null&&v.custo>0;});
   if(!comCusto.length) return null;
   var totKm=comCusto.reduce(function(s,v){return s+v.km;},0);
   var totCusto=comCusto.reduce(function(s,v){return s+v.custo;},0);
-  return {custoKm:totCusto/totKm, totalKm:totKm, totalCusto:totCusto, nViagens:comCusto.length};
+  return {
+    custoKm: totCusto/totKm,
+    totalKm: totKm,
+    totalCusto: totCusto,
+    nViagens: comCusto.length,
+    itens: [
+      {label:'Combustível estimado', val: cfg.diesel/cfg.consumo},
+      {label:'Óleo + pneus + manutenção', val: (cfg.oleoCusto/cfg.oleoKm)+(cfg.pneuCusto/cfg.pneuKm)+(cfg.manutCusto/cfg.manutKm)},
+    ]
+  };
 }
+
+// Custo TOTAL por km (operacional + rateio dos fixos sobre o faturamento)
+function calcCustoTotal(){
+  var varKm = (cfg.diesel/cfg.consumo) +
+              (cfg.oleoCusto/cfg.oleoKm) +
+              (cfg.pneuCusto/cfg.pneuKm) +
+              (cfg.manutCusto/cfg.manutKm);
+
+  var fixoMensal = cfg.parcela + cfg.motorista + (cfg.ipva/12) + (cfg.seguro/12) + (cfg.licen/12);
+
+  var totFat = viagens.reduce(function(s,v){return s+(v.fat||0);},0);
+  var totKm  = viagens.reduce(function(s,v){return s+(v.km||0);},0);
+  var meses  = calcMeses();
+  var fatMedio = totFat/meses;
+  var kmMedio  = totKm/meses;
+
+  var fixoKm, metodo, pctFixo;
+  if(totFat>0 && totKm>0){
+    var receitaKm = totFat/totKm;
+    pctFixo = fixoMensal/fatMedio;
+    fixoKm  = receitaKm * pctFixo;
+    metodo  = meses+' meses · '+fmt(Math.round(kmMedio))+' km/mês · '+brl(fatMedio)+'/mês';
+  } else {
+    var kmFb = cfg.kmMes||1;
+    pctFixo  = fixoMensal/(kmFb*5);
+    fixoKm   = fixoMensal/kmFb;
+    metodo   = 'estimado (sem histórico suficiente)';
+  }
+
+  var total = fixoKm + varKm;
+  var preco = total / (1 - (cfg.margem/100) - (cfg.imposto/100));
+
+  return {
+    varKm:    varKm,
+    fixoKm:   fixoKm,
+    fixoMensal: fixoMensal,
+    pctFixo:  pctFixo,
+    total:    total,
+    preco:    preco,
+    fatMedio: fatMedio,
+    kmMedio:  kmMedio,
+    metodo:   metodo,
+    itensVar: [
+      {label:'Combustível (R$/km)', val: cfg.diesel/cfg.consumo},
+      {label:'Óleo', val: cfg.oleoCusto/cfg.oleoKm},
+      {label:'Pneus', val: cfg.pneuCusto/cfg.pneuKm},
+      {label:'Manutenção', val: cfg.manutCusto/cfg.manutKm},
+    ],
+    itensFix: [
+      {label:'Parcela', val: cfg.parcela},
+      {label:'Motorista/mês', val: cfg.motorista},
+      {label:'IPVA/mês', val: cfg.ipva/12},
+      {label:'Seguro+Rastr./mês', val: cfg.seguro/12},
+      {label:'Licenciamento/mês', val: cfg.licen/12},
+    ]
+  };
+}
+
+// Alias para compatibilidade
+function calcCustoEstimado(){ return calcCustoTotal(); }
 
 // ── DASHBOARD ─────────────────────────────────────────────
 function renderDash(){
-  var est=calcCustoEstimado(), real=calcCustoReal();
-  var custoKm=est.total;
-  var precoKm=est.preco;
+  var op  = calcCustoOperacional();
+  var tot = calcCustoTotal();
 
-  var totFat=viagens.reduce(function(s,v){return s+(v.fat||0);},0);
-  var totKm=viagens.reduce(function(s,v){return s+(v.km||0);},0);
-  var totCusto=viagens.filter(function(v){return v.custo!=null;}).reduce(function(s,v){return s+v.custo;},0);
-  var impTotal=totFat*(cfg.imposto/100);
-  var sobra=totFat-totCusto-impTotal;
-  var margem=totFat>0?sobra/totFat:0;
-  var mc=margem>=cfg.margem/100?'ok':margem>=(cfg.margem/100)*0.7?'warn':'bad';
+  var totFat  = viagens.reduce(function(s,v){return s+(v.fat||0);},0);
+  var totKm   = viagens.reduce(function(s,v){return s+(v.km||0);},0);
+  var totCusto= viagens.filter(function(v){return v.custo!=null;}).reduce(function(s,v){return s+v.custo;},0);
+  var impTotal= totFat*(cfg.imposto/100);
+  var sobra   = totFat - totCusto - impTotal;
+  var margem  = totFat>0?sobra/totFat:0;
+  var mc      = margem>=cfg.margem/100?'ok':margem>=(cfg.margem/100)*0.7?'warn':'bad';
 
-  var est=calcCustoEstimado();
-  g('dash-sub').textContent=viagens.length+' viagens · '+fmt(est.kmMedio)+' km/mês · '+brl(est.fatMedio)+'/mês';
+  g('dash-sub').textContent = viagens.length+' viagens · '+fmt(Math.round(tot.kmMedio))+' km/mês';
 
-  g('kpi-area').innerHTML=
-    kpi('Faturamento total',brl(totFat),'todas as viagens','')+
-    kpi('KM total',fmt(totKm)+' km','rodados','')  +
-    kpi('Margem geral',pct(margem),'',mc)+
-    kpi('Custo/km real',real?'R$ '+real.custoKm.toFixed(2).replace('.',','):'Estimado','',real?'':'');
+  g('kpi-area').innerHTML =
+    kpi('Faturamento total', brl(totFat), 'todas as viagens', '') +
+    kpi('KM total', fmt(totKm)+' km', 'rodados', '') +
+    kpi('Margem geral', pct(margem), '', mc) +
+    kpi('Custo oper./km', op ? 'R$ '+op.custoKm.toFixed(2).replace('.',',') : 'Sem dados', 'desembolso direto', '');
 
-  // Custo km detalhe
-  var tag='<span class="tag-real">✓ '+est.metodo+'</span>';
-  var custoUsado=real?real.custoKm:est.total;
-  var linhas=est.itens.map(function(i){
-    return '<div class="ctrow"><span class="ct-label">'+i.label+'</span><span class="ct-val">R$ '+i.val.toFixed(2).replace('.',',')+'</span></div>';
+  // ── CARD CUSTO DETALHADO ───────────────────────────────
+  var opBox = '';
+  if(op){
+    opBox = '<div style="background:rgba(26,122,64,0.06);border:1px solid rgba(26,122,64,0.2);border-radius:10px;padding:12px;margin-bottom:10px">'+
+      '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--success);margin-bottom:8px">'+
+        '✓ Custo operacional real — baseado em '+op.nViagens+' viagens'+
+      '</div>'+
+      '<div style="display:flex;justify-content:space-between;align-items:center">'+
+        '<span style="font-size:13px;color:var(--text2)">Combustível + óleo + manutenção (informado)</span>'+
+        '<span style="font-size:18px;font-weight:800;color:var(--success);font-family:monospace">R$ '+op.custoKm.toFixed(2).replace('.',',')+'</span>'+
+      '</div>'+
+      '<div style="font-size:11px;color:var(--text3);margin-top:4px">'+fmt(op.totalKm)+' km · '+brl(op.totalCusto)+' total desembolsado</div>'+
+    '</div>';
+  }
+
+  // Itens variáveis
+  var varLinhas = tot.itensVar.map(function(i){
+    return '<div class="ctrow"><span class="ct-label">'+i.label+'</span>'+
+      '<span class="ct-val">R$ '+i.val.toFixed(4).replace('.',',')+'</span></div>';
   }).join('');
-  var realLinha=real?
-    '<div class="ctrow" style="background:rgba(26,122,64,0.06);border-radius:8px;padding:10px;margin-top:4px">'+
-      '<span class="ct-label" style="font-weight:700;color:var(--success)">Custo direto médio ('+real.nViagens+' viagens c/ custo)</span>'+
-      '<span class="ct-val green big">R$ '+real.custoKm.toFixed(2).replace('.',',')+'</span>'+
-    '</div>':'';
-  var totalLinha='<div class="ctrow"><span class="ct-label" style="font-weight:700">Custo total/km (diluído)</span>'+
-    '<span class="ct-val big">R$ '+est.total.toFixed(2).replace('.',',')+'</span></div>';
-  var precFinal='<div class="ctrow" style="padding:10px 0">'+
-    '<span class="ct-label" style="font-weight:700;color:var(--accent)">Preço sugerido/km</span>'+
-    '<span class="ct-val big" style="color:var(--accent);font-size:18px">R$ '+est.preco.toFixed(2).replace('.',',')+'</span></div>';
-  g('custo-detalhe').innerHTML=
-    '<div style="margin-bottom:10px">'+tag+'</div>'+
-    linhas+'<div style="height:1px;background:var(--border2);margin:6px 0"></div>'+
-    totalLinha+realLinha+precFinal;
+
+  // Fixos mensais
+  var fixLinhas = tot.itensFix.map(function(i){
+    return '<div class="ctrow"><span class="ct-label">'+i.label+'</span>'+
+      '<span class="ct-val">'+brl(i.val)+'/mês</span></div>';
+  }).join('');
+
+  var rateioBox = '<div style="background:var(--accent-dim);border-radius:10px;padding:12px;margin:8px 0">'+
+    '<div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px">Rateio dos fixos sobre faturamento</div>'+
+    '<div style="display:flex;justify-content:space-between;margin-bottom:4px">'+
+      '<span style="font-size:12px;color:var(--text2)">Fixos mensais</span>'+
+      '<span style="font-size:13px;font-weight:700;font-family:monospace">'+brl(tot.fixoMensal)+'/mês</span>'+
+    '</div>'+
+    '<div style="display:flex;justify-content:space-between;margin-bottom:4px">'+
+      '<span style="font-size:12px;color:var(--text2)">Faturamento médio</span>'+
+      '<span style="font-size:13px;font-weight:700;font-family:monospace">'+brl(tot.fatMedio)+'/mês</span>'+
+    '</div>'+
+    '<div style="display:flex;justify-content:space-between">'+
+      '<span style="font-size:12px;color:var(--text2)">% dos fixos sobre receita</span>'+
+      '<span style="font-size:13px;font-weight:700;font-family:monospace">'+pct(tot.pctFixo)+'</span>'+
+    '</div>'+
+    '<div style="display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">'+
+      '<span style="font-size:12px;color:var(--text2)">Fixo diluído por km</span>'+
+      '<span style="font-size:13px;font-weight:700;font-family:monospace">R$ '+tot.fixoKm.toFixed(2).replace('.',',')+'</span>'+
+    '</div>'+
+  '</div>';
+
+  g('custo-detalhe').innerHTML =
+    opBox +
+    '<div class="card-lbl" style="margin-bottom:8px">Custos variáveis (por km rodado)</div>' +
+    varLinhas +
+    '<div class="card-lbl" style="margin:12px 0 8px">Custos fixos mensais</div>' +
+    fixLinhas +
+    rateioBox +
+    '<div style="height:1px;background:var(--border2);margin:6px 0"></div>'+
+    '<div class="ctrow"><span class="ct-label" style="font-weight:700">Custo variável/km</span>'+
+      '<span class="ct-val big">R$ '+tot.varKm.toFixed(2).replace('.',',')+'</span></div>'+
+    '<div class="ctrow"><span class="ct-label" style="font-weight:700">Fixo diluído/km</span>'+
+      '<span class="ct-val big">R$ '+tot.fixoKm.toFixed(2).replace('.',',')+'</span></div>'+
+    '<div class="ctrow"><span class="ct-label" style="font-weight:700;color:var(--text)">Custo TOTAL/km</span>'+
+      '<span class="ct-val big" style="font-size:17px">R$ '+tot.total.toFixed(2).replace('.',',')+'</span></div>'+
+    '<div class="ctrow" style="padding:10px 0"><span class="ct-label" style="font-weight:700;color:var(--accent)">Preço sugerido/km</span>'+
+      '<span class="ct-val big" style="color:var(--accent);font-size:20px">R$ '+tot.preco.toFixed(2).replace('.',',')+'</span></div>';
 
   // Barras por cliente
   var porClienteDash={};
@@ -490,11 +539,12 @@ function renderDash(){
   var maxFatDash=Math.max.apply(null,listaDash.map(function(c){return c.fat;}).concat([1]));
   var barras=listaDash.slice(0,10).map(function(c){
     var w=(c.fat/maxFatDash*100).toFixed(1);
-    var ideal=c.km*est.preco;
+    var ideal=c.km*tot.preco;
     var ok=c.fat>=ideal;
     return '<div style="margin-bottom:10px">'+
       '<div style="display:flex;justify-content:space-between;margin-bottom:4px">'+
-        '<span style="font-size:12px;color:var(--text2);font-weight:700">'+c.nome+' <span style="color:var(--text4);font-weight:400">('+c.n+'×)</span></span>'+
+        '<span style="font-size:12px;color:var(--text2);font-weight:700">'+c.nome+
+          ' <span style="color:var(--text4);font-weight:400">('+c.n+'×)</span></span>'+
         '<span style="font-size:11px;font-family:monospace;color:'+(ok?'var(--success)':'var(--danger)')+'">'+brl(c.fat)+'</span>'+
       '</div>'+
       '<div style="background:var(--bg);border-radius:4px;height:6px;overflow:hidden">'+
@@ -503,9 +553,10 @@ function renderDash(){
       '<div style="font-size:10px;color:var(--text4);margin-top:3px">Ideal: '+brl(ideal)+'</div>'+
     '</div>';
   }).join('');
-
-  g('dash-barras').innerHTML=barras||'<div class="empty"><span class="empty-ico">📊</span><div class="empty-t">Sem dados</div></div>';
+  g('dash-barras').innerHTML = barras ||
+    '<div class="empty"><span class="empty-ico">📊</span><div class="empty-t">Sem dados</div></div>';
 }
+
 
 function kpi(label,value,sub,cls){
   return '<div class="kpi"><div class="kpi-label">'+label+'</div><div class="kpi-value '+cls+'">'+value+'</div>'+(sub?'<div class="kpi-sub">'+sub+'</div>':'')+'</div>';
