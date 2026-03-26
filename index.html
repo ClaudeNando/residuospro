@@ -531,14 +531,63 @@ g('ibama-sinp').oninput=function(){ibamaRender(this.value);};
 g('ibama-overlay').onclick=function(e){if(e.target===this)ibamaFechar();};
 
 // ── CÁLCULO ─────────────────────────────────────────────
+function getCustoFurgao(){
+  // Lê custo/km real do FurgãoPRO via localStorage
+  try {
+    var fp2cfg = localStorage.getItem('fp2_cfg');
+    var fp2viagens = localStorage.getItem('fp2_viagens');
+    if(!fp2cfg || !fp2viagens) return null;
+    var fcfg = JSON.parse(fp2cfg);
+    var fviagens = JSON.parse(fp2viagens);
+
+    // Calcular custo operacional real (viagens com custo informado)
+    var comCusto = fviagens.filter(function(v){return v.km>0&&v.custo!=null&&v.custo>0;});
+    if(!comCusto.length) return null;
+    var totKm = comCusto.reduce(function(s,v){return s+v.km;},0);
+    var totCusto = comCusto.reduce(function(s,v){return s+v.custo;},0);
+    var custoOpKm = totCusto/totKm;
+
+    // Calcular rateio dos fixos
+    var totFat = fviagens.reduce(function(s,v){return s+(v.fat||0);},0);
+    var totKmAll = fviagens.reduce(function(s,v){return s+(v.km||0);},0);
+    if(totFat<=0||totKmAll<=0) return {forn: custoOpKm, tipo:'operacional'};
+
+    // Meses desde primeira viagem
+    var datas = fviagens.filter(function(v){return v.data;}).map(function(v){return new Date(v.data);});
+    var minData = new Date(Math.min.apply(null,datas));
+    var hoje = new Date();
+    var meses = Math.max(1,(hoje.getFullYear()-minData.getFullYear())*12+(hoje.getMonth()-minData.getMonth())+1);
+
+    var fatMedio = totFat/meses;
+    var fixoMensal = fcfg.parcela + fcfg.motorista + (fcfg.ipva/12) + (fcfg.seguro/12) + (fcfg.licen/12);
+    var varKm = (fcfg.diesel/fcfg.consumo) + (fcfg.oleoCusto/fcfg.oleoKm) + (fcfg.pneuCusto/fcfg.pneuKm) + (fcfg.manutCusto/fcfg.manutKm);
+    var receitaKm = totFat/totKmAll;
+    var pctFixo = fixoMensal/fatMedio;
+    var fixoKm = receitaKm * pctFixo;
+    var custoTotalKm = varKm + fixoKm;
+
+    return {
+      forn: custoTotalKm,
+      op: custoOpKm,
+      tipo: 'integrado do FurgãoPRO'
+    };
+  } catch(e){ return null; }
+}
+
 function calcular(){
   var km=+g('trajeto').value||0,veic=g('veiculo').value,ac=+g('acresc').value||0;
-  var ctf=km*(cfg.transp.forn[veic]||0),ptc=km*(cfg.transp.cli[veic]||0);
+  // Se furgão selecionado, usar custo do FurgãoPRO
+  var custForgaoKm = null;
+  if(veic==='FURGAO'){
+    var fp = getCustoFurgao();
+    if(fp) custForgaoKm = fp.forn;
+  }
+  var ctf=km*(custForgaoKm||cfg.transp.forn[veic]||0),ptc=km*(cfg.transp.cli[veic]||0);
   if(km>=900)ptc+=cfg.transp.cli.DIARIA*(residuos.reduce(function(s,r){return s+(+r.peso||0);},0)/1000||0);
   var cdf=0,pdc=0;
   var itens=residuos.map(function(r){var kg=+r.peso||0,cf=(cfg.dest.forn[r.dest]||0)*kg,cc=(cfg.dest.cli[r.dest]||0)*kg;cdf+=cf;pdc+=cc;return{desc:r.desc,codigo:r.codigo,perigoso:r.perigoso,dest:r.dest,peso:kg,custForn:cf,precCli:cc};});
   var tot=ptc+pdc+ac,imp=tot*(cfg.imposto/100),ct=ctf+cdf+imp,sob=tot-ct,mar=tot>0?sob/tot:0;
-  ultimoCalculo={km:km,veic:veic,ac:ac,ctf:ctf,ptc:ptc,cdf:cdf,pdc:pdc,itens:itens,tot:tot,imp:imp,ct:ct,sob:sob,mar:mar,
+  ultimoCalculo={km:km,veic:veic,ac:ac,ctf:ctf,ptc:ptc,cdf:cdf,pdc:pdc,itens:itens,tot:tot,imp:imp,ct:ct,sob:sob,mar:mar,custoFurgaoIntegrado:custForgaoKm!=null,
     cli:{nome:g('cli-nome').value,cnpj:g('cli-cnpj').value,contato:g('cli-contato').value},
     obs:g('obs').value,data:new Date().toLocaleDateString('pt-BR')};
   return ultimoCalculo;
