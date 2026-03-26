@@ -14,6 +14,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <script src="ibama.js"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDizyPou7T-K7kADAexu2dJ71U87YOEMTs&libraries=places"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -217,6 +218,17 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
   bottom: calc(var(--nav-h) + var(--sb) + 16px);
 }
 
+/* ── MODAL MAPS ── */
+.maps-list { max-height: 250px; overflow-y: auto; margin-bottom: 12px; }
+.maps-stop { display:flex; align-items:center; gap:8px; margin-bottom: 8px; }
+.maps-stop-idx { width:24px; height:24px; border-radius:50%; background:var(--dark); color:#f8f0dd; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
+.maps-stop-inp { flex:1; }
+.maps-del { width:34px; height:34px; border-radius:8px; background:rgba(176,48,32,0.08); border:none; color:var(--danger); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.maps-resumo { font-size:12px; color:var(--text2); background:var(--bg); padding:10px; border-radius:8px; border:1px dashed var(--border); margin-bottom:12px; }
+.maps-resumo-dist { font-family:'DM Mono',monospace; font-size:16px; font-weight:500; color:var(--accent); }
+.pac-container { z-index: 9999 !important; font-family: 'Syne', sans-serif; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid var(--border); }
+.pac-item { padding: 8px 12px; font-size: 13px; cursor: pointer; color: var(--text); }
+.pac-item:hover { background: var(--bg2); }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -243,8 +255,10 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
     </div>
     <div class="card">
       <div class="card-head"><div class="card-icon">🚛</div><div class="card-lbl">Transporte</div></div>
-      <div class="g2">
-        <div class="field"><label class="flabel">Trajeto (km)</label><input class="inp inp-mono" type="number" id="trajeto" placeholder="0" inputmode="numeric" oninput="calcular()"></div>
+      <div class="field" style="display:flex; gap:8px;">
+        <div style="flex:1"><label class="flabel">Trajeto (km)</label><input class="inp inp-mono" type="number" id="trajeto" placeholder="0" inputmode="numeric" oninput="calcular()"></div>
+        <button class="btn btn-ghost" style="width:52px; align-self:flex-end;" onclick="abrirMaps()" title="Calcular Rota Automática">📍</button>
+      </div>
         <div class="field"><label class="flabel">Veículo</label>
           <select class="inp sel" id="veiculo" onchange="calcular()">
             <option value="FIORINO">Fiorino</option><option value="FURGAO">Furgão</option>
@@ -369,6 +383,27 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- MODAL MAPS ROTEAMENTO -->
+<div class="overlay" id="maps-modal" onclick="if(event.target===this)fecharMaps()">
+  <div class="modal">
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+    <div class="modal-head"><div class="modal-title">📍 Rota Automática</div><button class="modal-close-btn" onclick="fecharMaps()">×</button></div>
+    <div class="modal-body">
+      <div class="maps-resumo" id="maps-resumo-box" style="display:none">
+        Distância Total: <br><span class="maps-resumo-dist" id="maps-dist-val">0 km</span>
+      </div>
+      <div class="maps-list" id="maps-stops-list"></div>
+      <div class="btn-row" style="margin-bottom:12px">
+        <button class="btn btn-outline btn-sm" onclick="addMapsStop('cliente')">👤 + Cliente</button>
+        <button class="btn btn-outline btn-sm" onclick="addMapsStop('destinador')">♻️ + Destinador</button>
+      </div>
+      <button class="btn btn-primary" onclick="calcularRotaMaps()" id="btn-calc-rota">Calcular Distância</button>
+      <div style="height:10px"></div>
+      <button class="btn btn-ghost" onclick="usarDistanciaRota()" id="btn-usar-rota" style="display:none">Aplicar KM no Orçamento</button>
+    </div>
+  </div>
+</div>
 
 <script>
 var DEST_KEYS_I  =['ATERRO CLASSE I','BLEND CLASSE I','INCIN CLASSE I','EFLUENTE CLASSE I'];
@@ -1106,6 +1141,162 @@ function ibamaRenderLista(items,q){
 g('ibama-sinp').oninput=function(){ibamaRender(this.value);};
 g('ibama-overlay').onclick=function(e){if(e.target===this)ibamaFechar();};
 
+
+// ── GOOGLE MAPS ROUTING ─────────────────────────────────
+var _mapsStops = [];
+var _mapsNextId = 1;
+var _mapsCalculatedKm = 0;
+var _directionsService = null;
+
+function initMapsTools(){
+  if(!_directionsService && typeof google !== 'undefined' && google.maps) {
+    _directionsService = new google.maps.DirectionsService();
+  }
+}
+
+function abrirMaps(){
+  initMapsTools();
+  if(_mapsStops.length === 0){
+    // Cria estado default: Origem, 1 Cliente
+    _mapsStops = [
+      { id:_mapsNextId++, tipo:'origem', val:'Senador Canedo - GO', fixo:true },
+      { id:_mapsNextId++, tipo:'cliente', val:g('cli-nome').value || '' }
+    ];
+  }
+  g('maps-resumo-box').style.display = 'none';
+  g('btn-usar-rota').style.display = 'none';
+  renderMapsStops();
+  g('maps-modal').classList.add('open');
+}
+
+function fecharMaps(){
+  g('maps-modal').classList.remove('open');
+}
+
+function renderMapsStops(){
+  var html = '';
+  // Se não houver destino final, adiciona um visual
+  var temDestino = _mapsStops.length > 0 && _mapsStops[_mapsStops.length-1].tipo === 'destino';
+  var listToRender = _mapsStops.slice();
+  if(!temDestino && listToRender.length > 0) {
+    listToRender.push({ id:'fim', tipo:'destino', val:'Senador Canedo - GO', fixo:true });
+  }
+
+  listToRender.forEach(function(st, i){
+    var isFixo = st.fixo || st.tipo === 'origem' || st.tipo === 'destino';
+    var delBtn = !isFixo ? '<button class="maps-del" onclick="removeMapsStop('+st.id+')">×</button>' : '';
+    
+    var inp = '';
+    if(isFixo){
+      inp = '<input class="inp maps-stop-inp" type="text" value="'+st.val+'" readonly style="background:var(--bg2); color:var(--text2)">';
+    } else if(st.tipo === 'destinador') {
+      // Destinador vira um select para facilitar endereços reais depois se o usuario quiser.
+      // Por ora, endereços textuais genéricos.
+      var opts = [
+        'Aterro Sanitário - Goiânia, GO',
+        'Aterro Classe I Candeias, GO',
+        'Coprocessamento de Resíduos, GO',
+        'Tratamento de Efluentes, GO'
+      ].map(function(o){ return '<option value="'+o+'" '+(st.val===o?'selected':'')+'>'+o+'</option>'; }).join('');
+      inp = '<select class="inp sel maps-stop-inp" id="mstop-'+st.id+'" onchange="updMapsStop('+st.id+',this.value)">'+
+            '<option value="">Selecione destinador...</option>'+opts+'</select>';
+    } else {
+      // Cliente input
+      inp = '<input class="inp maps-stop-inp autocomplete-maps" type="text" id="mstop-'+st.id+'" placeholder="Endereço do cliente (Rua, Número, Cidade)" value="'+st.val+'" onchange="updMapsStop('+st.id+',this.value)">';
+    }
+
+    var ic = st.tipo==='cliente'?'👤':st.tipo==='destinador'?'♻️':st.tipo==='origem'?'🏭':'🏁';
+    html += '<div class="maps-stop"><div class="maps-stop-idx" title="'+st.tipo+'">'+ic+'</div>'+inp+delBtn+'</div>';
+  });
+
+  g('maps-stops-list').innerHTML = html;
+
+  // Ligar Autocomplete
+  if(typeof google !== 'undefined' && google.maps && google.maps.places) {
+    var acInps = document.querySelectorAll('.autocomplete-maps');
+    acInps.forEach(function(el){
+      if(!el.dataset.acBound){
+        var ac = new google.maps.places.Autocomplete(el, { componentRestrictions: { country: 'br' } });
+        ac.addListener('place_changed', function() {
+          var place = ac.getPlace();
+          if(place && place.formatted_address) {
+            updMapsStop(parseInt(el.id.replace('mstop-','')), place.formatted_address);
+          }
+        });
+        el.dataset.acBound = '1';
+      }
+    });
+  }
+}
+
+function updMapsStop(id, val){
+  var st = _mapsStops.find(function(x){ return x.id === id; });
+  if(st) st.val = val;
+}
+
+function removeMapsStop(id){
+  _mapsStops = _mapsStops.filter(function(x){ return x.id !== id; });
+  renderMapsStops();
+}
+
+function addMapsStop(tipo){
+  _mapsStops.push({ id:_mapsNextId++, tipo:tipo, val:'' });
+  renderMapsStops();
+}
+
+function calcularRotaMaps(){
+  if(!_directionsService) return toast('⚠️ API do Maps não carregada');
+  
+  // Coletar endereços reais ignorando a origem (tá fixa zero)
+  var orig = _mapsStops[0].val; // Senador Canedo
+  var waypts = [];
+  
+  for(var i=1; i < _mapsStops.length; i++){
+    var v = _mapsStops[i].val;
+    if(!v) return toast('⚠️ Preencha todos os endereços!');
+    waypts.push({ location: v, stopover: true });
+  }
+
+  // O último destino sempre é a própria empresa base (para fechar o ciclo da viagem)
+  var dest = 'Senador Canedo - GO';
+
+  g('btn-calc-rota').innerHTML = 'Calculando...';
+  g('btn-calc-rota').disabled = true;
+
+  var req = {
+    origin: orig,
+    destination: dest,
+    waypoints: waypts,
+    travelMode: 'DRIVING'
+  };
+
+  _directionsService.route(req, function(res, status) {
+    g('btn-calc-rota').innerHTML = 'Calcular Distância';
+    g('btn-calc-rota').disabled = false;
+    
+    if (status === 'OK') {
+      var distTotalMeters = 0;
+      var route = res.routes[0];
+      for (var j = 0; j < route.legs.length; j++) {
+        distTotalMeters += route.legs[j].distance.value;
+      }
+      _mapsCalculatedKm = Math.ceil(distTotalMeters / 1000);
+      
+      g('maps-dist-val').textContent = _mapsCalculatedKm + ' km';
+      g('maps-resumo-box').style.display = 'block';
+      g('btn-usar-rota').style.display = 'block';
+    } else {
+      toast('⚠️ Não foi possível calcular. Verifique os endereços.');
+    }
+  });
+}
+
+function usarDistanciaRota(){
+  g('trajeto').value = _mapsCalculatedKm;
+  calcular();
+  fecharMaps();
+  toast('📍 Distância de '+_mapsCalculatedKm+' km aplicada!');
+}
 
 renderRes();
 renderHist();
