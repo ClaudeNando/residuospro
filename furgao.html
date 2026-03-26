@@ -415,6 +415,7 @@ function calcCustoTotal(){
   var total = fixoKm + varKm;
   var preco = total / (1 - (cfg.margem/100) - (cfg.imposto/100));
 
+
   return {
     varKm:    varKm,
     fixoKm:   fixoKm,
@@ -748,6 +749,23 @@ function salvarViagem(){
   } else {
     nome=g('v-nome').value.trim();
     if(!nome){toast('⚠️ Informe o nome');return;}
+    // Auto-cadastrar como cliente se ainda não existir
+    var existente=clientes.find(function(x){return x.nome.toLowerCase()===nome.toLowerCase();});
+    if(existente){
+      clienteId=existente.id;
+    } else {
+      var novoCliente={
+        id:nextCId++,
+        nome:nome,
+        local:g('v-local-avulso')?g('v-local-avulso').value.trim():'',
+        uf:'GO',
+        km:+g('v-km').value||0,
+        fatEsperado:g('v-fat').value?+g('v-fat').value:null
+      };
+      clientes.push(novoCliente);
+      sClientes();
+      clienteId=novoCliente.id;
+    }
   }
   var km=+g('v-km').value||0;
   if(!km){toast('⚠️ Informe o KM');return;}
@@ -769,7 +787,39 @@ function salvarViagem(){
   sViagens();
   closeModal('viagem-modal');
   renderRegistros();
-  renderDash();
+  // Corrige viagens avulsas — vincula ao cliente auto-cadastrado
+function corrigirAvulsos(){
+  var corrigidas=0;
+  viagens.forEach(function(v){
+    if(v.clienteId) return; // já tem cliente
+    if(!v.nome) return;
+    var c=clientes.find(function(x){return x.nome.toLowerCase()===v.nome.toLowerCase();});
+    if(c){
+      v.clienteId=c.id;
+      corrigidas++;
+    } else {
+      // Criar cliente novo
+      var novoC={id:nextCId++,nome:v.nome,local:'',uf:'GO',km:v.km||0,fatEsperado:v.fat||null};
+      clientes.push(novoC);
+      sClientes();
+      v.clienteId=novoC.id;
+      corrigidas++;
+    }
+  });
+  if(corrigidas>0){
+    sViagens();
+    sClientes();
+    toast('✅ '+corrigidas+' viagens vinculadas a clientes!');
+    renderDash();
+    renderClientes();
+  }
+  return corrigidas;
+}
+
+// Executar correção automática na inicialização
+corrigirAvulsos();
+
+renderDash();
   renderClientes();
   toast('✅ Viagem salva!');
 }
