@@ -283,6 +283,10 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
       <button class="btn btn-primary" onclick="salvarCfg()">✓ Salvar</button>
       <div style="height:8px"></div>
       <button class="btn btn-outline" onclick="closeModal('cfg-modal')">Fechar</button>
+      <div style="height:8px"></div>
+      <button class="btn btn-danger" onclick="zerarViagens()">🗑 Zerar todas as viagens</button>
+      <div style="height:8px"></div>
+      <button class="btn btn-danger" onclick="zerarTudo()">🗑 Zerar viagens e clientes</button>
     </div>
   </div>
 </div>
@@ -564,7 +568,7 @@ function kpi(label,value,sub,cls){
 
 // ── REGISTROS ─────────────────────────────────────────────
 function renderRegistros(){
-  var real=calcCustoReal();
+  var real=calcCustoOperacional();
   var est=calcCustoEstimado();
   if(real){
     g('custo-real-box').innerHTML='📐 Custo/km real: <b>R$ '+real.custoKm.toFixed(2).replace('.',',')+'</b> calculado de '+real.nViagens+' viagens com custo informado ('+fmt(real.totalKm)+' km · '+brl(real.totalCusto)+' total)';
@@ -684,7 +688,7 @@ function calcViagemModal(){
   var custo=+g('v-custo').value||0;
   if(!km||!fat){g('v-preview').innerHTML='';return;}
   var est=calcCustoEstimado();
-  var real=calcCustoReal();
+  var real=calcCustoOperacional();
   var custoKm=real?real.custoKm:est.total;
   var custoUsado=custo>0?custo:km*custoKm;
   var imp=fat*(cfg.imposto/100);
@@ -871,6 +875,27 @@ function navTo(id,el){
 function openModal(id){if(id==='cfg-modal')openCfg();g(id).classList.add('open');}
 function closeModal(id){g(id).classList.remove('open');}
 
+
+function zerarViagens(){
+  if(!confirm("Apagar TODAS as viagens?")) return;
+  viagens=[];
+  nextVId=1;
+  sViagens();
+  closeModal("cfg-modal");
+  renderDash();
+  renderRegistros();
+  renderClientes();
+  toast("Viagens zeradas!");
+}
+function zerarTudo(){
+  if(!confirm("Apagar viagens E clientes?")) return;
+  viagens=[];clientes=[];
+  nextVId=1;nextCId=1;
+  sViagens();sClientes();
+  closeModal("cfg-modal");
+  renderDash();renderRegistros();renderClientes();
+  toast("Tudo zerado!");
+}
 renderDash();
 </script>
 </body>
