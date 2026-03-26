@@ -1162,11 +1162,14 @@ function renderMapsStops(){
 
   listToRender.forEach(function(st, i){
     var isFixo = st.fixo === true;
-    var delBtn = !isFixo ? '<button class="maps-del" onclick="removeMapsStop('+st.id+')">×</button>' : '';
+    var naoRemovivel = st.tipo==='origem' || st.tipo==='destino' || st.fixo===true;
+    var delBtn = !naoRemovivel ? '<button class="maps-del" onclick="removeMapsStop('+st.id+')">×</button>' : '';
     
     var inp = '';
-    if(false){
-      inp = '';
+    if(st.tipo === 'origem') {
+      inp = '<input class="inp maps-stop-inp autocomplete-maps" type="text" id="mstop-'+st.id+'" placeholder="Endereço de origem" value="'+st.val+'" onchange="updMapsStop('+st.id+',this.value)">';
+    } else if(st.tipo === 'destino') {
+      inp = '<input class="inp maps-stop-inp autocomplete-maps" type="text" id="mstop-'+st.id+'" placeholder="Endereço de retorno/destino final" value="'+st.val+'" onchange="updMapsStop('+st.id+',this.value)">';
     } else if(st.tipo === 'destinador') {
       // Destinador vira um select para facilitar endereços reais depois se o usuario quiser.
       // Por ora, endereços textuais genéricos.
