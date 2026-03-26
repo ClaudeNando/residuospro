@@ -1137,7 +1137,7 @@ function abrirMaps(){
   if(_mapsStops.length === 0){
     // Cria estado default: Origem, 1 Cliente
     _mapsStops = [
-      { id:_mapsNextId++, tipo:'origem', val:'Senador Canedo - GO', fixo:true },
+      { id:_mapsNextId++, tipo:'origem', val:'Senador Canedo - GO' },
       { id:_mapsNextId++, tipo:'cliente', val:g('cli-nome').value || '' }
     ];
   }
@@ -1157,16 +1157,16 @@ function renderMapsStops(){
   var temDestino = _mapsStops.length > 0 && _mapsStops[_mapsStops.length-1].tipo === 'destino';
   var listToRender = _mapsStops.slice();
   if(!temDestino && listToRender.length > 0) {
-    listToRender.push({ id:'fim', tipo:'destino', val:'Senador Canedo - GO', fixo:true });
+    listToRender.push({ id:'fim', tipo:'destino', val:'Senador Canedo - GO' });
   }
 
   listToRender.forEach(function(st, i){
-    var isFixo = st.fixo || st.tipo === 'origem' || st.tipo === 'destino';
+    var isFixo = st.fixo === true;
     var delBtn = !isFixo ? '<button class="maps-del" onclick="removeMapsStop('+st.id+')">×</button>' : '';
     
     var inp = '';
-    if(isFixo){
-      inp = '<input class="inp maps-stop-inp" type="text" value="'+st.val+'" readonly style="background:var(--bg2); color:var(--text2)">';
+    if(false){
+      inp = '';
     } else if(st.tipo === 'destinador') {
       // Destinador vira um select para facilitar endereços reais depois se o usuario quiser.
       // Por ora, endereços textuais genéricos.
@@ -1235,8 +1235,9 @@ function calcularRotaMaps(){
     waypts.push({ location: v, stopover: true });
   }
 
-  // O último destino sempre é a própria empresa base (para fechar o ciclo da viagem)
-  var dest = 'Senador Canedo - GO';
+  // Destino é a última parada da lista
+  var dest = _mapsStops[_mapsStops.length-1].val||'Senador Canedo - GO';
+  waypts.pop(); // remove último pois vira destination
 
   g('btn-calc-rota').innerHTML = 'Calculando...';
   g('btn-calc-rota').disabled = true;
