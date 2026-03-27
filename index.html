@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <script src="ibama.js"></script>
-<script async async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDizyPou7T-K7kADAexu2dJ71U87YOEMTs&libraries=places&callback=initMapsCallback"></script>
+<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDizyPou7T-K7kADAexu2dJ71U87YOEMTs&libraries=places&callback=initMapsCallback"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -515,10 +515,7 @@ function delRes(id){residuos=residuos.filter(function(r){return r.id!==id;});ren
 function updRes(id,f,v){var r=residuos.find(function(x){return x.id===id;});if(r)r[f]=v;}
 
 // ── MODAL IBAMA ─────────────────────────────────────────
-function ibamaFechar(){
-  g('ibama-overlay').classList.add('hidden');
-  ibamaResId=null;
-}
+
 
 
 function ibamaSelecionar(r){
