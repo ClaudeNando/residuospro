@@ -726,11 +726,13 @@ function gerarPDF(){
 
   // ── CLIENTE ───────────────────────────────────────────
   rectFill(MG,y,W-MG*2,1.5,'#db6a1d');
-  y+=5;
-  linha('A/C:',MG,y,9,false,'#666666'); y+=5;
-  linha('EMPRESA: '+(r.cli.nome||'—'),MG,y,10,true,'#1a1a1a'); y+=5;
-  if(r.cli.cnpj){linha('CNPJ: '+r.cli.cnpj,MG,y,9,false,'#666666');y+=5;}
-  if(r.cli.contato){linha('Contato: '+r.cli.contato,MG,y,9,false,'#666666');y+=5;}
+  y+=6.5;
+  var linhasCli = 2 + (r.cli.cnpj?1:0) + (r.cli.contato?1:0);
+  rectFill(MG, y-4, W-MG*2, linhasCli*5 + 2, '#f8f0dd');
+  linha('A/C:',MG+2,y,9,false,'#666666'); y+=5;
+  linha('EMPRESA: '+(r.cli.nome||'—'),MG+2,y,10,true,'#1a1a1a'); y+=5;
+  if(r.cli.cnpj){linha('CNPJ: '+r.cli.cnpj,MG+2,y,9,false,'#666666');y+=5;}
+  if(r.cli.contato){linha('Contato: '+r.cli.contato,MG+2,y,9,false,'#666666');y+=5;}
   y+=3; hrLine(y,'#dddddd'); y+=5;
 
   // ── INTRODUÇÃO ────────────────────────────────────────
@@ -758,9 +760,29 @@ function gerarPDF(){
   var italicL=doc.splitTextToSize(italic,W-MG*2);
   doc.text(italicL,MG,y); y+=italicL.length*4.5+5;
 
+  // ── 2. RESPONSABILIDADES DO CONTRATANTE ────────────────────────
+  if(y>240){doc.addPage();y=15;}
+  linha('2  RESPONSABILIDADES DO CONTRATANTE',MG,y,10,true,'#1a1a1a'); y+=5;
+  var resp=[
+    'Garantir livre acesso aos veículos e equipamentos da CONTRATADA nos horários agendados',
+    'Acondicionar os resíduos adequadamente, conforme normas da ABNT NBR 10.004, NBR 12.235, NBR 11.174 e ANTT',
+    'Emitir o Manifesto de Transporte de Resíduos (MTR) para cada movimentação',
+    'Informar as características físicas, químicas e biológicas dos resíduos, garantindo que não haja mistura divergente da classificada',
+    'Disponibilizar documentos e licenças aplicáveis quando solicitado'
+  ];
+  resp.forEach(function(item){
+    doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor('#333333');
+    var ls=doc.splitTextToSize('• '+item,W-MG*2-4);
+    doc.text(ls,MG+3,y); y+=ls.length*4.5+1;
+  });
+  y+=4;
+
   // ── 3. DESCRITIVO ─────────────────────────────────────
   if(y>230){doc.addPage();y=15;}
   linha('3  DESCRITIVO DO SERVIÇO',MG,y,10,true,'#1a1a1a'); y+=5;
+  
+  doc.setFont('helvetica','normal'); // FIX KERNING: Ensure font is normal before splitTextToSize
+  
   var residuosDesc=r.itens.filter(function(i){return i.peso>0;}).map(function(it){
     return it.desc+(it.perigoso?' (⚠ Perigoso)':'');
   }).join(', ');
@@ -837,6 +859,13 @@ function gerarPDF(){
   doc.text('* O preço inclui todos os encargos fiscais, trabalhistas, sociais e previdenciários incidentes sobre os serviços.',MG,y);
   y+=6;
 
+  // ── 6. IMPOSTOS ──────────────────────────────────────
+  if(y>260){doc.addPage();y=15;}
+  linha('6  IMPOSTOS',MG,y,10,true,'#1a1a1a'); y+=5;
+  doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor('#333333');
+  var impL=doc.splitTextToSize('O preço ora pactuado inclui todos os encargos fiscais, trabalhistas, sociais e previdenciários incidentes sobre os serviços.',W-MG*2);
+  doc.text(impL,MG,y); y+=impL.length*4.5+3;
+
   // ── 7. PAGAMENTO ──────────────────────────────────────
   if(y>230){doc.addPage();y=15;}
   linha('7  FORMA DE MEDIÇÃO E CONDIÇÕES DE PAGAMENTO',MG,y,10,true,'#1a1a1a'); y+=5;
@@ -856,6 +885,8 @@ function gerarPDF(){
     ['8  REAJUSTE DE PREÇOS','Para coletas recorrentes, os valores poderão ser reajustados anualmente com base no IPCA, mediante comunicação prévia de 30 dias ao CONTRATANTE.'],
     ['9  TERCEIRIZAÇÃO','A CONTRATADA poderá utilizar prestadores terceiros devidamente licenciados, mantendo-se integralmente responsável pela conformidade legal e ambiental de todas as operações.'],
     ['10  PENALIDADES','Coleta não realizada por responsabilidade do CONTRATANTE: multa de R$ 2.000,00/dia. Não carregamento após solicitação: cobrança integral do frete. Resíduos mal acondicionados: taxa adicional de R$ 3.000,00.'],
+    ['11  VERACIDADE DAS INFORMAÇÕES','O CONTRATANTE declara a veracidade das informações apresentadas, assumindo responsabilidade legal por danos decorrentes de informações inexatas sobre a natureza e composição dos resíduos.'],
+    ['12  COMPROMISSO AMBIENTAL','A CONTRATADA é autorizada a utilizar a logomarca do CONTRATANTE em seu portfólio de clientes que possuem compromisso com a correta destinação ambiental de resíduos, salvo manifestação em contrário.'],
     ['13  FORO','Foro da Comarca de Senador Canedo — GO.'],
     ['14  ACEITE DA PROPOSTA','O recebimento desta proposta e/ou aceite por e-mail ou mensagem terá valor de concordância integral com todos os termos aqui estabelecidos.'],
   ];
@@ -882,10 +913,13 @@ function gerarPDF(){
   // Bloco Cliente
   var cx=W-MG-80;
   rectFill(cx,y-2,80,36,'#f8f4ee');
-  var nomeC=r.cli.nome||'CONTRATANTE';
-  var nomeLines=doc.splitTextToSize(nomeC,76);
-  linha(nomeLines[0],cx+2,y+3,7.5,true,'#1a1a1a');
-  if(r.cli.cnpj)linha('CNPJ: '+r.cli.cnpj,cx+2,y+8,7,false,'#666666');
+  var nomeC = r.cli.nome || 'CONTRATANTE';
+  var nomeLines = doc.splitTextToSize(nomeC, 76);
+  for (var k = 0; k < Math.min(nomeLines.length, 2); k++) {
+    linha(nomeLines[k], cx+2, y+3 + (k*4), 7.5, true, '#1a1a1a');
+  }
+  var lineCnpjY = y + 3 + (Math.min(nomeLines.length, 2)*4);
+  if(r.cli.cnpj) linha('CNPJ: '+r.cli.cnpj, cx+2, lineCnpjY, 7, false, '#666666');
   doc.setDrawColor('#999');doc.setLineWidth(0.2);doc.line(cx+2,y+24,cx+78,y+24);
   linha('Representante Legal',cx+2,y+29.5,7,false,'#666666');
   y+=42;
