@@ -263,7 +263,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
         </div>
         <div class="field"><label class="flabel">Veículo</label>
           <select class="inp sel" id="veiculo" onchange="calcular()">
-            <option value="FIORINO">Fiorino</option><option value="FURGAO">Furgão</option>
+            <option value="FURGAO" selected>Furgão</option>
             <option value="BAU" selected>Baú</option><option value="MAIOR">Maior (Roll-on, Caçamba, Munk, Vácuo)</option>
           </select>
         </div>
@@ -354,7 +354,6 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
       </div>
       <span class="slabel">Custo Fornecedor — Transporte (R$/km)</span>
       <div class="card" style="margin-bottom:16px">
-        <div class="cfg-r"><div class="cfg-l">Fiorino</div><input class="cfg-i" id="cfg-tf" type="number" step="0.01" value="1.75"></div>
         <div class="cfg-r"><div class="cfg-l">Furgão</div><input class="cfg-i" id="cfg-tfu" type="number" step="0.01" value="3.35"></div>
         <div class="cfg-r"><div class="cfg-l">Baú</div><input class="cfg-i" id="cfg-tb" type="number" step="0.01" value="7.00"></div>
         <div class="cfg-r"><div class="cfg-l">Maior</div><input class="cfg-i" id="cfg-tm" type="number" step="0.01" value="10.00"></div>
@@ -362,7 +361,6 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
       </div>
       <span class="slabel">Preço ao Cliente — Transporte (R$/km)</span>
       <div class="card" style="margin-bottom:16px">
-        <div class="cfg-r"><div class="cfg-l">Fiorino</div><input class="cfg-i" id="cfg-cf" type="number" step="0.01" value="4.20"></div>
         <div class="cfg-r"><div class="cfg-l">Furgão</div><input class="cfg-i" id="cfg-cfu" type="number" step="0.01" value="5.00"></div>
         <div class="cfg-r"><div class="cfg-l">Baú</div><input class="cfg-i" id="cfg-cb" type="number" step="0.01" value="8.50"></div>
         <div class="cfg-r"><div class="cfg-l">Maior</div><input class="cfg-i" id="cfg-cm" type="number" step="0.01" value="14.00"></div>
@@ -412,7 +410,7 @@ var DEST_KEYS_I  =['ATERRO CLASSE I','BLEND CLASSE I','INCIN CLASSE I','EFLUENTE
 var DEST_KEYS_II =['ATERRO CLASSE II','BLEND CLASSE II','INCIN CLASSE II','EFLUENTE CLASSE II','COMPOST CLASSE II'];
 var DEST_KEYS    = DEST_KEYS_I.concat(DEST_KEYS_II);
 var DEF={empresa:'Cerrado Transportes e Soluções Ambientais',cnpj:'',tel:'',validade:15,imposto:15.45,margemMin:30,
-  transp:{forn:{FIORINO:1.75,FURGAO:3.35,BAU:7.00,MAIOR:10.00,DIARIA:0},cli:{FIORINO:4.20,FURGAO:5.00,BAU:8.50,MAIOR:14.00,DIARIA:0}},
+  transp:{forn:{FURGAO:3.35,BAU:7.00,MAIOR:10.00,DIARIA:0},cli:{FURGAO:5.00,BAU:8.50,MAIOR:14.00,DIARIA:0}},
   dest:{forn:{'ATERRO CLASSE I':0.60,'BLEND CLASSE I':0.50,'INCIN CLASSE I':3.20,'EFLUENTE CLASSE I':0.50,'ATERRO CLASSE II':0.135,'BLEND CLASSE II':0.50,'INCIN CLASSE II':0.50,'EFLUENTE CLASSE II':0.30,'COMPOST CLASSE II':0.04},
         cli:{'ATERRO CLASSE I':1.50,'BLEND CLASSE I':2.00,'INCIN CLASSE I':5.00,'EFLUENTE CLASSE I':1.80,'ATERRO CLASSE II':0.55,'BLEND CLASSE II':1.00,'INCIN CLASSE II':5.50,'EFLUENTE CLASSE II':1.00,'COMPOST CLASSE II':0.35}}};
 
@@ -440,8 +438,8 @@ function sCfg(c){localStorage.setItem('rpro_cfg',JSON.stringify(c));}
 
 function abrirCfg(){
   g('cfg-empresa').value=cfg.empresa||'';g('cfg-cnpj').value=cfg.cnpj||'';g('cfg-tel').value=cfg.tel||'';g('cfg-validade').value=cfg.validade||15;
-  g('cfg-tf').value=cfg.transp.forn.FIORINO;g('cfg-tfu').value=cfg.transp.forn.FURGAO;g('cfg-tb').value=cfg.transp.forn.BAU;g('cfg-tm').value=cfg.transp.forn.MAIOR;g('cfg-td').value=cfg.transp.forn.DIARIA;
-  g('cfg-cf').value=cfg.transp.cli.FIORINO;g('cfg-cfu').value=cfg.transp.cli.FURGAO;g('cfg-cb').value=cfg.transp.cli.BAU;g('cfg-cm').value=cfg.transp.cli.MAIOR;g('cfg-cd').value=cfg.transp.cli.DIARIA;
+  g('cfg-tfu').value=cfg.transp.forn.FURGAO;g('cfg-tb').value=cfg.transp.forn.BAU;g('cfg-tm').value=cfg.transp.forn.MAIOR;g('cfg-td').value=cfg.transp.forn.DIARIA;
+  g('cfg-cfu').value=cfg.transp.cli.FURGAO;g('cfg-cb').value=cfg.transp.cli.BAU;g('cfg-cm').value=cfg.transp.cli.MAIOR;g('cfg-cd').value=cfg.transp.cli.DIARIA;
   g('cfg-imposto').value=cfg.imposto;g('cfg-margem-min').value=cfg.margemMin||30;
   var fE=g('cfg-dest-forn'),cE=g('cfg-dest-cli');fE.innerHTML='';cE.innerHTML='';
   DEST_KEYS.forEach(function(k){
@@ -453,8 +451,8 @@ function abrirCfg(){
 function fecharCfg(){g('cfg-modal').classList.remove('open');}
 function salvarCfg(){
   cfg.empresa=g('cfg-empresa').value||'Cerrado Ambiental';cfg.cnpj=g('cfg-cnpj').value;cfg.tel=g('cfg-tel').value;cfg.validade=parseInt(g('cfg-validade').value)||15;
-  cfg.transp.forn.FIORINO=pf('cfg-tf');cfg.transp.forn.FURGAO=pf('cfg-tfu');cfg.transp.forn.BAU=pf('cfg-tb');cfg.transp.forn.MAIOR=pf('cfg-tm');cfg.transp.forn.DIARIA=pf('cfg-td');
-  cfg.transp.cli.FIORINO=pf('cfg-cf');cfg.transp.cli.FURGAO=pf('cfg-cfu');cfg.transp.cli.BAU=pf('cfg-cb');cfg.transp.cli.MAIOR=pf('cfg-cm');cfg.transp.cli.DIARIA=pf('cfg-cd');
+  cfg.transp.forn.FURGAO=pf('cfg-tfu');cfg.transp.forn.BAU=pf('cfg-tb');cfg.transp.forn.MAIOR=pf('cfg-tm');cfg.transp.forn.DIARIA=pf('cfg-td');
+  cfg.transp.cli.FURGAO=pf('cfg-cfu');cfg.transp.cli.BAU=pf('cfg-cb');cfg.transp.cli.MAIOR=pf('cfg-cm');cfg.transp.cli.DIARIA=pf('cfg-cd');
   cfg.imposto=pf('cfg-imposto');cfg.margemMin=pf('cfg-margem-min');
   DEST_KEYS.forEach(function(k){cfg.dest.forn[k]=pf('cdf-'+esc(k));cfg.dest.cli[k]=pf('cdc-'+esc(k));});
   sCfg(cfg);fecharCfg();toast('✅ Configurações salvas!');
@@ -1044,7 +1042,7 @@ function ibamaShowGrupos(){
   g('ibama-list').style.display='none';
   g('ibama-header').style.display='none';
   el.innerHTML='';
-  GRUPOS.forEach(function(gr){
+  GRUPOS.forEach(function(gr,idx){
     var count=src.filter(function(r){return r.c.indexOf(gr.pre+'.')===0;}).length;
     if(!count) return;
     var btn=document.createElement('button');
@@ -1052,7 +1050,7 @@ function ibamaShowGrupos(){
     btn.innerHTML=
       '<span class="ibama-grupo-emoji">'+gr.emoji+'</span>'+
       '<div class="ibama-grupo-info">'+
-        '<div class="ibama-grupo-nome">'+gr.nome+'</div>'+
+        '<div class="ibama-grupo-nome"><span style="color:var(--accent);font-size:12px;font-weight:800;margin-right:6px;font-family:monospace;">'+(idx+1)+'.</span>'+gr.nome+'</div>'+
         '<div class="ibama-grupo-sub">'+gr.sub+'</div>'+
       '</div>'+
       '<span class="ibama-grupo-count">'+count+'</span>';
