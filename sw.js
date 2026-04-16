@@ -1,11 +1,12 @@
-const CACHE_NAME = 'rpro-v20';
+const CACHE_NAME = 'rpro-v21';
 const ASSETS = [
   './index.html',
   './manifest.json',
   './ibama.js',
   './icon-192.png',
   './icon-512.png',
-  './apple-touch-icon.png'
+  './apple-touch-icon.png',
+  './furgao.html'
 ];
 
 self.addEventListener('install', e => {
