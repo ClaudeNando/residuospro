@@ -283,7 +283,12 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
       <button class="btn btn-primary" onclick="salvarCfg()">✓ Salvar</button>
       <div style="height:8px"></div>
       <button class="btn btn-outline" onclick="closeModal('cfg-modal')">Fechar</button>
+      <div class="card-lbl" style="margin:14px 0 10px">Backup</div>
+      <button class="btn btn-success" onclick="exportarBackup()">⬇️ Exportar backup (.json)</button>
       <div style="height:8px"></div>
+      <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">⬆️ Importar backup</button>
+      <input type="file" id="import-file" accept="application/json,.json" style="display:none" onchange="importarBackup(this)">
+      <div class="card-lbl" style="margin:14px 0 10px">Zona de risco</div>
       <button class="btn btn-danger" onclick="zerarViagens()">🗑 Zerar todas as viagens</button>
       <div style="height:8px"></div>
       <button class="btn btn-danger" onclick="zerarTudo()">🗑 Zerar viagens e clientes</button>
@@ -631,7 +636,7 @@ function renderClientes(){
     var stats=porCliente[c.id]||{fat:0,km:0,custo:0,n:0};
     var ideal=c.km*precoKm;
     var imp=stats.fat*(cfg.imposto/100);
-    var custoKm_est=c.km*est.total;
+    var custoKm_est=c.km*est2.total;
     var sobra=stats.fat-Math.max(stats.custo,custoKm_est*stats.n)-imp;
     var margem=stats.fat>0?sobra/stats.fat:null;
     var mc=margem===null?'':margem>=cfg.margem/100?'ok':margem>=(cfg.margem/100)*0.7?'warn':'bad';
@@ -785,43 +790,33 @@ function salvarViagem(){
     viagens.push(v);
   }
   sViagens();
+  corrigirAvulsos();
   closeModal('viagem-modal');
   renderRegistros();
-  // Corrige viagens avulsas — vincula ao cliente auto-cadastrado
+  renderDash();
+  renderClientes();
+  toast('✅ Viagem salva!');
+}
+
+// Garante que toda viagem tenha um cliente VÁLIDO: viagem sem cliente (avulsa) ou
+// apontando para um cliente que não existe mais (órfã) é recuperada/criada pelo nome.
 function corrigirAvulsos(){
   var corrigidas=0;
   viagens.forEach(function(v){
-    if(v.clienteId) return; // já tem cliente
     if(!v.nome) return;
+    if(v.clienteId && clientes.some(function(x){return x.id==v.clienteId;})) return;
     var c=clientes.find(function(x){return x.nome.toLowerCase()===v.nome.toLowerCase();});
     if(c){
       v.clienteId=c.id;
-      corrigidas++;
     } else {
-      // Criar cliente novo
       var novoC={id:nextCId++,nome:v.nome,local:'',uf:'GO',km:v.km||0,fatEsperado:v.fat||null};
       clientes.push(novoC);
-      sClientes();
       v.clienteId=novoC.id;
-      corrigidas++;
     }
+    corrigidas++;
   });
-  if(corrigidas>0){
-    sViagens();
-    sClientes();
-    toast('✅ '+corrigidas+' viagens vinculadas a clientes!');
-    renderDash();
-    renderClientes();
-  }
+  if(corrigidas>0){ sViagens(); sClientes(); }
   return corrigidas;
-}
-
-// Executar correção automática na inicialização
-corrigirAvulsos();
-
-renderDash();
-  renderClientes();
-  toast('✅ Viagem salva!');
 }
 
 function excluirViagem(){
@@ -946,7 +941,44 @@ function zerarTudo(){
   renderDash();renderRegistros();renderClientes();
   toast("Tudo zerado!");
 }
+function exportarBackup(){
+  var dados={app:'FurgaoPRO',versao:1,exportadoEm:new Date().toISOString(),cfg:cfg,clientes:clientes,viagens:viagens};
+  var blob=new Blob([JSON.stringify(dados,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='furgaopro-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('⬇️ Backup exportado ('+viagens.length+' viagens)');
+}
+function importarBackup(input){
+  var file=input.files&&input.files[0];
+  if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var d=JSON.parse(e.target.result);
+      if(!d||!Array.isArray(d.viagens)) throw new Error('formato');
+      if(!confirm('Importar '+d.viagens.length+' viagens e '+((d.clientes||[]).length)+' clientes? Isso substitui os dados atuais.')) { input.value=''; return; }
+      if(d.cfg) cfg=d.cfg;
+      clientes=Array.isArray(d.clientes)?d.clientes:[];
+      viagens=d.viagens;
+      nextVId=Math.max(0,...viagens.map(function(v){return v.id||0;}))+1;
+      nextCId=Math.max(0,...clientes.map(function(c){return c.id||0;}))+1;
+      sCfg(cfg); sClientes(); sViagens();
+      corrigirAvulsos();
+      renderDash(); renderRegistros(); renderClientes();
+      closeModal('cfg-modal');
+      toast('⬆️ Backup importado!');
+    }catch(err){ toast('⚠️ Arquivo inválido'); }
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+var _recuperados = corrigirAvulsos();
 renderDash();
+if(_recuperados>0){ renderClientes(); toast('✅ '+_recuperados+' cliente(s) recuperado(s) das viagens'); }
 </script>
 </body>
 </html>
