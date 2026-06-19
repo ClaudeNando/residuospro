@@ -155,7 +155,10 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
   <div id="screen-registros" class="screen">
     <div class="shdr">
       <div class="shdr-title">Viagens</div>
-      <button class="btn btn-success btn-sm" onclick="openNovaViagem()">+ Registrar</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-outline btn-sm" onclick="openRotaCompartilhada()">🔗 Compartilhada</button>
+        <button class="btn btn-success btn-sm" onclick="openNovaViagem()">+ Registrar</button>
+      </div>
     </div>
     <div class="info-box" id="custo-real-box"></div>
     <div id="registros-list"></div>
@@ -205,6 +208,29 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
       <button class="btn btn-primary" onclick="salvarViagem()">✓ Salvar Viagem</button>
       <div style="height:8px"></div>
       <button class="btn btn-danger" id="v-excluir-btn" onclick="excluirViagem()" style="display:none">🗑 Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ROTA COMPARTILHADA -->
+<div class="overlay" id="rota-modal" onclick="if(event.target===this)closeModal('rota-modal')">
+  <div class="modal">
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+    <div class="modal-head"><div class="modal-title">🔗 Rota Compartilhada</div><button class="modal-close" onclick="closeModal('rota-modal')">×</button></div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.45">Lance a rodagem real <b>uma vez</b>. O km e o custo são repartidos entre os clientes; cada um fica com uma viagem própria, sem duplicar.</div>
+      <div class="g2">
+        <div class="field"><label class="flabel">Data</label><input class="inp inp-mono" id="rc-data" type="date"></div>
+        <div class="field"><label class="flabel">KM total (ida+volta)</label><input class="inp inp-mono" id="rc-km" type="number" placeholder="0" inputmode="decimal" oninput="rcRecalc()"></div>
+      </div>
+      <div class="field"><label class="flabel">Custo total da rodagem (R$) — diesel + pedágio</label><input class="inp inp-mono" id="rc-custo" type="number" placeholder="0" inputmode="decimal" oninput="rcRecalc()"></div>
+      <div class="card-lbl" style="margin:14px 0 8px">Clientes na rota</div>
+      <div id="rc-linhas"></div>
+      <button class="btn btn-ghost btn-sm" onclick="rcAddLinha()" style="margin-top:6px">+ Adicionar cliente</button>
+      <div style="height:6px"></div>
+      <button class="btn btn-outline btn-sm" onclick="rcDividirIgual()">⚖️ Dividir km igualmente</button>
+      <div id="rc-resumo" style="margin:12px 0;min-height:24px"></div>
+      <button class="btn btn-primary" onclick="salvarRotaCompartilhada()">✓ Criar viagens</button>
     </div>
   </div>
 </div>
@@ -941,6 +967,90 @@ function zerarTudo(){
   renderDash();renderRegistros();renderClientes();
   toast("Tudo zerado!");
 }
+// ── ROTA COMPARTILHADA ───────────────────────────────────
+function rcOpcoesClientes(sel){
+  return '<option value="">— cliente —</option>'+clientes.map(function(c){
+    return '<option value="'+c.id+'"'+(sel==c.id?' selected':'')+'>'+c.nome+'</option>';
+  }).join('');
+}
+function openRotaCompartilhada(){
+  if(clientes.length<2){ toast('⚠️ Cadastre ao menos 2 clientes antes'); return; }
+  g('rc-data').value=new Date().toISOString().slice(0,10);
+  g('rc-km').value=''; g('rc-custo').value='';
+  g('rc-linhas').innerHTML='';
+  rcAddLinha(); rcAddLinha();
+  rcRecalc();
+  openModal('rota-modal');
+}
+function rcAddLinha(){
+  var row=document.createElement('div');
+  row.className='rc-linha';
+  row.style.cssText='display:grid;grid-template-columns:1fr 70px 90px 28px;gap:6px;align-items:center;margin-bottom:6px';
+  row.innerHTML=
+    '<select class="inp sel rc-cli" onchange="rcRecalc()" style="font-size:13px">'+rcOpcoesClientes()+'</select>'+
+    '<input class="inp inp-mono rc-km" type="number" placeholder="km" inputmode="decimal" oninput="rcRecalc()" style="font-size:13px">'+
+    '<input class="inp inp-mono rc-fat" type="number" placeholder="R$ fat." inputmode="decimal" style="font-size:13px">'+
+    '<button class="btn btn-ghost" onclick="this.parentNode.remove();rcRecalc()" style="padding:0;height:34px">×</button>';
+  g('rc-linhas').appendChild(row);
+}
+function rcLinhas(){ return Array.prototype.slice.call(document.querySelectorAll('#rc-linhas .rc-linha')); }
+function rcDividirIgual(){
+  var total=+g('rc-km').value||0, linhas=rcLinhas();
+  if(!total||!linhas.length){ toast('⚠️ Informe o KM total primeiro'); return; }
+  var base=Math.floor(total/linhas.length), resto=total-base*linhas.length;
+  linhas.forEach(function(r,i){ r.querySelector('.rc-km').value=base+(i===linhas.length-1?resto:0); });
+  rcRecalc();
+}
+function rcRecalc(){
+  var total=+g('rc-km').value||0, custo=+g('rc-custo').value||0;
+  var linhas=rcLinhas(), somaKm=0;
+  linhas.forEach(function(r){ somaKm+=(+r.querySelector('.rc-km').value||0); });
+  var falta=total-somaKm;
+  var cor=Math.abs(falta)<1?'var(--success)':'var(--danger)';
+  var html='<div style="background:var(--bg);border-radius:10px;padding:10px;font-size:12px">';
+  html+='<div style="display:flex;justify-content:space-between"><span>KM repartido</span><b style="font-family:monospace;color:'+cor+'">'+fmt(somaKm)+' / '+fmt(total)+(Math.abs(falta)<1?' ✓':' (faltam '+fmt(falta)+')')+'</b></div>';
+  if(custo>0&&total>0&&Math.abs(falta)<1){
+    linhas.forEach(function(r){
+      var id=r.querySelector('.rc-cli').value, km=+r.querySelector('.rc-km').value||0;
+      var c=clientes.find(function(x){return x.id==id;});
+      if(c&&km>0) html+='<div style="display:flex;justify-content:space-between;color:var(--text3);margin-top:4px"><span>'+c.nome+'</span><span style="font-family:monospace">'+fmt(km)+' km · '+brl(custo*km/total)+'</span></div>';
+    });
+  }
+  html+='</div>';
+  g('rc-resumo').innerHTML=html;
+}
+function salvarRotaCompartilhada(){
+  var data=g('rc-data').value, total=+g('rc-km').value||0, custo=+g('rc-custo').value||0;
+  if(!data){ toast('⚠️ Informe a data'); return; }
+  if(!total){ toast('⚠️ Informe o KM total'); return; }
+  var itens=[], somaKm=0, vistos={};
+  var erro=null;
+  rcLinhas().forEach(function(r){
+    var id=r.querySelector('.rc-cli').value, km=+r.querySelector('.rc-km').value||0, fat=r.querySelector('.rc-fat').value;
+    if(!id||!km) return;
+    if(vistos[id]){ erro='Cliente repetido na rota'; return; }
+    vistos[id]=1;
+    var c=clientes.find(function(x){return x.id==id;});
+    if(!c) return;
+    itens.push({c:c,km:km,fat:fat?+fat:null});
+    somaKm+=km;
+  });
+  if(erro){ toast('⚠️ '+erro); return; }
+  if(itens.length<2){ toast('⚠️ Selecione ao menos 2 clientes com km'); return; }
+  if(Math.abs(total-somaKm)>=1){ toast('⚠️ A soma dos km ('+fmt(somaKm)+') tem que bater com o total ('+fmt(total)+')'); return; }
+  // Reparte o custo proporcional ao km; sobra de arredondamento vai pro último.
+  var custoAcc=0;
+  itens.forEach(function(it,i){
+    var cst= custo>0 ? (i===itens.length-1 ? Math.round((custo-custoAcc)*100)/100 : Math.round(custo*it.km/total*100)/100) : null;
+    if(cst!=null) custoAcc+=cst;
+    viagens.push({ id:nextVId++, nome:it.c.nome, clienteId:it.c.id, data:data, km:it.km, fat:it.fat, custo:cst, obs:'Rota compartilhada '+fmtData(data) });
+  });
+  sViagens();
+  closeModal('rota-modal');
+  renderRegistros(); renderDash(); renderClientes();
+  toast('✅ '+itens.length+' viagens criadas (rota compartilhada)');
+}
+
 function exportarBackup(){
   var dados={app:'FurgaoPRO',versao:1,exportadoEm:new Date().toISOString(),cfg:cfg,clientes:clientes,viagens:viagens};
   var blob=new Blob([JSON.stringify(dados,null,2)],{type:'application/json'});
