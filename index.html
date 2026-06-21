@@ -264,11 +264,12 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
         <div class="field"><label class="flabel">Veículo</label>
           <select class="inp sel" id="veiculo" onchange="calcular()">
             <option value="FURGAO" selected>Furgão</option>
-            <option value="BAU" selected>Baú</option><option value="MAIOR">Maior (Roll-on, Caçamba, Munk, Vácuo)</option>
+            <option value="BAU">Baú</option><option value="MAIOR">Maior (Roll-on, Caçamba, Munk, Vácuo)</option>
           </select>
         </div>
       </div>
       <div class="field"><label class="flabel">Acréscimos de Cabeça (R$)</label><input class="inp inp-mono" type="number" id="acresc" placeholder="0,00" inputmode="numeric" oninput="calcular()"></div>
+      <button class="btn btn-ghost btn-sm" onclick="abrirRota()" style="margin-top:4px">🔗 Rota compartilhada (rateio por km)</button>
     </div>
     <div class="card">
       <div class="card-head"><div class="card-icon">♻️</div><div class="card-lbl">Resíduos</div></div>
@@ -354,7 +355,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
       </div>
       <span class="slabel">Custo Fornecedor — Transporte (R$/km)</span>
       <div class="card" style="margin-bottom:16px">
-        <div class="cfg-r"><div class="cfg-l">Furgão</div><input class="cfg-i" id="cfg-tfu" type="number" step="0.01" value="3.35"></div>
+        <div class="cfg-r"><div class="cfg-l">Furgão</div><input class="cfg-i" id="cfg-tfu" type="number" step="0.01" value="6.46"></div>
         <div class="cfg-r"><div class="cfg-l">Baú</div><input class="cfg-i" id="cfg-tb" type="number" step="0.01" value="7.00"></div>
         <div class="cfg-r"><div class="cfg-l">Maior</div><input class="cfg-i" id="cfg-tm" type="number" step="0.01" value="10.00"></div>
         <div class="cfg-r"><div class="cfg-l">Diária</div><input class="cfg-i" id="cfg-td" type="number" step="0.01" value="0.00"></div>
@@ -384,6 +385,22 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
 
 <div class="toast" id="toast"></div>
 
+<!-- MODAL ROTA COMPARTILHADA (rateio por km) -->
+<div class="overlay" id="rota-modal" onclick="if(event.target===this)fecharRota()">
+  <div class="modal">
+    <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
+    <div class="modal-head"><div class="modal-title">🔗 Rota Compartilhada</div><button class="modal-close-btn" onclick="fecharRota()">×</button></div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.45">Para quando uma viagem atende vários clientes. Informe o KM total da rota (ida+volta) e, se houver, o desvio exclusivo de cada cliente. O tronco comum é dividido igual entre todos; o desvio fica inteiro com quem o gerou.</div>
+      <div class="field"><label class="flabel">KM total da rota (ida + volta)</label><input class="inp inp-mono" type="number" id="rota-total" placeholder="0" inputmode="decimal" oninput="rotaCalc()"></div>
+      <span class="slabel">Clientes na rota</span>
+      <div id="rota-linhas" style="margin:6px 0"></div>
+      <button class="btn btn-ghost btn-sm" onclick="rotaAddLinha()">+ Adicionar cliente</button>
+      <div id="rota-resultado" style="margin-top:14px"></div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL MAPS ROTEAMENTO -->
 <div class="overlay" id="maps-modal" onclick="if(event.target===this)fecharMaps()">
   <div class="modal">
@@ -410,11 +427,13 @@ var DEST_KEYS_I  =['ATERRO CLASSE I','BLEND CLASSE I','INCIN CLASSE I','EFLUENTE
 var DEST_KEYS_II =['ATERRO CLASSE II','BLEND CLASSE II','INCIN CLASSE II','EFLUENTE CLASSE II','COMPOST CLASSE II'];
 var DEST_KEYS    = DEST_KEYS_I.concat(DEST_KEYS_II);
 var DEF={empresa:'Cerrado Transportes e Soluções Ambientais',cnpj:'',tel:'',validade:15,imposto:15.45,margemMin:30,
-  transp:{forn:{FURGAO:3.35,BAU:7.00,MAIOR:10.00,DIARIA:0},cli:{FURGAO:5.00,BAU:8.50,MAIOR:14.00,DIARIA:0}},
+  transp:{forn:{FURGAO:6.46,BAU:7.00,MAIOR:10.00,DIARIA:0},cli:{FURGAO:5.00,BAU:8.50,MAIOR:14.00,DIARIA:0}},
   dest:{forn:{'ATERRO CLASSE I':0.60,'BLEND CLASSE I':0.50,'INCIN CLASSE I':3.20,'EFLUENTE CLASSE I':0.50,'ATERRO CLASSE II':0.135,'BLEND CLASSE II':0.50,'INCIN CLASSE II':0.50,'EFLUENTE CLASSE II':0.30,'COMPOST CLASSE II':0.04},
         cli:{'ATERRO CLASSE I':1.50,'BLEND CLASSE I':2.00,'INCIN CLASSE I':5.00,'EFLUENTE CLASSE I':1.80,'ATERRO CLASSE II':0.55,'BLEND CLASSE II':1.00,'INCIN CLASSE II':5.50,'EFLUENTE CLASSE II':1.00,'COMPOST CLASSE II':0.35}}};
 
 var cfg=lCfg(),residuos=[{id:1,desc:'',codigo:'',perigoso:false,peso:0,dest:'ATERRO CLASSE II'}],nextId=2,ultimoCalculo=null,ibamaResId=null;
+// Custo real do furgão = R$6,46/km (análise das viagens no FurgãoPRO). Ajuste único p/ configs antigas.
+if(cfg && !cfg._furgaoV2){ cfg.transp=cfg.transp||{forn:{},cli:{}}; cfg.transp.forn=cfg.transp.forn||{}; cfg.transp.forn.FURGAO=6.46; cfg._furgaoV2=true; try{sCfg(cfg);}catch(e){} }
 
 function g(id){return document.getElementById(id);}
 function safeEval(val){
@@ -584,18 +603,11 @@ function getCustoFurgao(){
 
 function calcular(){
   var km=+g('trajeto').value||0,veic=g('veiculo').value,ac=+g('acresc').value||0;
-  // Se furgão selecionado, usar custo do FurgãoPRO
-  var custForgaoKm = null;
-  if(veic==='FURGAO'){
-    var fp = getCustoFurgao();
-    if(fp) custForgaoKm = fp.forn;
-  }
-  var ctf=km*(custForgaoKm||cfg.transp.forn[veic]||0),ptc=km*(cfg.transp.cli[veic]||0);
-  if(km>=900)ptc+=cfg.transp.cli.DIARIA*(residuos.reduce(function(s,r){return s+(+r.peso||0);},0)/1000||0);
+  var ctf=km*(cfg.transp.forn[veic]||0),ptc=km*(cfg.transp.cli[veic]||0);
   var cdf=0,pdc=0;
   var itens=residuos.map(function(r){var kg=+r.peso||0,cf=(cfg.dest.forn[r.dest]||0)*kg,cc=(cfg.dest.cli[r.dest]||0)*kg;cdf+=cf;pdc+=cc;return{desc:r.desc,codigo:r.codigo,perigoso:r.perigoso,dest:r.dest,peso:kg,custForn:cf,precCli:cc};});
   var tot=ptc+pdc+ac,imp=tot*(cfg.imposto/100),ct=ctf+cdf+imp,sob=tot-ct,mar=tot>0?sob/tot:0;
-  ultimoCalculo={km:km,veic:veic,ac:ac,ctf:ctf,ptc:ptc,cdf:cdf,pdc:pdc,itens:itens,tot:tot,imp:imp,ct:ct,sob:sob,mar:mar,custoFurgaoIntegrado:custForgaoKm!=null,
+  ultimoCalculo={km:km,veic:veic,ac:ac,ctf:ctf,ptc:ptc,cdf:cdf,pdc:pdc,itens:itens,tot:tot,imp:imp,ct:ct,sob:sob,mar:mar,custoFurgaoIntegrado:false,
     cli:{nome:g('cli-nome').value,cnpj:g('cli-cnpj').value,contato:g('cli-contato').value},
     obs:g('obs').value,data:new Date().toLocaleDateString('pt-BR')};
   return ultimoCalculo;
@@ -1241,19 +1253,18 @@ function addMapsStop(tipo){
 function calcularRotaMaps(){
   if(!_directionsService) return toast('⚠️ API do Maps não carregada');
   
-  // Coletar endereços reais ignorando a origem (tá fixa zero)
+  // Coletar endereços; a base (origem) também é o destino final = ida + volta
   var orig = _mapsStops[0].val; // Senador Canedo
   var waypts = [];
-  
+
   for(var i=1; i < _mapsStops.length; i++){
     var v = _mapsStops[i].val;
     if(!v) return toast('⚠️ Preencha todos os endereços!');
     waypts.push({ location: v, stopover: true });
   }
 
-  // Destino é a última parada da lista
-  var dest = _mapsStops[_mapsStops.length-1].val||'Senador Canedo - GO';
-  waypts.pop(); // remove último pois vira destination
+  // Retorna à base: rota = origem → todos os pontos → origem
+  var dest = orig;
 
   g('btn-calc-rota').innerHTML = 'Calculando...';
   g('btn-calc-rota').disabled = true;
@@ -1291,6 +1302,57 @@ function usarDistanciaRota(){
   calcular();
   fecharMaps();
   toast('📍 Distância de '+_mapsCalculatedKm+' km aplicada!');
+}
+
+// ── ROTA COMPARTILHADA (rateio por km exclusivo + tronco comum) ──
+function abrirRota(){
+  g('rota-total').value='';
+  g('rota-linhas').innerHTML='';
+  rotaAddLinha(); rotaAddLinha();
+  g('rota-resultado').innerHTML='';
+  g('rota-modal').classList.add('open');
+}
+function fecharRota(){ g('rota-modal').classList.remove('open'); }
+function rotaAddLinha(){
+  var row=document.createElement('div');
+  row.className='rota-linha';
+  row.style.cssText='display:grid;grid-template-columns:1fr 96px 28px;gap:6px;align-items:center;margin-bottom:6px';
+  row.innerHTML=
+    '<input class="inp rota-nome" type="text" placeholder="Cliente" style="font-size:13px">'+
+    '<input class="inp inp-mono rota-excl" type="number" placeholder="km desvio" inputmode="decimal" oninput="rotaCalc()" style="font-size:13px">'+
+    '<button class="btn btn-ghost" onclick="this.parentNode.remove();rotaCalc()" style="padding:0;height:38px">×</button>';
+  g('rota-linhas').appendChild(row);
+}
+function rotaLinhas(){ return Array.prototype.slice.call(document.querySelectorAll('#rota-linhas .rota-linha')); }
+function rotaCalc(){
+  var total=+g('rota-total').value||0, linhas=rotaLinhas();
+  var n=linhas.length;
+  if(!total||!n){ g('rota-resultado').innerHTML=''; return; }
+  var somaExcl=0;
+  linhas.forEach(function(r){ somaExcl+=(+r.querySelector('.rota-excl').value||0); });
+  var tronco=total-somaExcl;
+  if(tronco<0){ g('rota-resultado').innerHTML='<div style="color:var(--danger);font-size:12px">⚠️ A soma dos desvios ('+fmt(somaExcl)+' km) passou do total da rota.</div>'; return; }
+  var trechoComum=tronco/n;
+  var html='<div style="background:rgba(0,0,0,.15);border-radius:12px;padding:12px;font-size:13px">';
+  html+='<div style="color:var(--text2);margin-bottom:8px">Tronco comum '+fmt(tronco)+' km ÷ '+n+' = '+fmt(trechoComum)+' km por cliente</div>';
+  linhas.forEach(function(r){
+    var nome=r.querySelector('.rota-nome').value||'Cliente', excl=+r.querySelector('.rota-excl').value||0;
+    var km=Math.round(excl+trechoComum);
+    var pct=total>0?(km/total*100):0;
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid var(--border)">'+
+      '<span>'+nome+' <span style="color:var(--text3)">('+pct.toFixed(0)+'%)</span></span>'+
+      '<span style="display:flex;gap:8px;align-items:center"><b style="font-family:monospace">'+fmt(km)+' km</b>'+
+      '<button class="btn btn-ghost btn-sm" onclick="usarRotaKm('+km+',\''+nome.replace(/'/g,"")+'\')" style="padding:2px 8px">usar</button></span></div>';
+  });
+  html+='</div>';
+  g('rota-resultado').innerHTML=html;
+}
+function usarRotaKm(km,nome){
+  g('trajeto').value=km;
+  if(nome && !g('cli-nome').value) g('cli-nome').value=nome;
+  calcular();
+  fecharRota();
+  toast('📍 '+km+' km aplicados ao orçamento de '+nome);
 }
 
 renderRes();
