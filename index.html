@@ -129,6 +129,7 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
 .hist-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
 .hist-name{font-size:15px;font-weight:700}.hist-date{font-size:11px;color:var(--text4);font-family:'DM Mono',monospace}
 .hist-bot{display:flex;justify-content:space-between;align-items:center}
+.hist-sub{font-size:11px;color:var(--text4);margin-top:3px}
 .hist-val{font-family:'DM Mono',monospace;font-size:16px;color:var(--accent);font-weight:500}
 .empty{text-align:center;padding:60px 24px;color:var(--text3)}
 .empty-ico{font-size:44px;margin-bottom:14px;opacity:0.45;display:block}
@@ -253,6 +254,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
         <div class="field"><label class="flabel">CNPJ</label><input class="inp inp-mono" type="text" id="cli-cnpj" placeholder="00.000.000/0000-00" maxlength="18" inputmode="numeric" oninput="maskCNPJ(this);buscaCNPJ(this.value)"><div id="cnpj-status" style="font-size:11px;margin-top:4px;min-height:16px"></div></div>
         <div class="field"><label class="flabel">Contato</label><input class="inp" type="text" id="cli-contato" placeholder="Nome"></div>
       </div>
+      <div class="field"><label class="flabel">Local de coleta</label><input class="inp" type="text" id="cli-local" placeholder="Cidade / endereço da coleta"></div>
     </div>
     <div class="card">
       <div class="card-head"><div class="card-icon">🚛</div><div class="card-lbl">Transporte</div></div>
@@ -312,6 +314,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
       <div style="flex:1"><div class="shdr-title">Histórico</div><div class="shdr-sub">Orçamentos salvos</div></div>
       <button class="btn btn-outline btn-sm" onclick="limparHist()">Limpar</button>
     </div>
+    <div class="field" style="margin-bottom:12px"><input class="inp" type="text" id="hist-busca" placeholder="🔎 Buscar por cliente, contato, local..." oninput="renderHist()"></div>
     <div id="hist-list"></div>
   </div>
 </div>
@@ -608,7 +611,7 @@ function calcular(){
   var itens=residuos.map(function(r){var kg=+r.peso||0,cf=(cfg.dest.forn[r.dest]||0)*kg,cc=(cfg.dest.cli[r.dest]||0)*kg;cdf+=cf;pdc+=cc;return{desc:r.desc,codigo:r.codigo,perigoso:r.perigoso,dest:r.dest,peso:kg,custForn:cf,precCli:cc};});
   var tot=ptc+pdc+ac,imp=tot*(cfg.imposto/100),ct=ctf+cdf+imp,sob=tot-ct,mar=tot>0?sob/tot:0;
   ultimoCalculo={km:km,veic:veic,ac:ac,ctf:ctf,ptc:ptc,cdf:cdf,pdc:pdc,itens:itens,tot:tot,imp:imp,ct:ct,sob:sob,mar:mar,custoFurgaoIntegrado:false,
-    cli:{nome:g('cli-nome').value,cnpj:g('cli-cnpj').value,contato:g('cli-contato').value},
+    cli:{nome:g('cli-nome').value,cnpj:g('cli-cnpj').value,contato:g('cli-contato').value,local:g('cli-local').value},
     obs:g('obs').value,data:new Date().toLocaleDateString('pt-BR')};
   return ultimoCalculo;
 }
@@ -646,9 +649,11 @@ function whatsappProposta(){window.open('https://wa.me/?text='+encodeURIComponen
 
 function salvarHist(){var r=ultimoCalculo;if(!r)return;try{var h=JSON.parse(localStorage.getItem('rpro_hist')||'[]');h.unshift(Object.assign({},r,{id:Date.now()}));if(h.length>50)h=h.slice(0,50);localStorage.setItem('rpro_hist',JSON.stringify(h));toast('💾 Salvo!');renderHist();}catch(e){}}
 
-function renderHist(){try{var h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),el=g('hist-list');if(!h.length){el.innerHTML='<div class="empty"><span class="empty-ico">🗂️</span><div class="empty-t">Nenhum orçamento salvo</div></div>';return;}el.innerHTML=h.map(function(x){var ok=(x.mar*100)>=(cfg.margemMin||30);return '<div class="hist-card" onclick="carregarHist('+x.id+')"><div class="hist-top"><div class="hist-name">'+(x.cli&&x.cli.nome?x.cli.nome:'Sem nome')+'</div><div class="hist-date">'+(x.data||'')+'</div></div><div class="hist-bot"><div class="hist-val">'+brl(x.tot)+'</div><div class="badge '+(ok?'b-ok':'b-warn')+'">'+(x.mar*100).toFixed(1)+'% margem</div></div></div>';}).join('');}catch(e){}}
+function renderHist(){try{var h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),el=g('hist-list');var q=(g('hist-busca')&&g('hist-busca').value||'').trim().toLowerCase();if(q){h=h.filter(function(x){var c=x.cli||{};return [c.nome,c.contato,c.local,x.obs].join(' ').toLowerCase().indexOf(q)>=0;});}if(!h.length){el.innerHTML='<div class="empty"><span class="empty-ico">🗂️</span><div class="empty-t">'+(q?'Nada encontrado':'Nenhum orçamento salvo')+'</div></div>';return;}el.innerHTML=h.map(function(x){var ok=(x.mar*100)>=(cfg.margemMin||30);var c=x.cli||{};var lucroPct=x.tot>0?(x.sob/x.tot*100):0;return '<div class="hist-card" onclick="carregarHist('+x.id+')"><div class="hist-top"><div class="hist-name">'+(c.nome||'Sem nome')+'</div><div class="hist-date">'+(x.data||'')+'</div></div>'+(c.contato?'<div class="hist-sub">👤 '+c.contato+'</div>':'')+(c.local?'<div class="hist-sub">📍 '+c.local+'</div>':'')+'<div class="hist-bot"><div><div class="hist-sub">NF</div><div class="hist-val">'+brl(x.tot)+'</div></div><div style="text-align:right"><div class="hist-sub">Lucro</div><div class="hist-val">'+brl(x.sob)+' <span style="font-size:11px;color:var(--text3)">('+lucroPct.toFixed(1)+'%)</span></div></div></div><div class="hist-bot" style="margin-top:8px"><div class="badge '+(ok?'b-ok':'b-warn')+'">'+(x.mar*100).toFixed(1)+'% margem</div><div style="display:flex;gap:6px"><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();editarHist('+x.id+')">✏️ Editar</button><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();excluirHist('+x.id+')">🗑️</button></div></div></div>';}).join('');}catch(e){}}
 
 function carregarHist(id){try{var h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),x=h.find(function(i){return i.id===id;});if(!x)return;ultimoCalculo=x;renderResultado(x);navTo('resultado',g('nav-resultado'));toast('📋 Carregado');}catch(e){}}
+function excluirHist(id){if(!confirm('Excluir este orçamento?'))return;try{var h=JSON.parse(localStorage.getItem('rpro_hist')||'[]').filter(function(i){return i.id!==id;});localStorage.setItem('rpro_hist',JSON.stringify(h));renderHist();toast('🗑️ Excluído');}catch(e){}}
+function editarHist(id){try{var h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),x=h.find(function(i){return i.id===id;});if(!x)return;var c=x.cli||{};g('cli-nome').value=c.nome||'';g('cli-cnpj').value=c.cnpj||'';g('cli-contato').value=c.contato||'';g('cli-local').value=c.local||'';g('trajeto').value=x.km||'';g('veiculo').value=x.veic||'FURGAO';g('acresc').value=x.ac||'';g('obs').value=x.obs||'';residuos=(x.itens||[]).map(function(r){return{id:nextId++,desc:r.desc||'',codigo:r.codigo||'',perigoso:!!r.perigoso,peso:r.peso||0,dest:r.dest||'ATERRO CLASSE II'};});if(!residuos.length)residuos=[{id:nextId++,desc:'',codigo:'',perigoso:false,peso:0,dest:'ATERRO CLASSE II'}];renderRes();calcular();var h2=h.filter(function(i){return i.id!==id;});localStorage.setItem('rpro_hist',JSON.stringify(h2));renderHist();navTo('orcamento',g('nav-orcamento'));toast('✏️ Editando — recalcule e salve novamente');}catch(e){}}
 function limparHist(){if(confirm('Apagar todo o histórico?')){localStorage.removeItem('rpro_hist');renderHist();toast('🗑️ Limpo');}}
 
 function navTo(id,el){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});g('screen-'+id).classList.add('active');el.classList.add('active');if(id==='historico')renderHist();}
