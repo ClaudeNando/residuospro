@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rpro-v21';
+const CACHE_NAME = 'rpro-v22';
 const ASSETS = [
   './index.html',
   './manifest.json',
@@ -26,7 +26,9 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Sempre busca da rede primeiro, cai no cache se offline
+  const url = new URL(e.request.url);
+  // Só intercepta o próprio app (mesma origem). APIs externas (CNPJ, mapas) vão direto pra rede.
+  if (url.origin !== self.location.origin || e.request.method !== 'GET') return;
   e.respondWith(
     fetch(e.request)
       .then(res => {
