@@ -123,6 +123,36 @@ textarea.inp{resize:none;min-height:80px;line-height:1.6}
 .badge{display:inline-flex;align-items:center;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700}
 .b-ok{background:rgba(42,122,64,0.14);color:#1a6030;border:1px solid rgba(42,122,64,0.25)}
 .b-warn{background:rgba(200,112,32,0.14);color:#8a4800;border:1px solid rgba(200,112,32,0.25)}
+.b-danger{background:rgba(176,48,32,0.13);color:#9a2414;border:1px solid rgba(176,48,32,0.28)}
+.col-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.col-sum-i{background:var(--card);border:1px solid var(--border2);border-radius:13px;padding:12px 8px;text-align:center}
+.col-sum-venc .col-sum-n{color:var(--danger)}
+.col-sum-n{font-size:24px;font-weight:800;font-family:'DM Mono',monospace;line-height:1}
+.col-sum-l{font-size:10px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--text3);margin-top:5px}
+.col-tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.col-tab{flex-shrink:0;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;color:var(--text2);background:var(--bg2);border:1.5px solid transparent;cursor:pointer}
+.col-tab.active{background:var(--accent-dim);color:var(--accent);border-color:var(--border)}
+.col-card{background:var(--card);border:1.5px solid var(--border2);border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer}
+.col-card:active{border-color:var(--accent)}
+.col-card.venc{border-color:rgba(176,48,32,0.4)}
+.col-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.col-ger{font-size:16px;font-weight:700}
+.col-mtr{font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px}
+.col-row{font-size:12px;color:var(--text2);margin-top:3px}
+.ag-mes-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ag-nav-btn{width:40px;height:40px;border-radius:11px;background:var(--accent-dim);border:1.5px solid var(--border);color:var(--accent);font-size:22px;font-weight:800;cursor:pointer}
+.ag-mes-label{font-size:16px;font-weight:800;text-transform:capitalize}
+.ag-grid-head{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+.ag-grid-head span{text-align:center;font-size:10px;font-weight:700;color:var(--text3)}
+.ag-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.ag-cell{aspect-ratio:1;border-radius:9px;border:1px solid var(--border2);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:5px;font-size:12px;font-weight:700;cursor:pointer;position:relative}
+.ag-cell.empty{background:transparent;border:none;cursor:default}
+.ag-cell.hoje{border-color:var(--accent);border-width:1.5px}
+.ag-cell.sel{background:var(--accent-dim);border-color:var(--accent)}
+.ag-dots{display:flex;gap:2px;margin-top:3px;flex-wrap:wrap;justify-content:center}
+.ag-dot{width:5px;height:5px;border-radius:50%}
+.ag-dot.pend{background:#c87020}.ag-dot.venc{background:var(--danger)}.ag-dot.ok{background:var(--success)}
+.ag-dia-hdr{font-size:12px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);margin:16px 0 8px}
 .b-bad{background:rgba(176,48,32,0.12);color:var(--danger);border:1px solid rgba(176,48,32,0.22)}
 .proposta-txt{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:16px;font-size:12px;line-height:1.8;color:var(--text2);font-family:'DM Mono',monospace;white-space:pre-wrap;max-height:340px;overflow-y:auto}
 .hist-card{background:var(--card);border:1.5px solid var(--border2);border-radius:14px;padding:15px;margin-bottom:10px;cursor:pointer}.hist-card:active{border-color:var(--accent)}
@@ -317,6 +347,48 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
     <div class="field" style="margin-bottom:12px"><input class="inp" type="text" id="hist-busca" placeholder="🔎 Buscar por cliente, contato, local..." oninput="renderHist()"></div>
     <div id="hist-list"></div>
   </div>
+
+  <div id="screen-coletas" class="screen">
+    <div class="shdr" style="margin-bottom:14px">
+      <div class="shdr-icon">📅</div>
+      <div style="flex:1"><div class="shdr-title">Coletas</div><div class="shdr-sub">Agenda + controle de MTR/CDF</div></div>
+    </div>
+    <div class="col-sum">
+      <div class="col-sum-i"><div class="col-sum-n" id="col-n-pend">0</div><div class="col-sum-l">Pendentes</div></div>
+      <div class="col-sum-i col-sum-venc"><div class="col-sum-n" id="col-n-venc">0</div><div class="col-sum-l">Vencidas</div></div>
+      <div class="col-sum-i"><div class="col-sum-n" id="col-n-ok">0</div><div class="col-sum-l">Recebidas</div></div>
+    </div>
+    <div class="col-tabs" style="margin-bottom:12px">
+      <div class="col-tab active" id="vtab-lista" onclick="setVista('lista',this)">📋 Lista</div>
+      <div class="col-tab" id="vtab-mes" onclick="setVista('mes',this)">📅 Mês</div>
+    </div>
+
+    <div id="ag-lista">
+      <div class="col-tabs">
+        <div class="col-tab active" id="ftab-todas" onclick="setFiltroColeta('todas',this)">Todas</div>
+        <div class="col-tab" id="ftab-pendente" onclick="setFiltroColeta('pendente',this)">Pendentes</div>
+        <div class="col-tab" id="ftab-vencida" onclick="setFiltroColeta('vencida',this)">Vencidas</div>
+        <div class="col-tab" id="ftab-recebido" onclick="setFiltroColeta('recebido',this)">Recebidas</div>
+      </div>
+      <div class="field" style="margin-bottom:12px"><input class="inp" type="text" id="col-busca" placeholder="🔎 Buscar por MTR, gerador, destinador..." oninput="renderColetas()"></div>
+      <div id="col-list"></div>
+    </div>
+
+    <div id="ag-mes" style="display:none">
+      <div class="ag-mes-nav">
+        <button class="ag-nav-btn" onclick="mudaMes(-1)">‹</button>
+        <div class="ag-mes-label" id="ag-mes-label"></div>
+        <button class="ag-nav-btn" onclick="mudaMes(1)">›</button>
+      </div>
+      <div class="ag-grid-head"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
+      <div class="ag-grid" id="ag-grid"></div>
+      <div id="ag-dia-list" style="margin-top:14px"></div>
+    </div>
+
+    <div style="position:fixed;right:16px;bottom:calc(var(--nav-h) + var(--sb) + 16px);z-index:60">
+      <button class="btn btn-primary" onclick="abrirColeta()" style="width:auto;border-radius:24px;box-shadow:0 4px 16px rgba(219,106,29,.4)">+ Nova coleta</button>
+    </div>
+  </div>
 </div>
 
 <nav class="nav">
@@ -324,6 +396,7 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
   <div class="nav-item" id="nav-resultado" onclick="navTo('resultado',this)"><div class="nav-icon">📊</div><div class="nav-label">Resultado</div></div>
   <div class="nav-item" id="nav-proposta" onclick="navTo('proposta',this)"><div class="nav-icon">📄</div><div class="nav-label">Proposta</div></div>
   <div class="nav-item" id="nav-historico" onclick="navTo('historico',this)"><div class="nav-icon">🗂️</div><div class="nav-label">Histórico</div></div>
+  <div class="nav-item" id="nav-coletas" onclick="navTo('coletas',this)"><div class="nav-icon">📅</div><div class="nav-label">Coletas</div></div>
 </nav>
 
 <!-- MODAL IBAMA -->
@@ -389,6 +462,35 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
 <div class="toast" id="toast"></div>
 
 <!-- MODAL ROTA COMPARTILHADA (rateio por km) -->
+<div class="overlay" id="coleta-modal" onclick="if(event.target===this)fecharColeta()">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title" id="coleta-titulo">Nova coleta</div><button class="modal-close-btn" onclick="fecharColeta()">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="col-id">
+      <div class="field"><label class="flabel">Gerador (cliente)</label><input class="inp" type="text" id="col-gerador" placeholder="Quem gerou o resíduo"></div>
+      <div class="g2">
+        <div class="field"><label class="flabel">Transportador</label><input class="inp" type="text" id="col-transp" list="dl-transp" placeholder="Cerrado, Ecoliq..."><datalist id="dl-transp"><option value="Cerrado (Furgão)"><option value="Alugares"><option value="Ecoliq"><option value="Terceiro"><option value="Goyazes"><option value="H2S"><option value="Risco Zero"></datalist></div>
+        <div class="field"><label class="flabel">Veículo</label><input class="inp" type="text" id="col-veiculo" list="dl-veic" placeholder="Furgão, Baú..."><datalist id="dl-veic"><option value="Furgão"><option value="Baú"><option value="Vácuo"><option value="Roll-on"><option value="Munk"><option value="Poli"></datalist></div>
+      </div>
+      <div class="g2">
+        <div class="field"><label class="flabel">Nº do MTR</label><input class="inp inp-mono" type="text" id="col-mtr" placeholder="emitido pelo gerador"></div>
+        <div class="field"><label class="flabel">Data da coleta</label><input class="inp inp-mono" type="date" id="col-data"></div>
+      </div>
+      <div class="field"><label class="flabel">Destinador</label><input class="inp" type="text" id="col-destinador" placeholder="Para onde foi destinado"></div>
+      <div class="field"><label class="flabel">Resíduo (opcional)</label><input class="inp" type="text" id="col-residuo" placeholder="Descrição curta"></div>
+      <div class="g2">
+        <div class="field"><label class="flabel">Prazo do CDF (dias)</label><input class="inp inp-mono" type="number" id="col-prazo" value="30" inputmode="numeric"></div>
+        <div class="field"><label class="flabel">Status do CDF</label><select class="inp sel" id="col-status" onchange="colToggleCDF()"><option value="pendente">Pendente</option><option value="recebido">Recebido</option></select></div>
+      </div>
+      <div class="field" id="col-data-cdf-wrap" style="display:none"><label class="flabel">Data de recebimento do CDF</label><input class="inp inp-mono" type="date" id="col-data-cdf"></div>
+      <div style="height:8px"></div>
+      <button class="btn btn-primary" onclick="salvarColeta()">✓ Salvar coleta</button>
+      <div style="height:8px"></div>
+      <button class="btn btn-outline" id="col-excluir-btn" onclick="excluirColeta()" style="display:none;color:var(--danger);border-color:var(--danger)">🗑 Excluir</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="rota-modal" onclick="if(event.target===this)fecharRota()">
   <div class="modal">
     <div class="modal-handle-wrap"><div class="modal-handle"></div></div>
@@ -656,7 +758,7 @@ function excluirHist(id){if(!confirm('Excluir este orçamento?'))return;try{var 
 function editarHist(id){try{var h=JSON.parse(localStorage.getItem('rpro_hist')||'[]'),x=h.find(function(i){return i.id===id;});if(!x)return;var c=x.cli||{};g('cli-nome').value=c.nome||'';g('cli-cnpj').value=c.cnpj||'';g('cli-contato').value=c.contato||'';g('cli-local').value=c.local||'';g('trajeto').value=x.km||'';g('veiculo').value=x.veic||'FURGAO';g('acresc').value=x.ac||'';g('obs').value=x.obs||'';residuos=(x.itens||[]).map(function(r){return{id:nextId++,desc:r.desc||'',codigo:r.codigo||'',perigoso:!!r.perigoso,peso:r.peso||0,dest:r.dest||'ATERRO CLASSE II'};});if(!residuos.length)residuos=[{id:nextId++,desc:'',codigo:'',perigoso:false,peso:0,dest:'ATERRO CLASSE II'}];renderRes();calcular();var h2=h.filter(function(i){return i.id!==id;});localStorage.setItem('rpro_hist',JSON.stringify(h2));renderHist();navTo('orcamento',g('nav-orcamento'));toast('✏️ Editando — recalcule e salve novamente');}catch(e){}}
 function limparHist(){if(confirm('Apagar todo o histórico?')){localStorage.removeItem('rpro_hist');renderHist();toast('🗑️ Limpo');}}
 
-function navTo(id,el){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});g('screen-'+id).classList.add('active');el.classList.add('active');if(id==='historico')renderHist();}
+function navTo(id,el){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});g('screen-'+id).classList.add('active');el.classList.add('active');if(id==='historico')renderHist();if(id==='coletas')renderColetas();}
 
 function atualizarDestSelect(id){
   var r=residuos.find(function(x){return x.id===id;});
@@ -1365,8 +1467,122 @@ function usarRotaKm(km,nome){
   toast('📍 '+km+' km aplicados ao orçamento de '+nome);
 }
 
+// ── COLETAS: agenda + controle de MTR/CDF ──
+var _filtroColeta='todas', _vista='lista', _mesRef=new Date(), _diaSel=new Date().toISOString().slice(0,10);
+var MESES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+var DIAS_SEM=['dom','seg','ter','qua','qui','sex','sáb'];
+function lColetas(){try{return JSON.parse(localStorage.getItem('rpro_coletas')||'[]');}catch(e){return [];}}
+function sColetas(a){try{localStorage.setItem('rpro_coletas',JSON.stringify(a));}catch(e){}}
+function brData(d){if(!d)return '';var p=(''+d).split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d;}
+function hdrData(ds){var dt=new Date(ds+'T00:00:00');return DIAS_SEM[dt.getDay()]+', '+brData(ds);}
+function diasDesde(d){if(!d)return 0;return Math.floor((Date.now()-new Date(d+'T00:00:00').getTime())/86400000);}
+function statusColeta(c){
+  if(c.statusCDF==='recebido')return {tipo:'recebido'};
+  var dias=diasDesde(c.dataColeta), prazo=+c.prazoDias||30;
+  if(dias>prazo)return {tipo:'vencida',dias:dias-prazo};
+  return {tipo:'pendente',dias:dias,prazo:prazo};
+}
+function cardColeta(c){
+  var s=statusColeta(c), badge;
+  if(s.tipo==='recebido')badge='<div class="badge b-ok">✓ CDF recebido'+(c.dataCDF?' '+brData(c.dataCDF):'')+'</div>';
+  else if(s.tipo==='vencida')badge='<div class="badge b-danger">⚠ Vencido há '+s.dias+'d</div>';
+  else badge='<div class="badge b-warn">CDF pendente · '+s.dias+'/'+s.prazo+'d</div>';
+  var tv=[c.transportador,c.veiculo].filter(Boolean).join(' · ');
+  return '<div class="col-card'+(s.tipo==='vencida'?' venc':'')+'" onclick="abrirColeta('+c.id+')">'+
+    '<div class="col-top"><div><div class="col-ger">'+(c.gerador||'Sem nome')+'</div><div class="col-mtr">MTR '+(c.mtr||'—')+'</div></div>'+badge+'</div>'+
+    (tv?'<div class="col-row">🚛 '+tv+'</div>':'')+
+    (c.destinador?'<div class="col-row">🏭 '+c.destinador+'</div>':'')+
+    (c.residuo?'<div class="col-row">♻️ '+c.residuo+'</div>':'')+
+  '</div>';
+}
+function setVista(v,el){_vista=v;document.querySelectorAll('#vtab-lista,#vtab-mes').forEach(function(t){t.classList.remove('active');});el.classList.add('active');g('ag-lista').style.display=v==='lista'?'block':'none';g('ag-mes').style.display=v==='mes'?'block':'none';renderColetas();}
+function setFiltroColeta(f,el){_filtroColeta=f;el.parentNode.querySelectorAll('.col-tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');renderColetas();}
+function renderColetas(){
+  var arr=lColetas(),nP=0,nV=0,nO=0;
+  arr.forEach(function(c){var t=statusColeta(c).tipo;if(t==='recebido')nO++;else if(t==='vencida')nV++;else nP++;});
+  g('col-n-pend').textContent=nP;g('col-n-venc').textContent=nV;g('col-n-ok').textContent=nO;
+  if(_vista==='mes')renderMes();else renderLista();
+}
+function renderLista(){
+  var arr=lColetas(), el=g('col-list');
+  var q=(g('col-busca').value||'').trim().toLowerCase();
+  var list=arr.filter(function(c){
+    var t=statusColeta(c).tipo;
+    if(_filtroColeta==='pendente'&&t!=='pendente')return false;
+    if(_filtroColeta==='vencida'&&t!=='vencida')return false;
+    if(_filtroColeta==='recebido'&&t!=='recebido')return false;
+    if(q)return [c.gerador,c.mtr,c.destinador,c.residuo,c.transportador,c.veiculo].join(' ').toLowerCase().indexOf(q)>=0;
+    return true;
+  });
+  list.sort(function(a,b){return (''+(a.dataColeta||'9999')).localeCompare(''+(b.dataColeta||'9999'));});
+  if(!list.length){el.innerHTML='<div class="empty"><span class="empty-ico">📅</span><div class="empty-t">'+((q||_filtroColeta!=='todas')?'Nada aqui':'Nenhuma coleta')+'</div><div style="font-size:12px;margin-top:4px;color:var(--text3)">Toque em + Nova coleta</div></div>';return;}
+  var html='',lastD=null;
+  list.forEach(function(c){var d=c.dataColeta||'';if(d!==lastD){html+='<div class="ag-dia-hdr">'+(d?hdrData(d):'Sem data')+'</div>';lastD=d;}html+=cardColeta(c);});
+  el.innerHTML=html;
+}
+function mudaMes(delta){_mesRef=new Date(_mesRef.getFullYear(),_mesRef.getMonth()+delta,1);renderMes();}
+function selDia(ds){_diaSel=ds;renderMes();}
+function renderMes(){
+  var y=_mesRef.getFullYear(), m=_mesRef.getMonth();
+  g('ag-mes-label').textContent=MESES[m]+' '+y;
+  var startDow=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate();
+  var arr=lColetas(), byDay={};
+  arr.forEach(function(c){if(c.dataColeta){var p=c.dataColeta.split('-');if(+p[0]===y&&+p[1]===m+1)(byDay[+p[2]]=byDay[+p[2]]||[]).push(c);}});
+  var tStr=new Date().toISOString().slice(0,10), html='';
+  for(var i=0;i<startDow;i++)html+='<div class="ag-cell empty"></div>';
+  for(var d=1;d<=days;d++){
+    var ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'), items=byDay[d]||[], dots='';
+    items.slice(0,4).forEach(function(c){var t=statusColeta(c).tipo;dots+='<span class="ag-dot '+(t==='vencida'?'venc':t==='recebido'?'ok':'pend')+'"></span>';});
+    html+='<div class="ag-cell'+(ds===tStr?' hoje':'')+(ds===_diaSel?' sel':'')+'" onclick="selDia(\''+ds+'\')">'+d+'<div class="ag-dots">'+dots+'</div></div>';
+  }
+  g('ag-grid').innerHTML=html;
+  renderDiaList();
+}
+function renderDiaList(){
+  var items=lColetas().filter(function(c){return c.dataColeta===_diaSel;});
+  var h='<div class="ag-dia-hdr">'+hdrData(_diaSel)+'</div>';
+  h+=items.length?items.map(cardColeta).join(''):'<div style="font-size:13px;color:var(--text3);padding:4px 2px">Sem coletas neste dia. Toque em + Nova coleta.</div>';
+  g('ag-dia-list').innerHTML=h;
+}
+function colToggleCDF(){g('col-data-cdf-wrap').style.display=(g('col-status').value==='recebido')?'block':'none';}
+function abrirColeta(id){
+  var ed=(typeof id==='number')?lColetas().find(function(c){return c.id===id;}):null;
+  g('coleta-titulo').textContent=ed?'Editar coleta':'Nova coleta';
+  g('col-id').value=ed?ed.id:'';
+  g('col-gerador').value=ed?(ed.gerador||''):'';
+  g('col-transp').value=ed?(ed.transportador||''):'';
+  g('col-veiculo').value=ed?(ed.veiculo||''):'';
+  g('col-mtr').value=ed?(ed.mtr||''):'';
+  g('col-data').value=ed?(ed.dataColeta||''):(_vista==='mes'?_diaSel:new Date().toISOString().slice(0,10));
+  g('col-destinador').value=ed?(ed.destinador||''):'';
+  g('col-residuo').value=ed?(ed.residuo||''):'';
+  g('col-prazo').value=ed?(ed.prazoDias||30):30;
+  g('col-status').value=ed?(ed.statusCDF||'pendente'):'pendente';
+  g('col-data-cdf').value=ed?(ed.dataCDF||''):'';
+  colToggleCDF();
+  g('col-excluir-btn').style.display=ed?'flex':'none';
+  g('coleta-modal').classList.add('open');
+}
+function fecharColeta(){g('coleta-modal').classList.remove('open');}
+function salvarColeta(){
+  var ger=g('col-gerador').value.trim(), mtr=g('col-mtr').value.trim();
+  if(!ger&&!mtr){toast('⚠️ Informe ao menos o gerador ou o nº do MTR');return;}
+  var arr=lColetas(), id=g('col-id').value;
+  var obj={gerador:ger,transportador:g('col-transp').value.trim(),veiculo:g('col-veiculo').value.trim(),mtr:mtr,dataColeta:g('col-data').value,destinador:g('col-destinador').value.trim(),residuo:g('col-residuo').value.trim(),prazoDias:+g('col-prazo').value||30,statusCDF:g('col-status').value,dataCDF:g('col-status').value==='recebido'?g('col-data-cdf').value:''};
+  if(id){var i=arr.findIndex(function(c){return c.id==id;});if(i>=0)arr[i]=Object.assign({id:+id},obj);}
+  else{obj.id=Date.now();arr.push(obj);if(obj.dataColeta)_diaSel=obj.dataColeta;}
+  sColetas(arr);fecharColeta();renderColetas();toast('✅ Coleta salva');
+}
+function excluirColeta(){
+  var id=g('col-id').value;if(!id)return;
+  if(!confirm('Excluir esta coleta?'))return;
+  sColetas(lColetas().filter(function(c){return c.id!=id;}));
+  fecharColeta();renderColetas();toast('🗑️ Coleta excluída');
+}
+
 renderRes();
 renderHist();
+renderColetas();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
 </script>
 </body>
