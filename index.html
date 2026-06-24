@@ -455,6 +455,15 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
       <button class="btn btn-primary" onclick="salvarCfg()">✓ Salvar</button>
       <div style="height:10px"></div>
       <button class="btn btn-outline" onclick="fecharCfg()">Fechar</button>
+      <div class="slabel" style="margin:18px 0 10px">Backup dos dados</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.45">Salva clientes, coletas, histórico e configurações num arquivo. Guarde-o de tempos em tempos — é sua cópia de segurança.</div>
+      <button class="btn btn-ghost" onclick="exportarBackup()">⬇️ Exportar backup (.json)</button>
+      <div style="height:8px"></div>
+      <button class="btn btn-outline" onclick="document.getElementById('rpro-import-file').click()">⬆️ Importar backup</button>
+      <input type="file" id="rpro-import-file" accept="application/json,.json" style="display:none" onchange="importarBackup(this)">
+      <div class="slabel" style="margin:18px 0 10px">Conta</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Conectado: <span id="cfg-user-email">—</span></div>
+      <button class="btn btn-outline" onclick="sairConta()">Sair da conta</button>
     </div>
   </div>
 </div>
@@ -527,6 +536,23 @@ input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
   </div>
 </div>
 
+<!-- LOGIN (Firebase) -->
+<div id="login-gate" style="position:fixed;inset:0;z-index:300;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center">
+  <div class="hdr-mark" style="width:56px;height:56px;font-size:30px;border-radius:16px;margin-bottom:18px">C</div>
+  <div style="font-size:22px;font-weight:800">ResíduosPRO</div>
+  <div style="font-size:13px;color:var(--text3);margin-bottom:26px">Cerrado Ambiental — acesso restrito</div>
+  <div style="width:100%;max-width:340px">
+    <div class="field"><input class="inp" type="email" id="lg-email" placeholder="E-mail" autocomplete="username"></div>
+    <div class="field"><input class="inp" type="password" id="lg-senha" placeholder="Senha" autocomplete="current-password"></div>
+    <div id="lg-erro" style="color:var(--danger);font-size:13px;min-height:18px;margin:6px 0;font-weight:600"></div>
+    <button class="btn btn-primary" id="lg-btn" onclick="fazerLogin()">Entrar</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
 <script>
 var DEST_KEYS_I  =['ATERRO CLASSE I','BLEND CLASSE I','INCIN CLASSE I','EFLUENTE CLASSE I'];
 var DEST_KEYS_II =['ATERRO CLASSE II','BLEND CLASSE II','INCIN CLASSE II','EFLUENTE CLASSE II','COMPOST CLASSE II'];
@@ -571,6 +597,34 @@ function abrirCfg(){
     cE.innerHTML+='<div class="cfg-r"><div class="cfg-l">'+k+'</div><input class="cfg-i" id="cdc-'+esc(k)+'" type="number" step="0.01" value="'+cfg.dest.cli[k]+'"></div>';
   });
   g('cfg-modal').classList.add('open');
+}
+function exportarBackup(){
+  var dados={app:'ResiduosPRO',versao:1,exportadoEm:new Date().toISOString(),
+    cfg:localStorage.getItem('rpro_cfg'),hist:localStorage.getItem('rpro_hist'),coletas:localStorage.getItem('rpro_coletas')};
+  var blob=new Blob([JSON.stringify(dados,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download='residuospro-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  var nC=0; try{nC=JSON.parse(localStorage.getItem('rpro_coletas')||'[]').length;}catch(e){}
+  toast('⬇️ Backup exportado ('+nC+' coletas)');
+}
+function importarBackup(input){
+  var file=input.files&&input.files[0]; if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var d=JSON.parse(e.target.result);
+      if(!d||d.app!=='ResiduosPRO')throw new Error('formato');
+      if(!confirm('Importar este backup? Ele substitui os dados atuais deste app (coletas, histórico e configurações).')){input.value='';return;}
+      if(d.cfg!=null)localStorage.setItem('rpro_cfg',d.cfg);
+      if(d.hist!=null)localStorage.setItem('rpro_hist',d.hist);
+      if(d.coletas!=null)localStorage.setItem('rpro_coletas',d.coletas);
+      cfg=lCfg(); renderHist(); renderColetas(); fecharCfg();
+      toast('⬆️ Backup importado!');
+    }catch(err){ toast('⚠️ Arquivo inválido'); }
+    input.value='';
+  };
+  reader.readAsText(file);
 }
 function fecharCfg(){g('cfg-modal').classList.remove('open');}
 function salvarCfg(){
@@ -1584,6 +1638,79 @@ renderRes();
 renderHist();
 renderColetas();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+
+// ── FIREBASE: login (e-mail/senha) + sincronização na nuvem ──
+(function(){
+  if(typeof firebase==='undefined'){ return; } // SDK não carregou → app segue só local
+  var firebaseConfig={
+    apiKey:"AIzaSyDzPZMZ0tP0dYDzfaFR1fm6Thx6ir4K76Q",
+    authDomain:"residuospro---cerrado.firebaseapp.com",
+    projectId:"residuospro---cerrado",
+    storageBucket:"residuospro---cerrado.firebasestorage.app",
+    messagingSenderId:"849223957541",
+    appId:"1:849223957541:web:002d832603cb7ab75cd3cc"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var auth=firebase.auth(), db=firebase.firestore();
+  try{ db.enablePersistence({synchronizeTabs:true}).catch(function(){}); }catch(e){}
+
+  var SYNC_KEYS=['rpro_cfg','rpro_hist','rpro_coletas'], COL='residuospro';
+  var _applyingRemote=false, _timers={}, _unsub=[];
+  var _setItem=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){
+    _setItem.call(this,k,v);
+    if(this===window.localStorage && SYNC_KEYS.indexOf(k)>=0 && !_applyingRemote && auth.currentUser){
+      clearTimeout(_timers[k]); _timers[k]=setTimeout(function(){ pushCloud(k); },400);
+    }
+  };
+  function pushCloud(k){
+    if(!auth.currentUser)return;
+    db.collection(COL).doc(k).set({value:localStorage.getItem(k)||'',ts:Date.now(),by:auth.currentUser.email||''}).catch(function(){});
+  }
+  function aplicarRemoto(k,val){
+    if(localStorage.getItem(k)===val)return;
+    _applyingRemote=true; _setItem.call(localStorage,k,val==null?'':val); _applyingRemote=false;
+    try{ if(k==='rpro_cfg')cfg=lCfg(); renderHist(); renderColetas(); }catch(e){}
+  }
+  function iniciarSync(){
+    SYNC_KEYS.forEach(function(k){
+      var un=db.collection(COL).doc(k).onSnapshot(function(doc){
+        if(doc.exists){var d=doc.data();if(d&&typeof d.value==='string')aplicarRemoto(k,d.value);}
+        else if(localStorage.getItem(k)) pushCloud(k);
+      },function(){});
+      _unsub.push(un);
+    });
+  }
+  function pararSync(){ _unsub.forEach(function(u){try{u();}catch(e){}}); _unsub=[]; }
+
+  window.fazerLogin=function(){
+    var em=(g('lg-email').value||'').trim(), sn=g('lg-senha').value||'';
+    if(!em||!sn){g('lg-erro').textContent='Preencha e-mail e senha.';return;}
+    g('lg-erro').textContent=''; g('lg-btn').textContent='Entrando...';
+    auth.signInWithEmailAndPassword(em,sn).catch(function(err){
+      var m='Não foi possível entrar.';
+      if(err.code==='auth/invalid-email')m='E-mail inválido.';
+      else if(err.code==='auth/invalid-credential'||err.code==='auth/wrong-password'||err.code==='auth/user-not-found')m='E-mail ou senha incorretos.';
+      else if(err.code==='auth/network-request-failed')m='Sem conexão com a internet.';
+      else if(err.code==='auth/too-many-requests')m='Muitas tentativas. Aguarde um pouco.';
+      g('lg-erro').textContent=m;
+    }).finally(function(){ g('lg-btn').textContent='Entrar'; });
+  };
+  window.sairConta=function(){ if(confirm('Sair da conta? Os dados continuam salvos na nuvem.')){ pararSync(); auth.signOut(); try{fecharCfg();}catch(e){} } };
+
+  auth.onAuthStateChanged(function(user){
+    if(user){
+      g('login-gate').style.display='none';
+      var em=g('cfg-user-email'); if(em)em.textContent=user.email||'';
+      iniciarSync();
+    }else{
+      pararSync();
+      var em=g('cfg-user-email'); if(em)em.textContent='—';
+      g('login-gate').style.display='flex';
+    }
+  });
+  ['lg-email','lg-senha'].forEach(function(id){var el=g(id);if(el)el.addEventListener('keydown',function(e){if(e.key==='Enter')fazerLogin();});});
+})();
 </script>
 </body>
 </html>
