@@ -981,31 +981,36 @@ function buscaCNPJ(val){
   var cnpj = val.replace(/\D/g,'');
   if(cnpj.length < 14){ if(status) status.innerHTML=''; return; }
 
-  // Debounce — espera 600ms após parar de digitar
   clearTimeout(_cnpjTimer);
   _cnpjTimer = setTimeout(function(){
     if(status) status.innerHTML='<span style="color:var(--text3)">🔍 Consultando Receita Federal...</span>';
 
+    function aplica(razao, municipio, uf){
+      var nomeEl = g('cli-nome');
+      if(nomeEl) nomeEl.value = razao;
+      var info = razao + (municipio ? ' — '+municipio+'/'+(uf||'') : '');
+      if(status) status.innerHTML='<span style="color:var(--success)">✓ '+info+'</span>';
+    }
+
+    // Fonte 2 (reserva): ReceitaWS
+    function tentaReceitaWS(){
+      fetch('https://receitaws.com.br/v1/cnpj/'+cnpj)
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(d){
+          if(d && d.nome) aplica(d.nome, d.municipio, d.uf);
+          else if(status) status.innerHTML='<span style="color:var(--danger)">CNPJ não encontrado</span>';
+        })
+        .catch(function(){ if(status) status.innerHTML='<span style="color:var(--danger)">Sem conexão para consultar o CNPJ</span>'; });
+    }
+
+    // Fonte 1 (principal): BrasilAPI
     fetch('https://brasilapi.com.br/api/cnpj/v1/'+cnpj)
-      .then(function(r){ return r.json(); })
+      .then(function(r){ if(!r.ok) throw new Error('http'); return r.json(); })
       .then(function(d){
-        if(d.razao_social){
-          // Preencher nome
-          var nomeEl = g('cli-nome');
-          if(nomeEl){
-            nomeEl.value = d.razao_social;
-          }
-          // Mostrar confirmação
-          var info = d.razao_social;
-          if(d.municipio) info += ' — ' + d.municipio + '/' + d.uf;
-          if(status) status.innerHTML='<span style="color:var(--success)">✓ '+info+'</span>';
-        } else {
-          if(status) status.innerHTML='<span style="color:var(--danger)">CNPJ não encontrado</span>';
-        }
+        if(d && d.razao_social) aplica(d.razao_social, d.municipio, d.uf);
+        else tentaReceitaWS();
       })
-      .catch(function(){
-        if(status) status.innerHTML='<span style="color:var(--danger)">Erro ao consultar. Verifique o CNPJ.</span>';
-      });
+      .catch(function(){ tentaReceitaWS(); });
   }, 600);
 }
 
