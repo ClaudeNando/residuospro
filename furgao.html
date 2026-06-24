@@ -314,6 +314,9 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
       <div style="height:8px"></div>
       <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">⬆️ Importar backup</button>
       <input type="file" id="import-file" accept="application/json,.json" style="display:none" onchange="importarBackup(this)">
+      <div class="card-lbl" style="margin:14px 0 10px">Conta</div>
+      <div style="font-size:12px;color:var(--text3,#9ab);margin-bottom:8px">Conectado: <span id="cfg-user-email">—</span></div>
+      <button class="btn btn-outline" onclick="sairConta()">Sair da conta</button>
       <div class="card-lbl" style="margin:14px 0 10px">Zona de risco</div>
       <button class="btn btn-danger" onclick="zerarViagens()">🗑 Zerar todas as viagens</button>
       <div style="height:8px"></div>
@@ -323,6 +326,23 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- LOGIN (Firebase) -->
+<div id="login-gate" style="position:fixed;inset:0;z-index:300;background:var(--bg,#0d2137);display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;color:#e8f0f8">
+  <div style="width:56px;height:56px;border-radius:16px;background:var(--accent,#4a9de0);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:18px">🚛</div>
+  <div style="font-size:22px;font-weight:800">FurgãoPRO</div>
+  <div style="font-size:13px;opacity:.6;margin-bottom:26px">Cerrado Ambiental — acesso restrito</div>
+  <div style="width:100%;max-width:340px">
+    <div class="field"><input class="inp" type="email" id="lg-email" placeholder="E-mail" autocomplete="username"></div>
+    <div class="field" style="margin-top:8px"><input class="inp" type="password" id="lg-senha" placeholder="Senha" autocomplete="current-password"></div>
+    <div id="lg-erro" style="color:#ff8a7a;font-size:13px;min-height:18px;margin:8px 0;font-weight:600"></div>
+    <button class="btn btn-primary" id="lg-btn" onclick="fazerLogin()" style="width:100%">Entrar</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
 <script>
 var DEF_CFG={consumo:10,diesel:7.20,parcela:4202.39,kmMes:10392,ipva:4570,seguro:7265,licen:308,motorista:5000,oleoCusto:1000,oleoKm:10000,pneuCusto:3000,pneuKm:50000,manutCusto:3000,manutKm:50000,imposto:15.45,margem:30};
@@ -1089,6 +1109,84 @@ function importarBackup(input){
 var _recuperados = corrigirAvulsos();
 renderDash();
 if(_recuperados>0){ renderClientes(); toast('✅ '+_recuperados+' cliente(s) recuperado(s) das viagens'); }
+
+// ── FIREBASE: login (e-mail/senha) + sincronização na nuvem ──
+(function(){
+  if(typeof firebase==='undefined'){ return; }
+  var firebaseConfig={
+    apiKey:"AIzaSyDzPZMZ0tP0dYDzfaFR1fm6Thx6ir4K76Q",
+    authDomain:"residuospro---cerrado.firebaseapp.com",
+    projectId:"residuospro---cerrado",
+    storageBucket:"residuospro---cerrado.firebasestorage.app",
+    messagingSenderId:"849223957541",
+    appId:"1:849223957541:web:002d832603cb7ab75cd3cc"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var auth=firebase.auth(), db=firebase.firestore();
+  try{ db.enablePersistence({synchronizeTabs:true}).catch(function(){}); }catch(e){}
+
+  var SYNC_KEYS=['fp2_cfg','fp2_clientes','fp2_viagens'], COL='furgaopro';
+  var _applyingRemote=false, _timers={}, _unsub=[];
+  var _setItem=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){
+    _setItem.call(this,k,v);
+    if(this===window.localStorage && SYNC_KEYS.indexOf(k)>=0 && !_applyingRemote && auth.currentUser){
+      clearTimeout(_timers[k]); _timers[k]=setTimeout(function(){ pushCloud(k); },400);
+    }
+  };
+  function pushCloud(k){
+    if(!auth.currentUser)return;
+    db.collection(COL).doc(k).set({value:localStorage.getItem(k)||'',ts:Date.now(),by:auth.currentUser.email||''}).catch(function(){});
+  }
+  function aplicarRemoto(k,val){
+    if(localStorage.getItem(k)===val)return;
+    _applyingRemote=true; _setItem.call(localStorage,k,val==null?'':val); _applyingRemote=false;
+    try{
+      cfg=lCfg(); clientes=lClientes(); viagens=lViagens();
+      nextVId=Math.max(0,...viagens.map(function(v){return v.id||0;}))+1;
+      nextCId=Math.max(0,...clientes.map(function(c){return c.id||0;}))+1;
+      renderDash(); renderRegistros(); renderClientes();
+    }catch(e){}
+  }
+  function iniciarSync(){
+    SYNC_KEYS.forEach(function(k){
+      var un=db.collection(COL).doc(k).onSnapshot(function(doc){
+        if(doc.exists){var d=doc.data();if(d&&typeof d.value==='string')aplicarRemoto(k,d.value);}
+        else if(localStorage.getItem(k)) pushCloud(k);
+      },function(){});
+      _unsub.push(un);
+    });
+  }
+  function pararSync(){ _unsub.forEach(function(u){try{u();}catch(e){}}); _unsub=[]; }
+
+  window.fazerLogin=function(){
+    var em=(g('lg-email').value||'').trim(), sn=g('lg-senha').value||'';
+    if(!em||!sn){g('lg-erro').textContent='Preencha e-mail e senha.';return;}
+    g('lg-erro').textContent=''; g('lg-btn').textContent='Entrando...';
+    auth.signInWithEmailAndPassword(em,sn).catch(function(err){
+      var m='Não foi possível entrar.';
+      if(err.code==='auth/invalid-email')m='E-mail inválido.';
+      else if(err.code==='auth/invalid-credential'||err.code==='auth/wrong-password'||err.code==='auth/user-not-found')m='E-mail ou senha incorretos.';
+      else if(err.code==='auth/network-request-failed')m='Sem conexão com a internet.';
+      else if(err.code==='auth/too-many-requests')m='Muitas tentativas. Aguarde um pouco.';
+      g('lg-erro').textContent=m;
+    }).finally(function(){ g('lg-btn').textContent='Entrar'; });
+  };
+  window.sairConta=function(){ if(confirm('Sair da conta? Os dados continuam salvos na nuvem.')){ pararSync(); auth.signOut(); try{closeModal('cfg-modal');}catch(e){} } };
+
+  auth.onAuthStateChanged(function(user){
+    if(user){
+      g('login-gate').style.display='none';
+      var em=g('cfg-user-email'); if(em)em.textContent=user.email||'';
+      iniciarSync();
+    }else{
+      pararSync();
+      var em=g('cfg-user-email'); if(em)em.textContent='—';
+      g('login-gate').style.display='flex';
+    }
+  });
+  ['lg-email','lg-senha'].forEach(function(id){var el=g(id);if(el)el.addEventListener('keydown',function(e){if(e.key==='Enter')fazerLogin();});});
+})();
 </script>
 </body>
 </html>
