@@ -1,6 +1,6 @@
 {
-  "name": "ResíduosPRO — Cerrado Ambiental",
-  "short_name": "ResíduosPRO",
+  "name": "CerradoPRO — Cerrado Ambiental",
+  "short_name": "CerradoPRO",
   "description": "Orçamentos de coleta e destinação de resíduos industriais",
   "start_url": "./index.html",
   "scope": "./",
